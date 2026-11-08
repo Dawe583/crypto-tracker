@@ -3,6 +3,7 @@ import { getAddress, type Address } from 'viem';
 import { CHAINS, config } from './config.js';
 import { logger } from './logger.js';
 import { dispatch, type WhaleSignal } from './notifier.js';
+import { setGoldSnapshot } from './store.js';
 import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -126,6 +127,7 @@ function saveState(s: Record<string, string>) {
 
 export async function runGoldCycle(): Promise<GoldQuote[]> {
   const quotes = await scanGold();
+  setGoldSnapshot(quotes);
   const state = loadState();
   for (const q of quotes) {
     const key = `${q.chain}:${q.symbol}`;

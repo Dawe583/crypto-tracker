@@ -62,6 +62,16 @@ export const config = {
   telegramToken: str(process.env.TELEGRAM_BOT_TOKEN),
   telegramChatId: str(process.env.TELEGRAM_CHAT_ID),
   webhookUrl: str(process.env.ALERT_WEBHOOK_URL),
+  api: {
+    enabled: str(process.env.API_ENABLED, 'true').toLowerCase() !== 'false',
+    host: str(process.env.API_HOST, '0.0.0.0'),
+    port: num(process.env.API_PORT, 8787),
+    token: str(process.env.API_TOKEN),
+    corsOrigins: str(process.env.API_CORS_ORIGINS)
+      .split(',')
+      .map((s) => s.trim())
+      .filter((s) => s !== ''),
+  },
   gold: {
     spotUrl: str(process.env.GOLD_SPOT_URL, 'https://api.gold-api.com/price/XAU'),
     pollMs: num(process.env.GOLD_POLL_MS, 60_000),
