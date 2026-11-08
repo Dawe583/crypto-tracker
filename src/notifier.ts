@@ -1,6 +1,7 @@
-// Signal alert dispatcher: structured payload -> Telegram and/or generic webhook, always logged.
+// Signal alert dispatcher: structured payload -> Telegram and/or generic webhook, always logged and kept for the API.
 import { CHAINS, config } from './config.js';
 import { logger } from './logger.js';
+import { recordSignal } from './store.js';
 import type { SafetyVerdict } from './filter.js';
 
 export interface WhaleSignal {
@@ -43,6 +44,7 @@ export function renderText(s: WhaleSignal): string {
 
 export async function dispatch(s: WhaleSignal): Promise<void> {
   const text = renderText(s);
+  recordSignal(s);
   logger.info({ signal: s.kind, token: s.token.symbol, chain: s.chain }, 'signal');
   console.log(`\n${text}\n`);
 
