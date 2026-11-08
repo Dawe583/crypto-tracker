@@ -7,7 +7,7 @@
 [![systemd](https://img.shields.io/badge/systemd-auto--start-222222)](https://systemd.io/)
 [![License](https://img.shields.io/badge/license-private-lightgrey)](#license)
 
-A always-on monitor for Base (chain 8453) and Ethereum mainnet. It watches smart-money and VC wallets, detects new Uniswap V2/V3 and Aerodrome pools, runs basic token safety checks, and tracks how PAXG and XAUt trade on DEXs against spot gold. Alerts go to Telegram, a generic webhook, or stdout.
+A always-on monitor for Base (chain 8453) and Ethereum mainnet. It watches smart-money and VC wallets, detects new Uniswap V2/V3 and Aerodrome pools, runs basic token safety checks, and tracks how PAXG and XAUt trade on DEXs against spot gold. Alerts go to Telegram, a generic webhook, or stdout. A small HTTP JSON API exposes health, gold, whale, and pool data.
 
 > Not financial advice. Honeypot, DexScreener, and explorer data are third-party heuristics, not guarantees.
 
@@ -17,6 +17,7 @@ A always-on monitor for Base (chain 8453) and Ethereum mainnet. It watches smart
 - [Hardware requirements (Raspberry Pi 4)](#hardware-requirements-raspberry-pi-4)
 - [Quick start on Raspberry Pi](#quick-start-on-raspberry-pi)
 - [systemd auto-start](#systemd-auto-start)
+- [HTTP JSON API](#http-json-api)
 - [Configuration](#configuration)
 - [Project layout](#project-layout)
 - [Scripts](#scripts)
@@ -33,6 +34,7 @@ A always-on monitor for Base (chain 8453) and Ethereum mainnet. It watches smart
 | Safety filter | Honeypot and tax simulation, LP burn heuristic (V2-style), explorer verification, deployer history. Returns PASS, WARN, or REJECT. |
 | Gold RWA | Compares PAXG and XAUt DEX prices with a spot gold reference. Alerts on spread crossing `GOLD_ALERT_PCT` or `GOLD_MAJOR_PCT`, once per level change. |
 | Alerts | Telegram, generic JSON webhook, plus stdout and structured logs. |
+| HTTP JSON API | Read-only endpoints for health, gold, whales, and pools on port 8787. See [HTTP JSON API](#http-json-api). |
 
 ## Architecture
 
@@ -56,13 +58,20 @@ A always-on monitor for Base (chain 8453) and Ethereum mainnet. It watches smart
                  |  level-change alerts        |
                  +-----------------------------+
 
-  index.ts starts the listener and the gold loop in one process.
+                 +-----------------------------+
+  store.ts ----> |  api.ts                     |--> HTTP JSON API (port 8787)
+                 |  /api/health, /api/gold,    |
+                 |  /api/whales, /api/pools    |
+                 +-----------------------------+
+
+  index.ts starts the listener, the gold loop, and the API in one process.
   wallets.ts loads data/watchlist.json. config.ts reads .env.
+  store.ts holds the recent data that the API serves.
   State: data/gold_state.json (gold alert levels). Dedupe is in memory.
 ```
 
 Key design points:
-- One process, two independent loops (event listener and a polling gold loop). systemd keeps it running.
+- One process, independent loops (event listener and a polling gold loop) plus the optional API server. systemd keeps it running.
 - Every signal goes through one dispatcher, so new alert sinks are a single change in `notifier.ts`.
 - Alert spam is limited: pools and transfers are deduplicated in memory, and gold alerts fire only when an asset changes level.
 - Transport: a WebSocket RPC (`*_RPC_WS`) is used when set, otherwise HTTP polling.
@@ -83,7 +92,7 @@ Typical resource use: about 100 to 200 MB of RAM and low single-digit CPU percen
 
 ## Quick start on Raspberry Pi
 
-Run these on the Pi.
+Run these on the Pi. The full step-by-step guide is [docs/RPI4_DEPLOYMENT.md](docs/RPI4_DEPLOYMENT.md).
 
 ```bash
 # 1. Get the code
@@ -96,7 +105,7 @@ npm i
 # 3. Create your config (never commit .env)
 cp .env.example .env
 chmod 600 .env
-nano .env          # fill in RPC URLs and alert credentials
+nano .env          # fill in RPC URLs, alert credentials, and API_TOKEN
 
 # 4. Add verified wallet addresses to data/watchlist.json (template entries are skipped)
 nano data/watchlist.json
@@ -105,6 +114,7 @@ nano data/watchlist.json
 npm start
 
 # 6. Install the systemd service (see next section)
+sudo bash deploy/install-service.sh
 ```
 
 If Node.js is missing, install version 20 or later first. For example, with NodeSource:
@@ -116,7 +126,14 @@ sudo apt-get install -y nodejs git
 
 ## systemd auto-start
 
-The unit file is `deploy/whale-tracker.service`. It starts on boot, restarts after failure, and sends logs to journald.
+The recommended way to install the service is the helper script `deploy/install-service.sh`, run from the repo root on the Pi. Read the script first and check the paths it uses. The step-by-step procedure is in [docs/RPI4_DEPLOYMENT.md](docs/RPI4_DEPLOYMENT.md).
+
+```bash
+cd ~/crypto-tracker
+sudo bash deploy/install-service.sh
+```
+
+The unit file is `deploy/whale-tracker.service`. It starts on boot, restarts after failure, and sends logs to journald. To install it by hand instead:
 
 ```bash
 cd ~/crypto-tracker
@@ -144,7 +161,30 @@ Updating:
 cd ~/crypto-tracker && git pull && npm i && sudo systemctl restart whale-tracker
 ```
 
-See [deploy/DEPLOY.md](deploy/DEPLOY.md) for rsync deploys and more detail.
+See [docs/RPI4_DEPLOYMENT.md](docs/RPI4_DEPLOYMENT.md) for the full Raspberry Pi deployment guide, and [deploy/DEPLOY.md](deploy/DEPLOY.md) for rsync deploys and more detail.
+
+## HTTP JSON API
+
+The tracker process serves a read-only JSON API from `src/api.ts`, backed by the in-memory data in `src/store.ts`. It is enabled by default and listens on port 8787. Set `API_HOST=127.0.0.1` for local-only access, or `0.0.0.0` (the default in `.env.example`) for LAN access.
+
+| Method | Path | Returns |
+|---|---|---|
+| GET | `/api/health` | Service health and status. Use it to check that the tracker is running. |
+| GET | `/api/gold` | Latest PAXG and XAUt DEX prices compared with the spot gold reference. |
+| GET | `/api/whales` | Recent watched-wallet buy activity. |
+| GET | `/api/pools` | Recently detected new pools and their filter results. |
+
+Example:
+
+```bash
+curl http://<pi-address>:8787/api/health
+```
+
+Access control:
+- If `API_TOKEN` is set, protect the API with it. Generate a value with `openssl rand -hex 32`. The exact header or query scheme is defined in `src/api.ts`.
+- Set `API_TOKEN` whenever the Pi is reachable beyond localhost.
+- Browser access is allowed from `openterminal-ashen.vercel.app` and localhost by default. Add more origins with `API_CORS_ORIGINS`.
+- To disable the API, set `API_ENABLED=false` and restart the service.
 
 ## Configuration
 
@@ -173,6 +213,16 @@ All settings come from `.env`. The template is `.env.example`.
 | `BASE_XAUT_ADDRESS` | No | (empty) | Optional Base XAUt address. Verify on Basescan first. |
 | `LOG_LEVEL` | No | `info` | `fatal`, `error`, `warn`, `info`, `debug`, or `trace`. |
 
+HTTP API settings:
+
+| Variable | Required | Default | Description |
+|---|---|---|---|
+| `API_ENABLED` | No | `true` | Set to `false` to turn off the HTTP JSON API. |
+| `API_HOST` | No | `0.0.0.0` | Bind address. `0.0.0.0` allows LAN access. `127.0.0.1` allows local access only. |
+| `API_PORT` | No | `8787` | Port for the HTTP JSON API. |
+| `API_TOKEN` | Recommended | (empty) | Access token for the API. Generate with `openssl rand -hex 32`. Required if the Pi is reachable beyond localhost. |
+| `API_CORS_ORIGINS` | No | (empty) | Extra browser origins for CORS, comma-separated. `openterminal-ashen.vercel.app` and localhost are built in. |
+
 Changes to `.env` take effect after `sudo systemctl restart whale-tracker`.
 
 ## Project layout
@@ -180,19 +230,24 @@ Changes to `.env` take effect after `sudo systemctl restart whale-tracker`.
 ```
 crypto-tracker/
 ├── src/
-│   ├── index.ts         # entry point: starts listener + gold loop
+│   ├── index.ts         # entry point: starts listener, gold loop, and API
 │   ├── config.ts        # env parsing, chain/factory config, thresholds
 │   ├── listener.ts      # factory and watched-wallet event subscriptions
 │   ├── filter.ts        # market data, honeypot, LP lock, verification, verdicts
 │   ├── wallets.ts       # watchlist loader and lookup
 │   ├── gold_rwa.ts      # PAXG/XAUt vs spot monitor
+│   ├── store.ts         # in-memory store of recent gold, whale, and pool data
+│   ├── api.ts           # HTTP JSON API (/api/health, /api/gold, /api/whales, /api/pools)
 │   ├── notifier.ts      # alert rendering and dispatch (Telegram/webhook)
 │   └── logger.ts        # pino logger
 ├── data/
 │   └── watchlist.json   # wallets to watch (template shipped)
 ├── deploy/
-│   ├── DEPLOY.md        # detailed Raspberry Pi deployment guide
-│   └── whale-tracker.service  # systemd unit
+│   ├── install-service.sh     # installs the systemd service on the Pi
+│   ├── whale-tracker.service  # systemd unit
+│   └── DEPLOY.md        # rsync and deploy notes
+├── docs/
+│   └── RPI4_DEPLOYMENT.md     # detailed Raspberry Pi deployment guide
 ├── .env.example         # configuration template (no secrets)
 ├── package.json
 └── tsconfig.json
@@ -204,7 +259,7 @@ Runtime files such as `data/state.json` and `data/gold_state.json` are created o
 
 | Command | Purpose |
 |---|---|
-| `npm start` | Run the listener and the gold monitor (production entry point). |
+| `npm start` | Run the listener, the gold monitor, and the HTTP API (production entry point). |
 | `npm run listen` | On-chain listener only. |
 | `npm run gold` | One Gold RWA scan, printed as JSON. Useful for testing. |
 | `npm run typecheck` | TypeScript type check, no output. |
@@ -229,7 +284,10 @@ Alert types:
 | `watchlist loaded` with `count: 0` | Only template entries are present | Replace the `REPLACE_WITH_VERIFIED_0x_ADDRESS` entries with real addresses. |
 | No gold alerts and `no spot gold reference` warnings | Spot feed unreachable or changed shape | Check `GOLD_SPOT_URL` in a browser. Set `GOLD_SPOT_URL` to a feed that returns `{ "price": number }`. |
 | Telegram alerts missing | Wrong token or chat ID, or the bot was never started in the chat | Send `/start` to the bot. Check `telegram send failed` in the log. |
-| `EADDRINUSE` or service exits right away | Another instance is running, or the path in the unit file is wrong | Run `sudo systemctl status whale-tracker`. Check `WorkingDirectory` and `ExecStart`. |
+| `EADDRINUSE` or service exits right away | Another instance is running (including one on port 8787), or the path in the unit file is wrong | Run `sudo systemctl status whale-tracker`. Check `WorkingDirectory` and `ExecStart`. Change `API_PORT` if 8787 is taken. |
+| API unreachable from another machine | `API_HOST` set to `127.0.0.1`, or a firewall blocks port 8787 | Set `API_HOST=0.0.0.0`, restart the service, and check the firewall. |
+| API returns unauthorized | `API_TOKEN` is set but the request does not send it | Send the token using the scheme in `src/api.ts`. |
+| Browser requests blocked by CORS | Origin not in the built-in list | Add the origin to `API_CORS_ORIGINS` and restart. |
 | Service fails with `npm: not found` | npm is not at `/usr/bin/npm` | Run `which npm` and update `ExecStart` in `/etc/systemd/system/whale-tracker.service`, then `sudo systemctl daemon-reload`. |
 | Service stops after reboot | Network not up yet, or service not enabled | The unit waits for `network-online.target`. Run `sudo systemctl enable whale-tracker`. |
 | Pi is slow or runs out of memory | Swap or memory pressure, usually on a 1 GB board | Use a 2 GB or larger Pi. Check with `free -h`. |
@@ -241,6 +299,7 @@ Useful diagnostics:
 node -v && npm -v
 npm run typecheck
 npm run gold          # confirms spot and DEX data reachable
+curl http://localhost:8787/api/health   # confirms the API is up
 journalctl -u whale-tracker -n 200 --no-pager
 ```
 
@@ -249,7 +308,7 @@ journalctl -u whale-tracker -n 200 --no-pager
 - Honeypot and DexScreener data are third-party heuristics.
 - The LP lock check covers Uniswap V2-style LPs only. V3 positions are NFTs.
 - The gold spread compares DEX prices with a spot reference. Redemption fees, mint fees, and slippage are not netted out.
-- Dedupe state for pools and transfers is in memory, so it resets on restart.
+- Dedupe state for pools and transfers is in memory, so it resets on restart. The API data in `src/store.ts` is also in memory and resets on restart.
 - No watchlist addresses ship as verified. You must curate them.
 
 ## License
