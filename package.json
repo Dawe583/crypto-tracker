@@ -1,0 +1,27 @@
+{
+  "name": "base-evm-whale-tracker",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Base + Ethereum whale, new-pool, and Gold RWA (PAXG/XAUt) monitor with alerts",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "listen": "tsx src/listener.ts",
+    "gold": "tsx src/gold_rwa.ts",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "pino": "^9.5.0",
+    "viem": "^2.21.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0",
+    "@types/node": "^22.7.0"
+  }
+}

@@ -1,0 +1,22 @@
+# systemd unit for the Base/EVM whale tracker on Raspberry Pi OS (64-bit).
+# Install with the steps in deploy/DEPLOY.md. Replace <USER> and <APP_DIR>, or let the sed commands in README do it.
+# Find the npm path with: which npm (ExecStart below assumes /usr/bin/npm).
+[Unit]
+Description=Base & EVM whale tracker (crypto alert daemon)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=<USER>
+WorkingDirectory=<APP_DIR>
+EnvironmentFile=<APP_DIR>/.env
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/npm start
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

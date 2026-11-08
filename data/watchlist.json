@@ -1,0 +1,23 @@
+[
+  {
+    "address": "REPLACE_WITH_VERIFIED_0x_ADDRESS",
+    "label": "Example: top Base DEX trader (30d realized PnL) - replace",
+    "category": "smart_money",
+    "chains": ["base"],
+    "notes": "Populate from Dune / Nansen / Arkham / DexScreener top-trader lists, then verify on Basescan."
+  },
+  {
+    "address": "REPLACE_WITH_VERIFIED_0x_ADDRESS",
+    "label": "Example: VC wallet (public fund address) - replace",
+    "category": "vc",
+    "chains": ["base", "ethereum"],
+    "notes": "Use only addresses the fund publicly discloses."
+  },
+  {
+    "address": "REPLACE_WITH_VERIFIED_0x_ADDRESS",
+    "label": "Example: insider cluster member (funded by same source wallet) - replace",
+    "category": "insider_cluster",
+    "chains": ["base"],
+    "notes": "Cluster pattern: wallets funded from one common source within a short window before a launch."
+  }
+]
