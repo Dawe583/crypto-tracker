@@ -157,6 +157,24 @@ function drawTape() {
   const span = hi - lo || 1;
   const px = (i) => (i / cs.length) * w;
   const py = (v) => h - 4 - ((v - lo) / span) * (h - 30);
+  // liquidity heat: faint density blobs behind candles (visual depth field)
+  const t = performance.now() / 1000;
+  for (let i = 0; i < 14; i++) {
+    const bx = ((i * 37 + (t * 8) % w) % w);
+    const by = h * (.25 + .5 * Math.abs(Math.sin(i * 2.7 + t * .2)));
+    const br = 30 + 40 * Math.abs(Math.sin(i * 1.3));
+    const g = x.createRadialGradient(bx, by, 0, bx, by, br);
+    g.addColorStop(0, i % 3 ? 'rgba(143,107,255,.05)' : 'rgba(255,79,240,.045)');
+    g.addColorStop(1, 'transparent');
+    x.fillStyle = g; x.fillRect(bx - br, by - br, br * 2, br * 2);
+  }
+  // resting-order dots (limit order markers)
+  x.fillStyle = 'rgba(255,194,61,.5)';
+  for (let i = 0; i < 18; i++) {
+    const rx = (i * 53) % w;
+    const ry = py(lo + span * ((i * 0.13 + Math.sin(t + i) * .02 + .5) % 1));
+    x.fillRect(rx, ry, 2, 2);
+  }
   // volume bars
   const vmax = Math.max(...cs.map((c) => c.v)) || 1;
   cs.forEach((c, i) => {
@@ -173,15 +191,30 @@ function drawTape() {
     const bodyW = Math.max(2, w / cs.length * .55);
     x.fillRect(cx - bodyW / 2, Math.min(py(c.o), py(c.c)), bodyW, Math.max(1, Math.abs(py(c.o) - py(c.c))));
   });
-  // VWAP
-  let pv = 0, vv = 0;
-  x.strokeStyle = '#2fd8ff'; x.lineWidth = 1; x.beginPath();
-  cs.forEach((c, i) => {
-    pv += ((c.h + c.l + c.c) / 3) * c.v; vv += c.v;
+  // VWAP + 1σ/2σ bands (value area)
+  let pv = 0, vv = 0, pv2 = 0;
+  const vwap = [];
+  const sd = [];
+  cs.forEach((c) => {
+    const tp = (c.h + c.l + c.c) / 3;
+    pv += tp * c.v; vv += c.v; pv2 += tp * tp * c.v;
     const vw = pv / vv;
-    i ? x.lineTo(px(i), py(vw)) : x.moveTo(px(i), py(vw));
+    vwap.push(vw);
+    sd.push(Math.sqrt(Math.max(0, pv2 / vv - vw * vw)));
   });
+  x.strokeStyle = 'rgba(47,216,255,.25)'; x.lineWidth = .8;
+  for (const m of [1, 2]) {
+    x.beginPath();
+    vwap.forEach((vw, i) => { const y = py(vw + sd[i] * m); i ? x.lineTo(px(i), y) : x.moveTo(px(i), y); });
+    x.stroke();
+    x.beginPath();
+    vwap.forEach((vw, i) => { const y = py(vw - sd[i] * m); i ? x.lineTo(px(i), y) : x.moveTo(px(i), y); });
+    x.stroke();
+  }
+  x.strokeStyle = '#2fd8ff'; x.lineWidth = 1; x.beginPath();
+  vwap.forEach((vw, i) => (i ? x.lineTo(px(i), py(vw)) : x.moveTo(px(i), py(vw))));
   x.stroke();
+  x.lineWidth = 1;
   // last price tag
   const last = cs[cs.length - 1];
   x.fillStyle = '#ffc23d'; x.font = '11px monospace';
@@ -471,16 +504,18 @@ function drawPricer(now) {
 }
 
 // ---------- frame loop ----------
+let tapeT = 0;
 function frame(now) {
   drawSynapse(now);
   drawCortex(now);
   drawCalcium(now);
   drawBook(now);
+  if (now - tapeT > 250) { tapeT = now; drawTape(); }
   requestAnimationFrame(frame);
 }
 
 function drawSlow() {
-  drawNavChart(); drawTape(); drawWeights(); drawRotation(); drawPricer(performance.now());
+  drawNavChart(); drawWeights(); drawRotation(); drawPricer(performance.now());
 }
 
 setInterval(() => {

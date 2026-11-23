@@ -128,3 +128,9 @@ main { padding: 6px; }
 @media (max-width: 1280px) { .r2 { grid-template-columns: 1fr 2fr 1fr; } }
 @media (max-width: 980px) { .r1, .r2, .r3 { grid-template-columns: 1fr; } }
 ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-thumb { background: var(--edge); }
+@media (prefers-reduced-motion: reduce) {
+  .wire span, .dot, .pipe-node::before { animation: none; }
+}
+.panel { transition: border-color .18s ease; }
+.panel:hover { border-color: #243a5e; }
+button, .sym-tabs button { transition: color .15s ease, border-color .15s ease, box-shadow .15s ease; }
