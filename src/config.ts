@@ -28,7 +28,7 @@ export const CHAINS = {
     id: 1,
     key: 'ethereum' as const,
     name: 'Ethereum',
-    httpRpc: str(process.env.ETH_RPC_HTTP, 'https://eth.llamarpc.com'),
+    httpRpc: str(process.env.ETH_RPC_HTTP, 'https://ethereum-rpc.publicnode.com'),
     wsRpc: str(process.env.ETH_RPC_WS),
     explorer: 'https://etherscan.io',
     dexscreenerSlug: 'ethereum',

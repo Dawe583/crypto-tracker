@@ -1,5 +1,5 @@
 // Event listener: factory PoolCreated/PairCreated events, watched-wallet Transfer logs (whale buys).
-import { parseAbiItem, getAddress, formatUnits, type Address, type Log } from 'viem';
+import { parseAbiItem, getAddress, formatUnits, type Address, type Log, type PublicClient } from 'viem';
 import { CHAINS, QUOTE_TOKENS, config } from './config.js';
 import { logger } from './logger.js';
 import { WATCHLIST, lookupWallet, watchedAddresses } from './wallets.js';
@@ -95,27 +95,47 @@ async function onWatchedTransfer(chain: ChainKey, logs: Log[]) {
   }
 }
 
+// Public HTTP RPCs evict eth filters quickly; viem then fails every poll with
+// "filter not found" forever. Detect it and resubscribe instead.
+const isFilterGone = (e: unknown): boolean =>
+  /filter not found/i.test(String((e as any)?.details ?? (e as any)?.shortMessage ?? e));
+
+function watchWithResubscribe(client: PublicClient, ctx: Record<string, unknown>, params: Parameters<PublicClient['watchEvent']>[0]) {
+  let unwatch: (() => void) | undefined;
+  const subscribe = () => {
+    unwatch = client.watchEvent({
+      ...params,
+      onError: (e) => {
+        logger.error({ err: String(e), ...ctx }, 'watcher error');
+        if (isFilterGone(e)) {
+          unwatch?.();
+          setTimeout(subscribe, 10_000);
+        }
+      },
+    });
+  };
+  subscribe();
+}
+
 export function startListener() {
   for (const chain of ['base', 'ethereum'] as ChainKey[]) {
     const client = makeClient(chain);
     for (const f of CHAINS[chain].factories) {
       const ev = f.kind === 'v2' ? EV.pairV2 : f.kind === 'aero' ? EV.poolAero : EV.poolV3;
-      client.watchEvent({
+      watchWithResubscribe(client, { chain, dex: f.name }, {
         address: getAddress(f.address),
         event: ev as any,
         onLogs: (logs) => logs.forEach((l) => onNewPool(chain, f.name, f.kind, l).catch((e) => logger.error({ err: String(e) }, 'pool handler'))),
-        onError: (e) => logger.error({ err: String(e), chain, dex: f.name }, 'pool watcher error'),
       });
       logger.info({ chain, dex: f.name, factory: f.address }, 'watching factory');
     }
 
     const watched = watchedAddresses(chain);
     if (watched.length) {
-      client.watchEvent({
+      watchWithResubscribe(client, { chain }, {
         event: EV.transfer,
         args: { to: watched },
         onLogs: (logs) => onWatchedTransfer(chain, logs).catch((e) => logger.error({ err: String(e) }, 'transfer handler')),
-        onError: (e) => logger.error({ err: String(e), chain }, 'transfer watcher error'),
       });
       logger.info({ chain, wallets: watched.length }, 'watching smart-money transfers');
     }
