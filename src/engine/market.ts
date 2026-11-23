@@ -4,7 +4,7 @@ import type { Candle } from './types.js';
 
 const CANDLE_LIMIT = 300;
 
-interface Feed { candles: Candle[]; price: number; source: 'binance' | 'bybit'; lastFetch: number }
+interface Feed { candles: Candle[]; price: number; source: 'binance' | 'bybit' | 'coinbase' | 'kraken'; lastFetch: number }
 const feeds = new Map<string, Feed>();
 
 async function fromBinance(symbol: string, interval: string): Promise<Candle[]> {

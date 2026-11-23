@@ -150,6 +150,12 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
     }
     case '/api/engine/ledger':
       return send(res, 200, ledgerTail(parseLimit(url.searchParams.get('limit'))), cors);
+    case '/api/engine/candles': {
+      const sym = (url.searchParams.get('symbol') ?? 'BTCUSDT').toUpperCase();
+      const { getFeed } = await import('./engine/market.js');
+      const feed = getFeed(sym);
+      return send(res, 200, feed ? { symbol: sym, source: feed.source, lastFetch: feed.lastFetch, candles: feed.candles } : { symbol: sym, candles: [] }, cors);
+    }
     default:
       return send(res, 404, { error: 'not found' }, cors);
   }
