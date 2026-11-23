@@ -86,6 +86,16 @@ function renderStatic() {
   if (cd?.length > 1) {
     const chg = ((cd[cd.length - 1].c - cd[0].c) / cd[0].c) * 100;
     $('tapeChg').innerHTML = `<span class="${cls(chg)}">${chg >= 0 ? '▲' : '▼'} ${chg.toFixed(2)}%</span>`;
+    const lp = cd[cd.length - 1].c;
+    const bp = $('bigPrice');
+    bp.textContent = fmt$(lp, 2);
+    bp.className = chg >= 0 ? 'up' : 'dn';
+    $('bigPriceSub').innerHTML = `<span class="${cls(chg)}">${chg >= 0 ? '▲' : '▼'} ${Math.abs(chg).toFixed(2)}%</span>`;
+    const fair = vwapN(cd);
+    const dpm = STATE.decisions.filter((d) => Date.now() - d.ts < 60_000).length;
+    $('wireMsg').textContent = `SIX AGENTS LIVE · ${dpm} DECISIONS/MIN` +
+      (fair ? ` · MODEL FAIR ${fmt$(fair, 0)} VS MARKET ${fmt$(lp, 0)} · EDGE ${((fair - lp) / fair * 100).toFixed(2)}%` : '') +
+      ` · OPEN ${s.positions.length} TICKETS · ${s.killed ? 'ENGINE KILLED' : 'ENGINE ONLINE'}`;
   }
   $('symTabs').innerHTML = Object.keys(s.prices || {}).map((sym) =>
     `<button class="${sym === STATE.sym ? 'on' : ''}" onclick="STATE.sym='${sym}';refresh()">${sym}</button>`).join('');
@@ -257,42 +267,69 @@ const AGENTS = [
   { name: 'CLOSER', color: '#ff3860', desc: 'exits' },
 ];
 const NODES = [];   // 0-5 agents, 6 core, 7-18 strategies, 19-21 symbols, 22+ dust
-const EDGES = [];
+const SEGS = [];    // 3D dendrite segments: {a,b,w,c}
+const EDGES = [];   // long axon links for sparks
 const sparks = [];
 const dendrites = [];
+
+const _r = (a, b) => a + Math.random() * (b - a);
+const _norm = (x, y, z) => { const l = Math.hypot(x, y, z) || 1; return [x / l, y / l, z / l]; };
+
+// recursive 3D dendrite tree growing from a neuron body outward
+function growTree(root, dir, len, depth, color) {
+  if (depth <= 0 || SEGS.length > 1400) return;
+  let [px, py, pz] = root, [dx, dy, dz] = dir;
+  const chain = 2 + depth;
+  for (let s = 0; s < chain; s++) {
+    const nx = px + dx * len, ny = py + dy * len, nz = pz + dz * len;
+    SEGS.push({ a: [px, py, pz], b: [nx, ny, nz], w: depth * .55 + .4, c: color });
+    if (depth > 1 && Math.random() < .55) {         // fork: spawn 2 child branches
+      for (let k = 0; k < 2; k++)
+        growTree([nx, ny, nz], _norm(dx + _r(-1, 1), dy + _r(-.6, 1), dz + _r(-1, 1)), len * .58, depth - 1, color);
+      return;
+    }
+    px = nx; py = ny; pz = nz;
+    [dx, dy, dz] = _norm(dx + _r(-.4, .4), dy + _r(-.4, .4), dz + _r(-.4, .4));
+    len *= .94;
+  }
+}
+
 (function buildBrain() {
-  const rnd = (a, b) => a + Math.random() * (b - a);
   AGENTS.forEach((a, i) => {
     const th = (i / AGENTS.length) * Math.PI * 2;
-    NODES.push({ t: 'agent', label: a.name, desc: a.desc, color: a.color, r: 7, p: [Math.cos(th) * .55, Math.sin(th) * .18, Math.sin(th) * .55] });
+    const p = [Math.cos(th) * .62, _r(-.12, .12), Math.sin(th) * .62];
+    NODES.push({ t: 'agent', label: a.name, desc: a.desc, color: a.color, r: 15, p });
+    // dendrite tree radiating outward + a few filaments toward core
+    const out = _norm(p[0], p[1] + .3, p[2]);
+    for (let b = 0; b < 4; b++)
+      growTree(p, _norm(out[0] + _r(-.7, .7), out[1] + _r(-.5, .9), out[2] + _r(-.7, .7)), .12, 4, a.color);
+    growTree(p, _norm(-p[0], -p[1], -p[2]), .14, 3, a.color);   // axon toward core
   });
-  NODES.push({ t: 'core', label: 'BOOK', color: '#ff4ff0', r: 9, p: [0, 0, 0] });
+  NODES.push({ t: 'core', label: 'BOOK', color: '#f2f6ff', r: 26, p: [0, 0, 0] });
   const SN = 12;
-  for (let i = 0; i < SN; i++) {          // strategies on a fibonacci shell
+  for (let i = 0; i < SN; i++) {          // strategies embedded between trees
     const y = 1 - (i / (SN - 1)) * 2, rr = Math.sqrt(1 - y * y), th = i * 2.39996;
-    NODES.push({ t: 'strat', idx: i, color: STRAT_COLORS[i], r: 4.5, p: [Math.cos(th) * rr * .95, y * .8, Math.sin(th) * rr * .95] });
+    NODES.push({ t: 'strat', idx: i, color: STRAT_COLORS[i], r: 4, p: [Math.cos(th) * rr * _r(.9, 1.05), y * .85, Math.sin(th) * rr * _r(.9, 1.05)] });
   }
   ['BTC', 'ETH', 'SOL'].forEach((s, j) => {
     const th = (j / 3) * Math.PI * 2 + .8;
-    NODES.push({ t: 'sym', label: s, color: '#ffc23d', r: 5.5, p: [Math.cos(th) * 1.28, .2, Math.sin(th) * 1.28] });
+    NODES.push({ t: 'sym', label: s, color: '#ffc23d', r: 6, p: [Math.cos(th) * 1.3, _r(-.1, .35), Math.sin(th) * 1.3] });
   });
-  for (let i = 0; i < 80; i++) {          // ambient dust
-    const y = 1 - 2 * Math.random(), rr = Math.sqrt(Math.max(0, 1 - y * y)), th = Math.random() * Math.PI * 2, rad = rnd(.85, 1.5);
+  for (let i = 0; i < 90; i++) {          // ambient dust
+    const y = 1 - 2 * Math.random(), rr = Math.sqrt(Math.max(0, 1 - y * y)), th = Math.random() * Math.PI * 2, rad = _r(.8, 1.6);
     NODES.push({ t: 'dust', r: .6 + Math.random() * 1.1, p: [Math.cos(th) * rr * rad, y * rad, Math.sin(th) * rr * rad] });
   }
   const ai = (k) => 7 + k, si = (j) => 19 + j;
-  for (let i = 0; i < 6; i++) { EDGES.push([i, (i + 1) % 6]); EDGES.push([i, 6]); }
-  for (let i = 0; i < SN; i++) { EDGES.push([ai(i), i % 6]); if (i % 3 === 0) EDGES.push([ai(i), ai((i + 1) % SN)]); }
+  for (let i = 0; i < 6; i++) { EDGES.push([i, 6]); EDGES.push([i, (i + 1) % 6]); }
   for (let j = 0; j < 3; j++) for (let k = 0; k < 4; k++) EDGES.push([si(j), ai(j * 4 + k)]);
-  for (let i = 0; i < 16; i++) EDGES.push([(Math.random() * 21) | 0, (Math.random() * 21) | 0]);
-  for (let i = 0; i < 26; i++) {          // ambient dendrite field
+  for (let i = 0; i < 26; i++) {          // ambient 2D dendrite wash behind
     const pts = [];
-    let x0 = rnd(.1, .9), y0 = rnd(.15, .85), ang = rnd(0, Math.PI * 2);
+    let x0 = _r(.05, .95), y0 = _r(.1, .9), ang = _r(0, Math.PI * 2);
     for (let s = 0; s < 9; s++) {
-      pts.push([x0, y0]); ang += rnd(-.9, .9);
-      x0 += Math.cos(ang) * rnd(.02, .07); y0 += Math.sin(ang) * rnd(.02, .07);
+      pts.push([x0, y0]); ang += _r(-.9, .9);
+      x0 += Math.cos(ang) * _r(.02, .07); y0 += Math.sin(ang) * _r(.02, .07);
     }
-    dendrites.push({ pts, c: STRAT_COLORS[i % STRAT_COLORS.length], a: rnd(.04, .14), ph: rnd(0, 6) });
+    dendrites.push({ pts, c: STRAT_COLORS[i % STRAT_COLORS.length], a: _r(.03, .1), ph: _r(0, 6) });
   }
 })();
 
@@ -317,7 +354,7 @@ function drawBrain(now) {
   const t = now / 1000;
   for (const d of dendrites) {           // ambient field
     x.strokeStyle = d.c;
-    x.globalAlpha = d.a + Math.sin(t * 1.5 + d.ph) * .05;
+    x.globalAlpha = d.a + Math.sin(t * 1.5 + d.ph) * .04;
     x.lineWidth = .7;
     x.beginPath();
     d.pts.forEach(([px, py], i) => (i ? x.lineTo(px * w, py * h) : x.moveTo(px * w, py * h)));
@@ -336,118 +373,178 @@ function drawBrain(now) {
   };
   const P = NODES.map((n) => ({ n, ...proj(n.p) }));
   const recent = STATE.decisions.filter((d) => now - d.ts < 60_000).length;
-  // edges, depth-shaded
-  x.lineWidth = .8;
-  for (const [a, b] of EDGES) {
-    const A = P[a], B = P[b];
-    if (!A || !B) continue;
-    const depth = Math.max(0, 1 - ((A.z + B.z) / 2) / 1.6);
-    x.strokeStyle = A.n.color || '#2fd8ff';
-    x.globalAlpha = .05 + depth * .25;
+  // dendrite segments, depth-shaded, round caps
+  x.lineCap = 'round';
+  for (const sg of SEGS) {
+    const A = proj(sg.a), B = proj(sg.b);
+    const depth = Math.max(0, 1 - ((A.z + B.z) / 2) / 1.7);
+    const flicker = .85 + .15 * Math.sin(t * 3 + A.X * .05);
+    x.strokeStyle = sg.c;
+    x.globalAlpha = (.12 + depth * .5) * flicker;
+    x.lineWidth = Math.max(.4, sg.w * A.s);
     x.beginPath(); x.moveTo(A.X, A.Y); x.lineTo(B.X, B.Y); x.stroke();
   }
   x.globalAlpha = 1;
-  // sparks travel edges on activity
-  if (Math.random() < .12 + recent * .05 && sparks.length < 50) {
-    const e = EDGES[(Math.random() * EDGES.length) | 0];
-    sparks.push({ a: e[0], b: e[1], p: 0, c: NODES[e[0]].color || '#2fd8ff' });
+  // axon links carrying sparks
+  x.lineWidth = .8;
+  for (const [a, b] of EDGES) {
+    const A = P[a], B = P[b];
+    const depth = Math.max(0, 1 - ((A.z + B.z) / 2) / 1.7);
+    x.strokeStyle = NODES[a].color || '#2fd8ff';
+    x.globalAlpha = .06 + depth * .22;
+    x.beginPath(); x.moveTo(A.X, A.Y);
+    x.quadraticCurveTo(CX, CY - 30, B.X, B.Y); x.stroke();
+  }
+  x.globalAlpha = 1;
+  // sparks travel dendrite paths
+  if (Math.random() < .14 + recent * .05 && sparks.length < 60) {
+    if (Math.random() < .7 && SEGS.length) {
+      const sg = SEGS[(Math.random() * SEGS.length) | 0];
+      sparks.push({ seg: sg, p: 0, c: sg.c });
+    } else {
+      const e = EDGES[(Math.random() * EDGES.length) | 0];
+      sparks.push({ a: e[0], b: e[1], p: 0, c: NODES[e[0]].color || '#2fd8ff' });
+    }
   }
   for (let i = sparks.length - 1; i >= 0; i--) {
-    const s = sparks[i]; s.p += .028;
+    const s = sparks[i]; s.p += .03;
     if (s.p >= 1) { sparks.splice(i, 1); continue; }
-    const pa = NODES[s.a].p, pb = NODES[s.b].p;
-    const q = proj([pa[0] + (pb[0] - pa[0]) * s.p, pa[1] + (pb[1] - pa[1]) * s.p, pa[2] + (pb[2] - pa[2]) * s.p]);
-    x.fillStyle = s.c; x.shadowColor = s.c; x.shadowBlur = 12;
-    x.beginPath(); x.arc(q.X, q.Y, 2.4 * q.s, 0, 7); x.fill();
+    let q;
+    if (s.seg) {
+      const { a, b } = s.seg;
+      q = proj([a[0] + (b[0] - a[0]) * s.p, a[1] + (b[1] - a[1]) * s.p, a[2] + (b[2] - a[2]) * s.p]);
+    } else {
+      const pa = NODES[s.a].p, pb = NODES[s.b].p;
+      q = proj([pa[0] + (pb[0] - pa[0]) * s.p, pa[1] + (pb[1] - pa[1]) * s.p, pa[2] + (pb[2] - pa[2]) * s.p]);
+    }
+    x.fillStyle = s.c; x.shadowColor = s.c; x.shadowBlur = 14;
+    x.beginPath(); x.arc(q.X, q.Y, 2.6 * q.s, 0, 7); x.fill();
     x.shadowBlur = 0;
   }
-  // nodes, far to near
+  // nodes far to near
   const sorted = [...P].sort((a, b) => b.z - a.z);
   for (const nd of sorted) {
     const n = nd.n;
-    const depth = Math.max(.12, 1 - nd.z / 1.7);
+    const depth = Math.max(.12, 1 - nd.z / 1.8);
     if (n.t === 'dust') {
-      x.fillStyle = `rgba(120,150,210,${.18 * depth * (.7 + .3 * Math.sin(t + nd.X))})`;
+      x.fillStyle = `rgba(120,150,210,${.16 * depth * (.7 + .3 * Math.sin(t + nd.X))})`;
       x.beginPath(); x.arc(nd.X, nd.Y, n.r * nd.s, 0, 7); x.fill();
       continue;
     }
     const hot = n.t === 'agent'
-      ? (n.label === 'EDGE' || n.label === 'TAKER' ? Math.min(1, .3 + recent / 5) : .4 + .3 * Math.sin(t * 2 + nd.X))
-      : n.t === 'strat' ? .45 : .55;
-    const sz = n.r * nd.s * (n.t === 'core' ? 1.5 : 1);
-    const g = x.createRadialGradient(nd.X, nd.Y, 0, nd.X, nd.Y, sz * 3.2);
+      ? (n.label === 'EDGE' || n.label === 'TAKER' ? Math.min(1, .35 + recent / 5) : .45 + .3 * Math.sin(t * 2 + nd.X))
+      : n.t === 'strat' ? .5 : .6;
+    const sz = n.r * nd.s;
+    // glow halo
+    const g = x.createRadialGradient(nd.X, nd.Y, 0, nd.X, nd.Y, sz * 3);
     g.addColorStop(0, n.color); g.addColorStop(1, 'transparent');
-    x.globalAlpha = (.2 + hot * .45) * depth;
-    x.fillStyle = g; x.beginPath(); x.arc(nd.X, nd.Y, sz * 3.2, 0, 7); x.fill();
+    x.globalAlpha = (.22 + hot * .4) * depth;
+    x.fillStyle = g; x.beginPath(); x.arc(nd.X, nd.Y, sz * 3, 0, 7); x.fill();
     x.globalAlpha = 1;
-    x.fillStyle = n.color;
-    x.beginPath(); x.arc(nd.X, nd.Y, Math.max(1, sz), 0, 7); x.fill();
-    if (n.label && nd.s > .8) {
+    // neuron body
+    if (n.t === 'agent' || n.t === 'core') {
+      const bg = x.createRadialGradient(nd.X - sz * .3, nd.Y - sz * .3, sz * .1, nd.X, nd.Y, sz);
+      bg.addColorStop(0, '#ffffff'); bg.addColorStop(1, n.color);
+      x.fillStyle = bg;
+      x.beginPath(); x.arc(nd.X, nd.Y, sz, 0, 7); x.fill();
+      // the "V" eyes
+      x.fillStyle = 'rgba(2,4,10,.85)';
+      x.beginPath(); x.ellipse(nd.X - sz * .22, nd.Y, sz * .1, sz * .32, 0, 0, 7); x.fill();
+      x.beginPath(); x.ellipse(nd.X + sz * .22, nd.Y, sz * .1, sz * .32, 0, 0, 7); x.fill();
+    } else {
+      x.fillStyle = n.color;
+      x.beginPath(); x.arc(nd.X, nd.Y, Math.max(1, sz), 0, 7); x.fill();
+    }
+    if (n.label && nd.s > .75) {
       x.fillStyle = n.color; x.font = `${n.t === 'agent' ? 11 : 10}px monospace`; x.textAlign = 'center';
-      x.fillText(n.label, nd.X, nd.Y - sz * 3);
-      if (n.desc) { x.fillStyle = '#4d5f80'; x.font = '8px monospace'; x.fillText(n.desc, nd.X, nd.Y - sz * 3 + 11); }
+      x.fillText(n.label, nd.X, nd.Y + sz + 13);
+      if (n.desc) { x.fillStyle = '#4d5f80'; x.font = '8px monospace'; x.fillText(n.desc, nd.X, nd.Y + sz + 23); }
     }
   }
-  // core pulse
+  // core halo pulse
   const c = P[6], pulse = .8 + Math.sin(t * 2.4) * .2;
-  const g2 = x.createRadialGradient(c.X, c.Y, 0, c.X, c.Y, 55 * pulse * c.s);
-  g2.addColorStop(0, 'rgba(255,79,240,.75)'); g2.addColorStop(.5, 'rgba(143,107,255,.25)'); g2.addColorStop(1, 'transparent');
-  x.fillStyle = g2; x.beginPath(); x.arc(c.X, c.Y, 55 * pulse * c.s, 0, 7); x.fill();
-  x.fillStyle = '#ff4ff0'; x.font = '10px monospace'; x.textAlign = 'center';
-  x.fillText(`NAV ${fmt$(STATE.snap?.equityUsd || 0, 0)}`, c.X, c.Y + 30 * c.s);
-  $('brainMeta').textContent = `${NODES.length - 80} neurons · ${EDGES.length} synapses · ${recent} spikes/min`;
+  const g2 = x.createRadialGradient(c.X, c.Y, 0, c.X, c.Y, 60 * pulse * c.s);
+  g2.addColorStop(0, 'rgba(242,246,255,.55)'); g2.addColorStop(.4, 'rgba(143,107,255,.22)'); g2.addColorStop(1, 'transparent');
+  x.fillStyle = g2; x.beginPath(); x.arc(c.X, c.Y, 60 * pulse * c.s, 0, 7); x.fill();
+  x.fillStyle = '#e8f4ff'; x.font = '10px monospace'; x.textAlign = 'center';
+  x.fillText(`NAV ${fmt$(STATE.snap?.equityUsd || 0, 0)}`, c.X, c.Y + 40 * c.s);
+  $('brainMeta').textContent = `${NODES.length - 90} neurons · ${SEGS.length + EDGES.length} synapses · ${recent} spikes/min`;
   $('pipeline').innerHTML = AGENTS.map((a) =>
     `<div class="pipe-node" style="color:${a.color}"><b>${a.name}</b><span>${a.desc}</span></div>`).join('');
 }
 
-// ---------- cortex mini-network ----------
-const cortexNodes = Array.from({ length: 18 }, (_, i) => ({
-  u: Math.random(), v: Math.random(), c: STRAT_COLORS[i % STRAT_COLORS.length], ph: Math.random() * 6,
-}));
+// ---------- cortex: layered input net ----------
+const CORTEX_L = ['TAPE', 'BOOK', 'ORACLE', 'FLOW', 'VOL', 'CHAIN'];
+const CORTEX_R = ['H1', 'H2', 'H3', 'H4'];
 function drawCortex(now) {
   const { x, w, h } = ctx2d('cortex');
   x.clearRect(0, 0, w, h);
   const t = now / 1000;
-  const ns = cortexNodes.map((n, i) => ({
-    x: (0.15 + n.u * 0.7) * w,
-    y: (0.15 + n.v * 0.7) * h + Math.sin(t + n.ph) * 4,
-    c: n.c, i,
+  const Lx = w * .16, Rx = w * .84;
+  const L = CORTEX_L.map((n, i) => ({ n, X: Lx, Y: 16 + i * ((h - 32) / (CORTEX_L.length - 1)), c: STRAT_COLORS[i] }));
+  const R = CORTEX_R.map((n, i) => ({ n, X: Rx, Y: 24 + i * ((h - 48) / (CORTEX_R.length - 1)), c: '#8f6bff' }));
+  x.lineWidth = .7;
+  L.forEach((l, i) => R.forEach((r, j) => {
+    const ph = Math.sin(t * 1.8 + i + j * .7) * 10;
+    x.strokeStyle = l.c;
+    x.globalAlpha = .1 + .12 * Math.abs(Math.sin(t + i * j));
+    x.beginPath(); x.moveTo(l.X + 6, l.Y);
+    x.bezierCurveTo(l.X + w * .3, l.Y + ph, r.X - w * .3, r.Y - ph, r.X - 6, r.Y); x.stroke();
   }));
-  x.lineWidth = .6;
-  for (let i = 0; i < ns.length; i++) for (let j = i + 1; j < ns.length; j++) {
-    const d = Math.hypot(ns[i].x - ns[j].x, ns[i].y - ns[j].y);
-    if (d < 55) {
-      x.strokeStyle = ns[i].c; x.globalAlpha = .18;
-      x.beginPath(); x.moveTo(ns[i].x, ns[i].y); x.lineTo(ns[j].x, ns[j].y); x.stroke();
-    }
-  }
   x.globalAlpha = 1;
-  for (const n of ns) {
-    const r = 3 + Math.sin(t * 2 + n.ph) * 1.2;
-    x.fillStyle = n.c; x.shadowColor = n.c; x.shadowBlur = 6;
-    x.beginPath(); x.arc(n.x, n.y, Math.max(1.5, r), 0, 7); x.fill();
+  for (const n of [...L, ...R]) {
+    const pul = .8 + .35 * Math.sin(t * 3 + n.Y);
+    x.fillStyle = n.c; x.shadowColor = n.c; x.shadowBlur = 8;
+    x.beginPath(); x.arc(n.X, n.Y, 5 * pul, 0, 7); x.fill();
     x.shadowBlur = 0;
+    x.strokeStyle = n.c; x.globalAlpha = .4;
+    x.beginPath(); x.arc(n.X, n.Y, 8 * pul, 0, 7); x.stroke();
+    x.globalAlpha = 1;
+    x.fillStyle = '#4d5f80'; x.font = '7.5px monospace'; x.textAlign = 'center';
+    x.fillText(n.n, n.X, n.Y + 18);
   }
+  x.fillStyle = '#4d5f80'; x.font = '8px monospace'; x.textAlign = 'left';
+  x.fillText('INPUT', Lx - 18, 9); x.fillText('HIDDEN', Rx - 24, 9);
 }
 
-// ---------- calcium imaging (per-symbol momentum dots) ----------
+// ---------- calcium imaging: momentum scatter + per-symbol sparklines ----------
 function drawCalcium(now) {
   const { x, w, h } = ctx2d('calcium');
   x.clearRect(0, 0, w, h);
   const syms = Object.keys(STATE.snap?.prices || {});
-  const cols = 14;
-  syms.forEach((sym, r) => {
+  if (!syms.length) return;
+  const half = w * .55;
+  for (let i = 0; i < 90; i++) {
+    const sym = syms[i % syms.length];
     const cd = STATE.candles[sym] || [];
     const chg = cd.length > 2 ? ((cd[cd.length - 1].c - cd[0].c) / cd[0].c) * 100 : 0;
-    for (let i = 0; i < cols; i++) {
-      const px = 10 + i * ((w - 20) / cols);
-      const py = 14 + r * 18;
-      const glow = .2 + Math.abs(chg) * .4 + Math.sin(now / 700 + i + r) * .15;
-      x.fillStyle = chg >= 0 ? `rgba(0,232,160,${Math.min(.9, glow)})` : `rgba(255,56,96,${Math.min(.9, glow)})`;
-      x.beginPath(); x.arc(px, py, 4, 0, 7); x.fill();
-    }
+    const px = 8 + (((i * 37) % 100) / 100) * (half - 16);
+    const py = h / 2 - Math.tanh(chg * 3) * h * .3 + Math.sin(i * 13.7) * h * .22;
+    const glow = .25 + .5 * Math.abs(Math.sin(now / 900 + i));
+    x.fillStyle = STRAT_COLORS[i % STRAT_COLORS.length];
+    x.globalAlpha = glow * .85;
+    x.beginPath(); x.arc(px, Math.max(4, Math.min(h - 4, py)), 2.4, 0, 7); x.fill();
+  }
+  x.globalAlpha = 1;
+  x.strokeStyle = '#16203a';
+  x.beginPath(); x.moveTo(half, 4); x.lineTo(half, h - 4); x.stroke();
+  syms.forEach((sym, r) => {
+    const cd = (STATE.candles[sym] || []).slice(-30);
+    if (cd.length < 2) return;
+    const lo = Math.min(...cd.map((c) => c.l)), hi = Math.max(...cd.map((c) => c.h));
+    const y0 = 14 + r * 26;
+    const chg = ((cd[cd.length - 1].c - cd[0].c) / cd[0].c) * 100;
+    x.strokeStyle = chg >= 0 ? '#00e8a0' : '#ff3860'; x.lineWidth = 1; x.beginPath();
+    cd.forEach((c, i) => {
+      const px = half + 8 + (i / (cd.length - 1)) * (w - half - 62);
+      const py = y0 + 8 - ((c.c - lo) / (hi - lo || 1)) * 8;
+      i ? x.lineTo(px, py) : x.moveTo(px, py);
+    });
+    x.stroke();
     x.fillStyle = '#4d5f80'; x.font = '8px monospace';
-    x.fillText(sym.replace('USDT', ''), w - 34, 17 + r * 18);
+    x.fillText(sym.replace('USDT', ''), w - 48, y0 + 4);
+    x.fillStyle = chg >= 0 ? '#00e8a0' : '#ff3860';
+    x.fillText(`${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%`, w - 48, y0 + 13);
   });
 }
 
@@ -472,31 +569,53 @@ function drawWeights() {
   x.fillText('brighter = more pnl-weight', 8, h - 4);
 }
 
-// ---------- signal rotation ----------
+// ---------- signal rotation: orbit diagram + activity bars ----------
 function drawRotation() {
   const { x, w, h } = ctx2d('rotation');
   x.clearRect(0, 0, w, h);
   const strats = STATE.strats;
   if (!strats.length) return;
-  const rowH = h / strats.length;
-  const maxAct = 12;
+  const ow = Math.min(w * .34, 190), ox = ow / 2 + 6, oy = h / 2;
+  const t = performance.now() / 1000;
+  for (let ring = 1; ring <= 3; ring++) {           // orbit rings
+    x.strokeStyle = '#16203a'; x.globalAlpha = .9;
+    x.beginPath(); x.ellipse(ox, oy, ow * .45 * ring / 3, h * .42 * ring / 3, .4, 0, 7); x.stroke();
+  }
+  x.globalAlpha = 1;
+  x.fillStyle = '#ff4ff0';
+  x.beginPath(); x.arc(ox, oy, 4, 0, 7); x.fill();
+  strats.forEach((s, i) => {                       // orbiting strategy comets
+    const c = STRAT_COLORS[i % STRAT_COLORS.length];
+    const act = STATE.decisions.filter((d) => d.strategy === s.name).length;
+    const ring = 1 + (i % 3);
+    const ang = t * (.25 + Math.min(1, act / 12) * .9) * (i % 2 ? 1 : -1) + i * 2.4;
+    const rx = ow * .45 * ring / 3, ry = h * .42 * ring / 3;
+    const px = ox + Math.cos(ang) * rx, py = oy + Math.sin(ang) * ry;
+    x.strokeStyle = c; x.globalAlpha = .35; x.lineWidth = 1.2;
+    x.beginPath();
+    for (let k = 0; k < 9; k++) {
+      const a2 = ang - k * .07 * (i % 2 ? 1 : -1);
+      const tx = ox + Math.cos(a2) * rx, ty = oy + Math.sin(a2) * ry;
+      k ? x.lineTo(tx, ty) : x.moveTo(tx, ty);
+    }
+    x.stroke(); x.globalAlpha = 1;
+    x.fillStyle = c; x.shadowColor = c; x.shadowBlur = 6;
+    x.beginPath(); x.arc(px, py, 3.2, 0, 7); x.fill(); x.shadowBlur = 0;
+  });
+  // activity bars on the right
+  const bx = ow + 12, bw = w - bx - 52, rowH = h / strats.length;
   strats.forEach((s, i) => {
-    const y = i * rowH + 2;
+    const y = i * rowH;
     const st = STATE.snap?.stats?.[s.name] || { pnl: 0, trades: 0 };
     const act = STATE.decisions.filter((d) => d.strategy === s.name).length;
     const c = STRAT_COLORS[i % STRAT_COLORS.length];
-    // activity bar
     x.fillStyle = c; x.globalAlpha = s.enabled ? .8 : .2;
-    const bw = Math.min(1, act / maxAct) * (w * .45);
-    x.fillRect(4, y + 2, bw, rowH - 5);
+    x.fillRect(bx, y + 2, Math.min(1, act / 12) * bw, Math.max(3, rowH - 5));
     x.globalAlpha = 1;
-    // pnl pip on the right
+    x.fillStyle = '#cfe0f5'; x.font = '8.5px monospace';
+    x.fillText(s.name, bx + 2, y + rowH - 4);
     x.fillStyle = st.pnl >= 0 ? '#00e8a0' : '#ff3860';
-    x.font = '9px monospace'; x.textAlign = 'right';
-    x.fillText(fmt$(st.pnl, 0), w - 6, y + rowH - 4);
-    x.textAlign = 'left';
-    x.fillStyle = '#cfe0f5';
-    x.fillText(s.name, 8, y + rowH - 4);
+    x.textAlign = 'right'; x.fillText(fmt$(st.pnl, 0), w - 4, y + rowH - 4); x.textAlign = 'left';
   });
 }
 

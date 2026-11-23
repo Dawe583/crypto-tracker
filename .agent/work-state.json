@@ -1,0 +1,112 @@
+{
+  "project": "crypto-tracker",
+  "goal": "Ultimate crazy trading deck (1:1 GROK DESK reference) + complete autonomous paper-trading system merged from best parts of studied repos, running on live data, RPi4-ready.",
+  "updated_at": "2026-11-23T23:51:28.915001Z",
+  "loop": {
+    "definition": "docs/LOOP_ENGINEERING.md",
+    "cycle": [
+      "discover",
+      "spec",
+      "minimal change",
+      "verify",
+      "diff review",
+      "evidence to graph"
+    ],
+    "stop_condition": "all nodes status=done with non-empty evidence"
+  },
+  "nodes": [
+    {
+      "id": "brain-3d",
+      "title": "3D dendrite brain centerpiece (agent neurons, blobs, sparks, drag/zoom)",
+      "owner": "devin-dd5aa7644a1946d085254fd97cd7ccd8",
+      "paths": [
+        "deck/app.js",
+        "deck/index.html",
+        "deck/style.css"
+      ],
+      "status": "done",
+      "evidence": [
+        "live render verified: dendrite brain + big price + cortex layers + calcium scatter + rotation orbit (screenshot ss_740d18a9), node --check OK"
+      ]
+    },
+    {
+      "id": "tape-panel",
+      "title": "Tape: big price readout, wire metrics strip, order book polish",
+      "owner": "devin-dd5aa7644a1946d085254fd97cd7ccd8",
+      "paths": [
+        "deck/index.html",
+        "deck/app.js",
+        "deck/style.css"
+      ],
+      "status": "done",
+      "depends_on": [
+        "brain-3d"
+      ],
+      "evidence": [
+        "live render verified: dendrite brain + big price + cortex layers + calcium scatter + rotation orbit (screenshot ss_740d18a9), node --check OK"
+      ]
+    },
+    {
+      "id": "cortex-calcium",
+      "title": "Sensory cortex layered net + calcium imaging scatter/sparklines",
+      "owner": "devin-dd5aa7644a1946d085254fd97cd7ccd8",
+      "paths": [
+        "deck/app.js",
+        "deck/index.html"
+      ],
+      "status": "done",
+      "depends_on": [
+        "brain-3d"
+      ],
+      "evidence": [
+        "live render verified: dendrite brain + big price + cortex layers + calcium scatter + rotation orbit (screenshot ss_740d18a9), node --check OK"
+      ]
+    },
+    {
+      "id": "rotation-trace-pricer",
+      "title": "Signal rotation orbit diagram, trace styling, pricer fidelity",
+      "owner": "devin-dd5aa7644a1946d085254fd97cd7ccd8",
+      "paths": [
+        "deck/app.js",
+        "deck/index.html",
+        "deck/style.css"
+      ],
+      "status": "done",
+      "depends_on": [
+        "cortex-calcium"
+      ],
+      "evidence": [
+        "live render verified: dendrite brain + big price + cortex layers + calcium scatter + rotation orbit (screenshot ss_740d18a9), node --check OK"
+      ]
+    },
+    {
+      "id": "final-polish",
+      "title": "Consistency pass, motion tuning, browser verify, commit+push",
+      "owner": "devin-dd5aa7644a1946d085254fd97cd7ccd8",
+      "paths": [
+        "deck/"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "tape-panel",
+        "cortex-calcium",
+        "rotation-trace-pricer"
+      ],
+      "evidence": []
+    },
+    {
+      "id": "system-completeness",
+      "title": "Backlog from merged repos (more strategies, backtest mode, broker adapter spec)",
+      "owner": "devin-dd5aa7644a1946d085254fd97cd7ccd8",
+      "paths": [
+        "src/",
+        "docs/"
+      ],
+      "status": "pending",
+      "depends_on": [
+        "final-polish"
+      ],
+      "evidence": []
+    }
+  ]
+}

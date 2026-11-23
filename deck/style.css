@@ -154,3 +154,9 @@ button, .sym-tabs button { transition: color .15s ease, border-color .15s ease, 
 #kellyBox .krow label { color: var(--dim); font-size: 8px; letter-spacing: 1px; }
 #kellyBox .kbar { height: 7px; margin-top: 3px; background: #070c16; border: 1px solid var(--edge); }
 #kellyBox .kbar i { display: block; height: 100%; background: var(--violet); transition: width .5s; }
+
+.bigprice { display: flex; align-items: baseline; gap: 12px; padding: 2px 0 6px; }
+.bigprice b { font-size: 42px; font-weight: 800; letter-spacing: -1px; color: var(--text); text-shadow: 0 0 26px rgba(47,216,255,.35); }
+.bigprice b.up { color: var(--green); text-shadow: 0 0 26px rgba(0,232,160,.45); }
+.bigprice b.dn { color: var(--red); text-shadow: 0 0 26px rgba(255,56,96,.45); }
+.bigprice span { font-size: 13px; }
