@@ -27,7 +27,7 @@
         <div class="ptitle">SWARM PNL — BOOK BALANCE HISTORY <span class="right" id="running"></span></div>
         <div class="bignav" id="bigNav">—</div>
         <div class="navdelta" id="bigDelta"></div>
-        <canvas id="navChart" height="90"></canvas>
+        <canvas id="navChart" height="110"></canvas>
         <div class="biasrow"><label>DIRECTIONAL BIAS</label><div class="biasbar"><i id="biasUp" class="u"></i><i id="biasDn" class="d"></i></div><span id="biasTxt"></span></div>
         <div class="biasrow"><label>MATCHED INVENTORY</label><div class="biasbar"><i id="invB" class="u"></i><i id="invS" class="d"></i></div><span id="invTxt"></span></div>
         <div class="stats4">
@@ -36,7 +36,30 @@
           <div><label>AVG EDGE</label><b id="stEdge">—</b></div>
           <div><label>MAX DD</label><b id="stDD">—</b></div>
         </div>
+        <div class="ptitle" style="margin-top:8px">OPEN TICKETS <span class="right" id="openTickets"></span></div>
+        <div id="cortexList"></div>
       </div>
+      <div class="panel brain-panel">
+        <div class="ptitle">THE BRAIN — LIVE 3D SYSTEM GRAPH · AGENTS × STRATEGIES × MARKETS · DRAG TO ROTATE · SCROLL TO ZOOM <span class="right" id="brainMeta"></span></div>
+        <canvas id="brain"></canvas>
+        <div class="pipeline" id="pipeline"></div>
+      </div>
+      <div class="panel side-panel">
+        <div class="ptitle">MODEL — FAIR vs MARKET</div>
+        <div id="modelRows"></div>
+        <div class="ptitle">KELLY — SIZING THE STAKE</div>
+        <div id="kellyBox"></div>
+        <div class="ptitle">MEMBRANE — EXECUTION BAND</div>
+        <canvas id="membrane" height="72"></canvas>
+        <div class="ptitle">SYNAPTIC WEIGHTS</div>
+        <canvas id="weights" height="72"></canvas>
+        <div class="ptitle">SIGNAL ROTATION <span class="right dim">strength × activity</span></div>
+        <canvas id="rotation" height="180"></canvas>
+        <div id="rotLegend" class="rot-legend"></div>
+      </div>
+    </section>
+
+    <section class="row r2">
       <div class="panel tape-panel">
         <div class="ptitle">THE TAPE — <span id="tapeSym">BTCUSDT</span> · VWAP Σ-BANDS · LIVE ORDER BOOK <span class="right"><span id="tapeRsi"></span> <span id="tapeChg"></span></span></div>
         <div class="tape-body">
@@ -46,48 +69,18 @@
         <div class="ind-chips" id="indChips"></div>
         <div class="sym-tabs" id="symTabs"></div>
       </div>
-    </section>
-
-    <section class="row r2">
       <div class="panel cortex-panel">
         <div class="ptitle">SENSORY CORTEX</div>
         <canvas id="cortex"></canvas>
         <div class="ptitle">CALCIUM IMAGING <span class="right dim">features × momentum</span></div>
-        <canvas id="calcium" height="90"></canvas>
-      </div>
-      <div class="panel synapse-panel">
-        <div class="ptitle">THE SYNAPSE — AGENTS · DENDRITES REACH FOR SIGNAL · ONE SPIKE CARRIES THE TICKET</div>
-        <canvas id="synapse"></canvas>
-        <div class="pipeline" id="pipeline"></div>
-      </div>
-      <div class="panel side-panel">
-        <div class="ptitle">CORTEX <span class="right" id="openTickets"></span></div>
-        <div id="cortexList"></div>
-        <div class="ptitle">MODEL — FAIR vs MARKET</div>
-        <div id="modelRows"></div>
-        <div class="ptitle">KELLY — SIZING THE STAKE</div>
-        <div id="kellyBox"></div>
-        <div class="ptitle">MEMBRANE — EXECUTION BAND</div>
-        <canvas id="membrane" height="56"></canvas>
+        <canvas id="calcium" height="110"></canvas>
         <div class="ptitle">THOUGHT LOG</div>
         <div class="thoughts" id="thoughts"></div>
-        <div class="ptitle">SYNAPTIC WEIGHTS</div>
-        <canvas id="weights" height="56"></canvas>
-      </div>
-    </section>
-
-    <section class="row r3">
-      <div class="panel">
-        <div class="ptitle">SIGNAL ROTATION — STRATEGIES · STRENGTH × ACTIVITY</div>
-        <canvas id="rotation" height="150"></canvas>
-        <div id="rotLegend" class="rot-legend"></div>
       </div>
       <div class="panel">
-        <div class="ptitle">THE TRACE — EVERY STEP THE DESK TAKES · SIX COLOURS</div>
+        <div class="ptitle">THE TRACE — EVERY STEP THE DESK TAKES</div>
         <div class="trace" id="trace"></div>
-      </div>
-      <div class="panel">
-        <div class="ptitle">THE PRICER — FAN OF FUTURES · EVERY PATH ONE SIM</div>
+        <div class="ptitle" style="margin-top:8px">THE PRICER — FAN OF FUTURES</div>
         <canvas id="pricer" height="150"></canvas>
       </div>
     </section>
