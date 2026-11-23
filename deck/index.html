@@ -28,6 +28,8 @@
         <div class="bignav" id="bigNav">—</div>
         <div class="navdelta" id="bigDelta"></div>
         <canvas id="navChart" height="90"></canvas>
+        <div class="biasrow"><label>DIRECTIONAL BIAS</label><div class="biasbar"><i id="biasUp" class="u"></i><i id="biasDn" class="d"></i></div><span id="biasTxt"></span></div>
+        <div class="biasrow"><label>MATCHED INVENTORY</label><div class="biasbar"><i id="invB" class="u"></i><i id="invS" class="d"></i></div><span id="invTxt"></span></div>
         <div class="stats4">
           <div><label>TICKETS</label><b id="stTickets">0</b></div>
           <div><label>WIN RATE</label><b id="stWin">—</b></div>
@@ -36,11 +38,12 @@
         </div>
       </div>
       <div class="panel tape-panel">
-        <div class="ptitle">THE TAPE — <span id="tapeSym">BTCUSDT</span> · VALUE AREA · LIVE <span class="right" id="tapeChg"></span></div>
+        <div class="ptitle">THE TAPE — <span id="tapeSym">BTCUSDT</span> · VWAP Σ-BANDS · LIVE ORDER BOOK <span class="right"><span id="tapeRsi"></span> <span id="tapeChg"></span></span></div>
         <div class="tape-body">
           <canvas id="tapeChart"></canvas>
           <div class="book" id="orderBook"></div>
         </div>
+        <div class="ind-chips" id="indChips"></div>
         <div class="sym-tabs" id="symTabs"></div>
       </div>
     </section>
@@ -60,6 +63,12 @@
       <div class="panel side-panel">
         <div class="ptitle">CORTEX <span class="right" id="openTickets"></span></div>
         <div id="cortexList"></div>
+        <div class="ptitle">MODEL — FAIR vs MARKET</div>
+        <div id="modelRows"></div>
+        <div class="ptitle">KELLY — SIZING THE STAKE</div>
+        <div id="kellyBox"></div>
+        <div class="ptitle">MEMBRANE — EXECUTION BAND</div>
+        <canvas id="membrane" height="56"></canvas>
         <div class="ptitle">THOUGHT LOG</div>
         <div class="thoughts" id="thoughts"></div>
         <div class="ptitle">SYNAPTIC WEIGHTS</div>

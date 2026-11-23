@@ -134,3 +134,22 @@ main { padding: 6px; }
 .panel { transition: border-color .18s ease; }
 .panel:hover { border-color: #243a5e; }
 button, .sym-tabs button { transition: color .15s ease, border-color .15s ease, box-shadow .15s ease; }
+
+/* indicator + model panels */
+.biasrow { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+.biasrow label { font-size: 7.5px; letter-spacing: 1px; color: var(--dim); width: 118px; flex: none; }
+.biasbar { flex: 1; height: 7px; display: flex; background: #070c16; border: 1px solid var(--edge); overflow: hidden; }
+.biasbar i { display: block; height: 100%; transition: width .5s; }
+.biasbar i.u { background: linear-gradient(90deg, rgba(0,232,160,.35), var(--green)); }
+.biasbar i.d { background: linear-gradient(90deg, var(--red), rgba(255,56,96,.35)); }
+.biasrow span { font-size: 8px; color: var(--dim); min-width: 84px; text-align: right; }
+.ind-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 3px; padding-top: 4px; }
+.ind-chips .chip { border: 1px solid var(--edge); padding: 2px 5px; font-size: 8px; display: flex; justify-content: space-between; letter-spacing: .4px; }
+.ind-chips .chip b { font-weight: 400; }
+#modelRows .mrow { display: flex; justify-content: space-between; font-size: 9px; padding: 2px 0; border-bottom: 1px solid #0a0f1a; }
+#modelRows .mrow label { color: var(--dim); font-size: 8px; letter-spacing: 1px; }
+#kellyBox { font-size: 9px; }
+#kellyBox .krow { display: flex; justify-content: space-between; padding: 2px 0; }
+#kellyBox .krow label { color: var(--dim); font-size: 8px; letter-spacing: 1px; }
+#kellyBox .kbar { height: 7px; margin-top: 3px; background: #070c16; border: 1px solid var(--edge); }
+#kellyBox .kbar i { display: block; height: 100%; background: var(--violet); transition: width .5s; }

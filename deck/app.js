@@ -96,6 +96,8 @@ function renderStatic() {
       <span class="${cls(pc)}">${pc.toFixed(2)}%</span><span>${fmt$(p.unrealizedUsd, 2)}</span></div>`;
   }).join('') || '<div class="dim">no open tickets</div>';
 
+  renderIndicators(s);
+
   $('thoughts').innerHTML = (STATE.decisions || []).slice(0, 40).map((d) =>
     `<div><span class="t">${new Date(d.ts).toTimeString().slice(0, 8)}</span>
      <b style="color:${stageColor(d)}">${d.strategy}</b> ${d.action.toUpperCase()} ${d.symbol.replace('USDT', '')}
@@ -458,6 +460,158 @@ function drawRotation() {
   });
 }
 
+// ---------- indicators ----------
+const cls2 = (v) => (v >= 0 ? 'pos' : 'neg');
+function emaN(a, p) {
+  if (a.length < p) return null;
+  const k = 2 / (p + 1);
+  let e = a.slice(0, p).reduce((x, y) => x + y, 0) / p;
+  for (let i = p; i < a.length; i++) e = a[i] * k + e * (1 - k);
+  return e;
+}
+function rsiN(a, p = 14) {
+  if (a.length < p + 1) return null;
+  let g = 0, l = 0;
+  for (let i = a.length - p; i < a.length; i++) { const d = a[i] - a[i - 1]; if (d > 0) g += d; else l -= d; }
+  return 100 - 100 / (1 + g / (l || 1e-9));
+}
+function bollPctB(a, p = 20, m = 2) {
+  if (a.length < p) return null;
+  const s = a.slice(-p), mean = s.reduce((x, y) => x + y, 0) / p;
+  const sd = Math.sqrt(s.reduce((x, y) => x + (y - mean) ** 2, 0) / p);
+  const band = sd * m || 1e-9;
+  return (a[a.length - 1] - (mean - band)) / (2 * band);
+}
+function zsc(a, p = 50) {
+  if (a.length < p) return null;
+  const s = a.slice(-p), mean = s.reduce((x, y) => x + y, 0) / p;
+  const sd = Math.sqrt(s.reduce((x, y) => x + (y - mean) ** 2, 0) / p) || 1e-9;
+  return (a[a.length - 1] - mean) / sd;
+}
+function atrP(cs, p = 14) {
+  if (cs.length < p + 1) return null;
+  let t = 0;
+  for (let i = cs.length - p; i < cs.length; i++)
+    t += Math.max(cs[i].h - cs[i].l, Math.abs(cs[i].h - cs[i - 1].c), Math.abs(cs[i].l - cs[i - 1].c));
+  return (t / p / cs[cs.length - 1].c) * 100;
+}
+function vwapN(cs, n = 90) {
+  const s = cs.slice(-n); let pv = 0, v = 0;
+  for (const c of s) { pv += c.c * c.v; v += c.v; }
+  return v ? pv / v : null;
+}
+function stochK(cs, p = 14) {
+  if (cs.length < p) return null;
+  const s = cs.slice(-p), lo = Math.min(...s.map((c) => c.l)), hi = Math.max(...s.map((c) => c.h));
+  return ((cs[cs.length - 1].c - lo) / (hi - lo || 1e-9)) * 100;
+}
+
+function chip(name, val, tone) {
+  return `<div class="chip"><span class="dim">${name}</span><b class="${tone || ''}">${val}</b></div>`;
+}
+
+function renderIndicators(s) {
+  const cs = STATE.candles[STATE.sym] || [];
+  const cl = cs.map((c) => c.c);
+  if (cl.length < 30) return;
+  const last = cl[cl.length - 1];
+  const rsi = rsiN(cl), pb = bollPctB(cl), z = zsc(cl), atr = atrP(cs);
+  const macd = emaN(cl, 12) - emaN(cl, 26);
+  const stoch = stochK(cs);
+  const vsma = cs.slice(-20).reduce((a, c) => a + c.v, 0) / Math.min(20, cs.length) || 1e-9;
+  const volR = cs[cs.length - 1].v / vsma;
+  const fvwap = vwapN(cs);
+  const e9 = emaN(cl, 9), e21 = emaN(cl, 21);
+
+  $('tapeRsi').innerHTML = rsi != null
+    ? `<span class="${rsi > 70 ? 'neg' : rsi < 30 ? 'pos' : 'amb'}">RSI ${rsi.toFixed(0)}</span>` : '';
+
+  const tone = (v, lo, hi) => (v > hi ? 'neg' : v < lo ? 'pos' : 'amb');
+  $('indChips').innerHTML = [
+    chip('RSI14', rsi?.toFixed(0), tone(rsi, 30, 70)),
+    chip('STOCH', stoch?.toFixed(0), tone(stoch, 20, 80)),
+    chip('MACD', macd?.toFixed(1), cls2(macd)),
+    chip('%B', pb?.toFixed(2), tone(pb, .2, .8)),
+    chip('Z50', z?.toFixed(2), tone(z, -1.5, 1.5)),
+    chip('ATR%', atr?.toFixed(2), atr > 1 ? 'neg' : 'amb'),
+    chip('VOL×', volR.toFixed(2), volR > 2 ? 'neg' : 'dim'),
+    chip('EMA9>21', e9 > e21 ? 'BULL' : 'BEAR', e9 > e21 ? 'pos' : 'neg'),
+    chip('ΔVWAP', fvwap ? `${(((last - fvwap) / fvwap) * 100).toFixed(2)}%` : '—', cls2(last - fvwap)),
+  ].join('');
+
+  // directional bias: fraction of up candles in last 50
+  const win = cl.slice(-50);
+  const ups = win.filter((v, i) => i && v > win[i - 1]).length / (win.length - 1 || 1);
+  $('biasUp').style.width = `${ups * 100}%`; $('biasDn').style.width = `${(1 - ups) * 100}%`;
+  $('biasTxt').textContent = `${(ups * 100).toFixed(0)}% up / ${((1 - ups) * 100).toFixed(0)}% dn`;
+
+  // matched inventory: buy vs sell pressure from decisions + tape volume split
+  const ds = STATE.decisions || [];
+  const buys = ds.filter((d) => d.intent?.side === 'buy').length;
+  const sells = ds.filter((d) => d.intent?.side === 'sell').length;
+  const tot = buys + sells || 1;
+  $('invB').style.width = `${(buys / tot) * 100}%`; $('invS').style.width = `${(sells / tot) * 100}%`;
+  $('invTxt').textContent = `${buys} buy / ${sells} sell`;
+
+  // model: fair vs market
+  const edge = fvwap ? (fvwap - last) / fvwap * 100 : null;
+  $('modelRows').innerHTML = [
+    ['FAIR (VWAP)', fvwap ? fmt$(fvwap, 0) : '—', ''],
+    ['MARKET', fmt$(last, 0), ''],
+    ['EDGE', edge != null ? `${edge >= 0 ? '+' : ''}${edge.toFixed(2)}%` : '—', cls2(edge)],
+    ['SPREAD σ', atr != null ? `${(atr / 4).toFixed(2)}%` : '—', 'amb'],
+    ['Z-SCORE', z?.toFixed(2), tone(z, -1.5, 1.5)],
+  ].map(([l, v, c]) => `<div class="mrow"><label>${l}</label><span class="${c}">${v}</span></div>`).join('');
+
+  // kelly
+  const stats = Object.values(s.stats || {});
+  const trades = stats.reduce((a, v) => a + v.trades, 0);
+  const wins = stats.reduce((a, v) => a + v.wins, 0);
+  const w = trades ? wins / trades : .5;
+  const gp = s.realizedUsd > 0 ? s.realizedUsd / Math.max(wins, 1) : 0;
+  const gl = trades - wins ? Math.min(-s.realizedUsd, 0) / (trades - wins) || 1 : 1;
+  const b = gp && gl ? Math.abs(gp / gl) : 1;
+  const kf = Math.max(0, Math.min(.25, w - (1 - w) / (b || 1)));
+  $('kellyBox').innerHTML = `
+    <div class="krow"><label>KELLY f*</label><span>${(kf * 100).toFixed(1)}% (cap 25%)</span></div>
+    <div class="krow"><label>STAKE</label><span>${fmt$(kf * s.equityUsd, 0)}</span></div>
+    <div class="krow"><label>EXPOSURE</label><span>${((1 - s.cashUsd / s.equityUsd) * 100).toFixed(0)}% of book</span></div>
+    <div class="kbar"><i style="width:${(kf / .25) * 100}%"></i></div>`;
+}
+
+// ---------- membrane: execution band ----------
+function drawMembrane() {
+  const { x, w, h } = ctx2d('membrane');
+  x.clearRect(0, 0, w, h);
+  const cs = (STATE.candles[STATE.sym] || []).slice(-60);
+  if (cs.length < 10) { x.fillStyle = '#4d5f80'; x.fillText('waiting…', 8, h / 2); return; }
+  const cl = cs.map((c) => c.c);
+  const mean = cl.reduce((a, b) => a + b, 0) / cl.length;
+  const sd = Math.sqrt(cl.reduce((a, v) => a + (v - mean) ** 2, 0) / cl.length) || 1e-9;
+  const lo = Math.min(...cl, mean - sd * 2), hi = Math.max(...cl, mean + sd * 2);
+  const py = (v) => h - 4 - ((v - lo) / (hi - lo || 1)) * (h - 8);
+  const px = (i) => (i / (cl.length - 1)) * w;
+  // band
+  x.fillStyle = 'rgba(143,107,255,.10)';
+  x.fillRect(0, py(mean + sd), w, py(mean - sd) - py(mean + sd));
+  x.strokeStyle = 'rgba(143,107,255,.5)'; x.setLineDash([2, 3]);
+  [mean + sd, mean - sd].forEach((v) => { x.beginPath(); x.moveTo(0, py(v)); x.lineTo(w, py(v)); x.stroke(); });
+  x.setLineDash([]);
+  x.strokeStyle = '#4d5f80'; x.beginPath(); x.moveTo(0, py(mean)); x.lineTo(w, py(mean)); x.stroke();
+  // price line
+  const grad = x.createLinearGradient(0, 0, w, 0);
+  grad.addColorStop(0, 'rgba(47,216,255,.2)'); grad.addColorStop(1, '#2fd8ff');
+  x.strokeStyle = grad; x.lineWidth = 1.2; x.beginPath();
+  cl.forEach((v, i) => (i ? x.lineTo(px(i), py(v)) : x.moveTo(px(i), py(v))));
+  x.stroke(); x.lineWidth = 1;
+  const last = cl[cl.length - 1];
+  const inside = Math.abs(last - mean) <= sd;
+  x.fillStyle = inside ? '#00e8a0' : '#ff3860';
+  x.beginPath(); x.arc(px(cl.length - 1), py(last), 3, 0, 7); x.fill();
+  x.font = '8px monospace'; x.fillStyle = '#4d5f80';
+  x.fillText(inside ? 'INSIDE BAND — maker regime' : 'OUTSIDE BAND — taker regime', 4, 10);
+}
+
 // ---------- pricer: Monte-Carlo fan ----------
 const mcPaths = [];
 function drawPricer(now) {
@@ -515,7 +669,7 @@ function frame(now) {
 }
 
 function drawSlow() {
-  drawNavChart(); drawWeights(); drawRotation(); drawPricer(performance.now());
+  drawNavChart(); drawWeights(); drawRotation(); drawPricer(performance.now()); drawMembrane();
 }
 
 setInterval(() => {
