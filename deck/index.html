@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Crypto-Tracker Trading Deck</title>
+  <link rel="stylesheet" href="/deck/style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">CRYPTO-TRACKER <span class="dim">// autonomous paper deck</span></div>
+    <div class="stats">
+      <div class="stat"><label>NAV</label><span id="nav">—</span></div>
+      <div class="stat"><label>DAY PNL</label><span id="dayPnl">—</span></div>
+      <div class="stat"><label>REALIZED</label><span id="realized">—</span></div>
+      <div class="stat"><label>UNREALIZED</label><span id="unrealized">—</span></div>
+      <div class="stat"><label>OPEN</label><span id="openN">—</span></div>
+      <div class="stat"><label>FEES</label><span id="fees">—</span></div>
+    </div>
+    <button id="kill" class="kill">KILL SWITCH</button>
+  </header>
+
+  <main>
+    <section class="panel chart-panel">
+      <div class="panel-title">EQUITY CURVE <span class="dim" id="cycleAt"></span></div>
+      <canvas id="equity" height="160"></canvas>
+      <div id="marketStrip" class="market-strip"></div>
+    </section>
+
+    <div class="grid">
+      <section class="panel">
+        <div class="panel-title">OPEN POSITIONS</div>
+        <table id="positions"><thead><tr><th>strategy</th><th>symbol</th><th>qty</th><th>entry</th><th>mark</th><th>uPnL</th><th>age</th></tr></thead><tbody></tbody></table>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">STRATEGY LEADERBOARD</div>
+        <table id="strategies"><thead><tr><th>name</th><th>on</th><th>trades</th><th>wins</th><th>PnL</th></tr></thead><tbody></tbody></table>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">DECISION FEED</div>
+        <div id="decisions" class="feed"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title">MONITOR SIGNALS</div>
+        <div class="mini"><label>whale buys</label><span id="whales">0</span></div>
+        <div class="mini"><label>new pools</label><span id="pools">0</span></div>
+        <div id="goldMini"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="/deck/app.js"></script>
+</body>
+</html>

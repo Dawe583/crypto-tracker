@@ -22,3 +22,7 @@ data/gold_state.json
 Thumbs.db
 .vscode/
 .idea/
+
+# Trading engine runtime artifacts
+data/ledger/
+data/KILL

@@ -2,6 +2,8 @@
 import { startListener } from './listener.js';
 import { startGoldLoop } from './gold_rwa.js';
 import { startApi } from './api.js';
+import { startEngineLoop } from './engine/loop.js';
+import { config } from './config.js';
 import { logger } from './logger.js';
 
 process.on('unhandledRejection', (e) => logger.error({ err: String(e) }, 'unhandled rejection'));
@@ -10,5 +12,6 @@ process.on('SIGINT', () => { logger.info('SIGINT received, exiting'); process.ex
 
 startListener();
 startGoldLoop();
+if (config.engine.enabled) startEngineLoop();
 startApi();
-logger.info('Base & EVM whale tracker running (Ctrl+C to stop)');
+logger.info('Base & EVM whale tracker + trading engine running (Ctrl+C to stop)');
