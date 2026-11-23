@@ -1,0 +1,127 @@
+{
+  "at": "2026-11-23T23:52:18.449Z",
+  "interval": "1m",
+  "results": [
+    {
+      "strategy": "ema_cross",
+      "symbol": "BTCUSDT",
+      "trades": 8,
+      "winRate": 12.5,
+      "pnlUsd": -4.07,
+      "unrealizedUsd": 0,
+      "feesUsd": 4.8,
+      "maxDdUsd": 7.24,
+      "bars": 240
+    },
+    {
+      "strategy": "rsi_reversion",
+      "symbol": "BTCUSDT",
+      "trades": 5,
+      "winRate": 60,
+      "pnlUsd": 0.14,
+      "unrealizedUsd": -0.42,
+      "feesUsd": 2.75,
+      "maxDdUsd": 1.79,
+      "bars": 240
+    },
+    {
+      "strategy": "bollinger_reversion",
+      "symbol": "BTCUSDT",
+      "trades": 5,
+      "winRate": 40,
+      "pnlUsd": -0.37,
+      "unrealizedUsd": -0.72,
+      "feesUsd": 2.75,
+      "maxDdUsd": 2.14,
+      "bars": 240
+    },
+    {
+      "strategy": "breakout",
+      "symbol": "BTCUSDT",
+      "trades": 0,
+      "winRate": 0,
+      "pnlUsd": -0.66,
+      "unrealizedUsd": -0.66,
+      "feesUsd": 0.3,
+      "maxDdUsd": 2.03,
+      "bars": 240
+    },
+    {
+      "strategy": "macd_momentum",
+      "symbol": "BTCUSDT",
+      "trades": 0,
+      "winRate": 0,
+      "pnlUsd": 0,
+      "unrealizedUsd": 0,
+      "feesUsd": 0,
+      "maxDdUsd": 0,
+      "bars": 240
+    },
+    {
+      "strategy": "vol_spike",
+      "symbol": "BTCUSDT",
+      "trades": 0,
+      "winRate": 0,
+      "pnlUsd": 0,
+      "unrealizedUsd": 0,
+      "feesUsd": 0,
+      "maxDdUsd": 0,
+      "bars": 240
+    },
+    {
+      "strategy": "atr_trend",
+      "symbol": "BTCUSDT",
+      "trades": 14,
+      "winRate": 7.1,
+      "pnlUsd": -6.14,
+      "unrealizedUsd": 0,
+      "feesUsd": 8.4,
+      "maxDdUsd": 10.34,
+      "bars": 240
+    },
+    {
+      "strategy": "grid",
+      "symbol": "BTCUSDT",
+      "trades": 0,
+      "winRate": 0,
+      "pnlUsd": 0,
+      "unrealizedUsd": 0,
+      "feesUsd": 0,
+      "maxDdUsd": 0,
+      "bars": 240
+    },
+    {
+      "strategy": "zscore_reversion",
+      "symbol": "BTCUSDT",
+      "trades": 2,
+      "winRate": 100,
+      "pnlUsd": 0.92,
+      "unrealizedUsd": 0.16,
+      "feesUsd": 1.25,
+      "maxDdUsd": 0.58,
+      "bars": 240
+    },
+    {
+      "strategy": "whale_follow",
+      "symbol": "BTCUSDT",
+      "trades": 0,
+      "winRate": 0,
+      "pnlUsd": 0,
+      "unrealizedUsd": 0,
+      "feesUsd": 0,
+      "maxDdUsd": 0,
+      "bars": 240
+    },
+    {
+      "strategy": "gold_spread",
+      "symbol": "BTCUSDT",
+      "trades": 0,
+      "winRate": 0,
+      "pnlUsd": 0,
+      "unrealizedUsd": 0,
+      "feesUsd": 0,
+      "maxDdUsd": 0,
+      "bars": 240
+    }
+  ]
+}

@@ -11,6 +11,7 @@
     "start": "tsx src/index.ts",
     "listen": "tsx src/listener.ts",
     "gold": "tsx src/gold_rwa.ts",
+    "backtest": "tsx src/engine/backtest.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json"
   },

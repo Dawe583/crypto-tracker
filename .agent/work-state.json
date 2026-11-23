@@ -1,7 +1,7 @@
 {
   "project": "crypto-tracker",
   "goal": "Ultimate crazy trading deck (1:1 GROK DESK reference) + complete autonomous paper-trading system merged from best parts of studied repos, running on live data, RPi4-ready.",
-  "updated_at": "2026-11-23T23:51:28.915001Z",
+  "updated_at": "2026-11-23T23:52:36.619587+00:00",
   "loop": {
     "definition": "docs/LOOP_ENGINEERING.md",
     "cycle": [
@@ -102,11 +102,14 @@
         "src/",
         "docs/"
       ],
-      "status": "pending",
+      "status": "in_progress",
       "depends_on": [
         "final-polish"
       ],
-      "evidence": []
+      "evidence": [
+        "npm run backtest: replays 240 1m bars/strategy via PaperPortfolio; BTCUSDT verified (zscore +0.92, ema_cross -4.07); wrote data/backtest.json",
+        "docs/BROKER_ADAPTER.md: adapter interface + testnet-first rollout rules"
+      ]
     }
   ]
 }
