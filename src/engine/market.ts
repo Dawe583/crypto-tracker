@@ -3,6 +3,7 @@ import { logger } from '../logger.js';
 import type { Candle } from './types.js';
 
 const CANDLE_LIMIT = 300;
+const MINUTES_PER_UNIT: Record<string, number> = { m: 1, h: 60, d: 1440, w: 10080, M: 44640 };
 
 export interface Feed { candles: Candle[]; price: number; source: 'binance' | 'bybit' | 'coinbase' | 'kraken'; lastFetch: number }
 const feeds = new Map<string, Feed>();
@@ -52,13 +53,19 @@ async function fromKraken(symbol: string, interval: string): Promise<Candle[]> {
 }
 
 export async function fetchSymbol(symbol: string, interval: string): Promise<Feed | null> {
+  const [, amount, unit] = /^(\d+)([mhdwM])$/.exec(interval) ?? [];
+  const period = Number(amount) * MINUTES_PER_UNIT[unit] * 60_000;
   for (const [source, fn] of [['binance', fromBinance], ['bybit', fromBybit], ['coinbase', fromCoinbase], ['kraken', fromKraken]] as const) {
     try {
       const candles = await fn(symbol, interval);
       if (!candles.length || candles.some(({ t, o, h, l, c, v }) =>
         !Number.isFinite(t) || ![o, h, l, c].every((p) => Number.isFinite(p) && p > 0)
         || !Number.isFinite(v) || v < 0)) throw new Error('invalid market candles');
-      return { candles, price: candles[candles.length - 1].c, source, lastFetch: Date.now() };
+      const latest = candles[candles.length - 1];
+      const now = Date.now();
+      // Candle timestamps are bucket opens; some exchanges omit the ongoing bucket.
+      if (latest.t > now || !(now - latest.t < 2 * period)) throw new Error('stale market candles');
+      return { candles, price: latest.c, source, lastFetch: now };
     } catch (err) {
       logger.warn({ err: String(err), symbol, source }, 'market feed failed');
     }
