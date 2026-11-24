@@ -1,0 +1,392 @@
+{
+  "at": "2026-11-24T11:36:28.480Z",
+  "interval": "15m",
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT",
+    "DOGEUSDT",
+    "AVAXUSDT",
+    "LINKUSDT"
+  ],
+  "results": [
+    {
+      "strategy": "ema_cross",
+      "feePct": 0.05,
+      "slipBps": 0,
+      "pnlUsd": 95.44,
+      "trades": 18
+    },
+    {
+      "strategy": "ema_cross",
+      "feePct": 0.05,
+      "slipBps": 5,
+      "pnlUsd": 91.65,
+      "trades": 18
+    },
+    {
+      "strategy": "ema_cross",
+      "feePct": 0.05,
+      "slipBps": 20,
+      "pnlUsd": 71.84,
+      "trades": 18
+    },
+    {
+      "strategy": "ema_cross",
+      "feePct": 0.1,
+      "slipBps": 0,
+      "pnlUsd": 94.39,
+      "trades": 18
+    },
+    {
+      "strategy": "ema_cross",
+      "feePct": 0.1,
+      "slipBps": 5,
+      "pnlUsd": 90.62,
+      "trades": 18
+    },
+    {
+      "strategy": "ema_cross",
+      "feePct": 0.1,
+      "slipBps": 20,
+      "pnlUsd": 70.81,
+      "trades": 18
+    },
+    {
+      "strategy": "ema_cross",
+      "feePct": 0.2,
+      "slipBps": 0,
+      "pnlUsd": 92.32,
+      "trades": 18
+    },
+    {
+      "strategy": "ema_cross",
+      "feePct": 0.2,
+      "slipBps": 5,
+      "pnlUsd": 88.54,
+      "trades": 18
+    },
+    {
+      "strategy": "ema_cross",
+      "feePct": 0.2,
+      "slipBps": 20,
+      "pnlUsd": 68.74,
+      "trades": 18
+    },
+    {
+      "strategy": "rsi_reversion",
+      "feePct": 0.05,
+      "slipBps": 0,
+      "pnlUsd": 29.72,
+      "trades": 26
+    },
+    {
+      "strategy": "rsi_reversion",
+      "feePct": 0.05,
+      "slipBps": 5,
+      "pnlUsd": 22.95,
+      "trades": 26
+    },
+    {
+      "strategy": "rsi_reversion",
+      "feePct": 0.05,
+      "slipBps": 20,
+      "pnlUsd": 2.67,
+      "trades": 26
+    },
+    {
+      "strategy": "rsi_reversion",
+      "feePct": 0.1,
+      "slipBps": 0,
+      "pnlUsd": 26.85,
+      "trades": 26
+    },
+    {
+      "strategy": "rsi_reversion",
+      "feePct": 0.1,
+      "slipBps": 5,
+      "pnlUsd": 20.06,
+      "trades": 26
+    },
+    {
+      "strategy": "rsi_reversion",
+      "feePct": 0.1,
+      "slipBps": 20,
+      "pnlUsd": -0.21,
+      "trades": 26
+    },
+    {
+      "strategy": "rsi_reversion",
+      "feePct": 0.2,
+      "slipBps": 0,
+      "pnlUsd": 21.07,
+      "trades": 26
+    },
+    {
+      "strategy": "rsi_reversion",
+      "feePct": 0.2,
+      "slipBps": 5,
+      "pnlUsd": 14.3,
+      "trades": 26
+    },
+    {
+      "strategy": "rsi_reversion",
+      "feePct": 0.2,
+      "slipBps": 20,
+      "pnlUsd": -5.97,
+      "trades": 26
+    },
+    {
+      "strategy": "breakout",
+      "feePct": 0.05,
+      "slipBps": 0,
+      "pnlUsd": 36.66,
+      "trades": 13
+    },
+    {
+      "strategy": "breakout",
+      "feePct": 0.05,
+      "slipBps": 5,
+      "pnlUsd": 34.69,
+      "trades": 13
+    },
+    {
+      "strategy": "breakout",
+      "feePct": 0.05,
+      "slipBps": 20,
+      "pnlUsd": 28.79,
+      "trades": 13
+    },
+    {
+      "strategy": "breakout",
+      "feePct": 0.1,
+      "slipBps": 0,
+      "pnlUsd": 36.66,
+      "trades": 13
+    },
+    {
+      "strategy": "breakout",
+      "feePct": 0.1,
+      "slipBps": 5,
+      "pnlUsd": 34.69,
+      "trades": 13
+    },
+    {
+      "strategy": "breakout",
+      "feePct": 0.1,
+      "slipBps": 20,
+      "pnlUsd": 28.79,
+      "trades": 13
+    },
+    {
+      "strategy": "breakout",
+      "feePct": 0.2,
+      "slipBps": 0,
+      "pnlUsd": 36.66,
+      "trades": 13
+    },
+    {
+      "strategy": "breakout",
+      "feePct": 0.2,
+      "slipBps": 5,
+      "pnlUsd": 34.69,
+      "trades": 13
+    },
+    {
+      "strategy": "breakout",
+      "feePct": 0.2,
+      "slipBps": 20,
+      "pnlUsd": 28.79,
+      "trades": 13
+    },
+    {
+      "strategy": "zscore_reversion",
+      "feePct": 0.05,
+      "slipBps": 0,
+      "pnlUsd": 25.16,
+      "trades": 10
+    },
+    {
+      "strategy": "zscore_reversion",
+      "feePct": 0.05,
+      "slipBps": 5,
+      "pnlUsd": 22.51,
+      "trades": 10
+    },
+    {
+      "strategy": "zscore_reversion",
+      "feePct": 0.05,
+      "slipBps": 20,
+      "pnlUsd": 14.58,
+      "trades": 10
+    },
+    {
+      "strategy": "zscore_reversion",
+      "feePct": 0.1,
+      "slipBps": 0,
+      "pnlUsd": 23.9,
+      "trades": 10
+    },
+    {
+      "strategy": "zscore_reversion",
+      "feePct": 0.1,
+      "slipBps": 5,
+      "pnlUsd": 21.27,
+      "trades": 10
+    },
+    {
+      "strategy": "zscore_reversion",
+      "feePct": 0.1,
+      "slipBps": 20,
+      "pnlUsd": 13.34,
+      "trades": 10
+    },
+    {
+      "strategy": "zscore_reversion",
+      "feePct": 0.2,
+      "slipBps": 0,
+      "pnlUsd": 21.37,
+      "trades": 10
+    },
+    {
+      "strategy": "zscore_reversion",
+      "feePct": 0.2,
+      "slipBps": 5,
+      "pnlUsd": 18.73,
+      "trades": 10
+    },
+    {
+      "strategy": "zscore_reversion",
+      "feePct": 0.2,
+      "slipBps": 20,
+      "pnlUsd": 10.8,
+      "trades": 10
+    },
+    {
+      "strategy": "stoch_cross",
+      "feePct": 0.05,
+      "slipBps": 0,
+      "pnlUsd": 33.81,
+      "trades": 31
+    },
+    {
+      "strategy": "stoch_cross",
+      "feePct": 0.05,
+      "slipBps": 5,
+      "pnlUsd": 25.52,
+      "trades": 31
+    },
+    {
+      "strategy": "stoch_cross",
+      "feePct": 0.05,
+      "slipBps": 20,
+      "pnlUsd": 0.7,
+      "trades": 31
+    },
+    {
+      "strategy": "stoch_cross",
+      "feePct": 0.1,
+      "slipBps": 0,
+      "pnlUsd": 30.03,
+      "trades": 31
+    },
+    {
+      "strategy": "stoch_cross",
+      "feePct": 0.1,
+      "slipBps": 5,
+      "pnlUsd": 21.75,
+      "trades": 31
+    },
+    {
+      "strategy": "stoch_cross",
+      "feePct": 0.1,
+      "slipBps": 20,
+      "pnlUsd": -3.05,
+      "trades": 31
+    },
+    {
+      "strategy": "stoch_cross",
+      "feePct": 0.2,
+      "slipBps": 0,
+      "pnlUsd": 22.47,
+      "trades": 31
+    },
+    {
+      "strategy": "stoch_cross",
+      "feePct": 0.2,
+      "slipBps": 5,
+      "pnlUsd": 14.2,
+      "trades": 31
+    },
+    {
+      "strategy": "stoch_cross",
+      "feePct": 0.2,
+      "slipBps": 20,
+      "pnlUsd": -10.58,
+      "trades": 31
+    },
+    {
+      "strategy": "obv_drift",
+      "feePct": 0.05,
+      "slipBps": 0,
+      "pnlUsd": 34.51,
+      "trades": 39
+    },
+    {
+      "strategy": "obv_drift",
+      "feePct": 0.05,
+      "slipBps": 5,
+      "pnlUsd": 26.79,
+      "trades": 39
+    },
+    {
+      "strategy": "obv_drift",
+      "feePct": 0.05,
+      "slipBps": 20,
+      "pnlUsd": 3.69,
+      "trades": 39
+    },
+    {
+      "strategy": "obv_drift",
+      "feePct": 0.1,
+      "slipBps": 0,
+      "pnlUsd": 30.8,
+      "trades": 39
+    },
+    {
+      "strategy": "obv_drift",
+      "feePct": 0.1,
+      "slipBps": 5,
+      "pnlUsd": 23.09,
+      "trades": 39
+    },
+    {
+      "strategy": "obv_drift",
+      "feePct": 0.1,
+      "slipBps": 20,
+      "pnlUsd": 0,
+      "trades": 39
+    },
+    {
+      "strategy": "obv_drift",
+      "feePct": 0.2,
+      "slipBps": 0,
+      "pnlUsd": 23.4,
+      "trades": 39
+    },
+    {
+      "strategy": "obv_drift",
+      "feePct": 0.2,
+      "slipBps": 5,
+      "pnlUsd": 15.69,
+      "trades": 39
+    },
+    {
+      "strategy": "obv_drift",
+      "feePct": 0.2,
+      "slipBps": 20,
+      "pnlUsd": -7.36,
+      "trades": 39
+    }
+  ]
+}

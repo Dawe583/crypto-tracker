@@ -22,9 +22,11 @@ export interface BacktestRow {
 }
 
 // Replay one strategy (given params) over a candle series through PaperPortfolio.
-export function replayOne(strategy: Strategy, params: Record<string, number>, symbol: string, candles: any[]): BacktestRow {
+// feePct/slipBps override execution costs: slip worsens fills (buy higher, sell lower).
+export function replayOne(strategy: Strategy, params: Record<string, number>, symbol: string, candles: any[], feePct = config.engine.feePct, slipBps = 0): BacktestRow {
   const pf = new PaperPortfolio(10_000);
   const eq: number[] = [];
+  const slip = slipBps / 10_000;
   for (let i = WARMUP; i < candles.length; i++) {
     const win = candles.slice(0, i + 1);
     const price = win[win.length - 1].c;
@@ -44,9 +46,9 @@ export function replayOne(strategy: Strategy, params: Record<string, number>, sy
     for (const it of intents) {
       if (it.confidence < config.engine.minConfidence) continue;
       if (it.side === 'buy') {
-        const f = pf.open(it, price, config.engine.feePct);
+        const f = pf.open(it, price * (1 + slip), feePct);
         if (f) pf.positions.get(`${strategy.name}|${symbol}`)!.entryTs = now;
-      } else pf.close(strategy.name, symbol, price, config.engine.feePct, it.reason);
+      } else pf.close(strategy.name, symbol, price * (1 - slip), feePct, it.reason);
     }
     eq.push(pf.equity(new Map([[symbol, price]])));
   }

@@ -14,7 +14,8 @@
     "backtest": "tsx src/engine/backtest.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json",
-    "sweep": "tsx src/engine/sweep.ts"
+    "sweep": "tsx src/engine/sweep.ts",
+    "stress": "tsx src/engine/stress.ts"
   },
   "dependencies": {
     "dotenv": "^16.4.5",

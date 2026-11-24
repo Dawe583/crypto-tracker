@@ -36,3 +36,17 @@ Replay of all 19 strategies through PaperPortfolio on live candles (Coinbase fee
 | whale_follow | BTCUSDT | 0 | 0 | 0.00 | 0.00 |
 
 Takeaway: 15m is the signal window for this strategy set; 1m is too noisy, 1h too slow.
+## Cost stress (15m, all 6 symbols) — data/stress-15m.json
+
+pnl $ at fee x slippage; ema_cross survives every scenario, breakout fee-insensitive (few trades).
+
+| strategy | 0.1% + 0bps | 0.1% + 5bps | 0.1% + 20bps |
+|---|---|---|---|
+| ema_cross | 94.4 | 90.6 | 70.8 |
+| breakout | 36.7 | 34.7 | 28.8 |
+| zscore_reversion | 23.9 | 21.3 | 13.3 |
+| rsi_reversion | 26.9 | 20.1 | -0.2 |
+| stoch_cross | 30.0 | 21.8 | -3.0 |
+| obv_drift | 30.8 | 23.1 | 0.0 |
+
+Takeaway: fast reversion strategies die at ~20bps slippage (DEX territory); trend strategies (ema_cross, breakout) keep edge — on CEX spot with ~2-3bps slip they are safe.
