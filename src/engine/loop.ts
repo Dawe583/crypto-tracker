@@ -122,7 +122,7 @@ export function createPaperEngine(options: {
         for (const i of intents) {
           const rec: DecisionRecord = { strategy: i.strategy, symbol, action: i.side, confidence: i.confidence, reason: i.reason, ts: Date.now() };
           if (i.side === 'sell') {
-            const fill = portfolio.close(i.strategy, symbol, prices.get(symbol) ?? feed.price, config.engine.feePct, i.reason);
+            const fill = portfolio.close(i.strategy, symbol, feed.price, config.engine.feePct, i.reason);
             if (fill) recordFill(fill);
             rec.vetoed = fill ? undefined : 'no position to close';
             append('decision', rec);
@@ -140,7 +140,7 @@ export function createPaperEngine(options: {
             : risk.check(i, positions, portfolio.equity(prices), exposure);
           if (risk.baselineDay !== baselineDay) append('checkpoint', { checkpoint: checkpointState() });
           if (veto) { rec.vetoed = veto; append('decision', rec); append('risk', rec); state.decisions.unshift(rec); continue; }
-          const fill = portfolio.open(i, prices.get(symbol) ?? feed.price, config.engine.feePct);
+          const fill = portfolio.open(i, feed.price, config.engine.feePct);
           if (fill) {
             recordFill(fill);
             append('decision', rec);
@@ -152,7 +152,7 @@ export function createPaperEngine(options: {
     }
 
     const positions = [...portfolio.positions.values()];
-    const marks = new Map(prices);
+    const marks = new Map([...Object.entries(state.snapshot?.prices ?? {}), ...prices]);
     for (const p of positions) {
       const priorMark = state.snapshot?.positions.find((previous) => previous.id === p.id)?.markPrice;
       if (!marks.has(p.symbol) && priorMark !== undefined) marks.set(p.symbol, priorMark);
@@ -177,7 +177,7 @@ export function createPaperEngine(options: {
       stats: Object.fromEntries([...perStrategy.entries()]),
       equityCurve: equityCurve.slice(-500),
       killed: risk.killed,
-      prices: Object.fromEntries(prices),
+      prices: Object.fromEntries(marks),
       cycleAt: new Date().toISOString(),
     };
     if (state.decisions.length > 300) state.decisions.length = 300;
@@ -195,7 +195,10 @@ function monitorSignals() {
 }
 
 const strategies = loadStrategies();
-const local = createPaperEngine({ state: engineState, append: ledgerAppend, refresh: refreshSymbol, signals: monitorSignals, strategies });
+const local = createPaperEngine({
+  state: engineState, append: ledgerAppend, signals: monitorSignals, strategies,
+  refresh: (symbol, interval) => refreshSymbol(symbol, interval, { requireRecent: true }),
+});
 export const { portfolio, risk } = local;
 let recovered = false;
 

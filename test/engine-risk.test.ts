@@ -25,6 +25,7 @@ async function runCycle(
 
   const env = {
     ENGINE_SYMBOLS: 'BTCUSDT,ETHUSDT',
+    ENGINE_INTERVAL: '1m',
     ENGINE_START_USD: '10000',
     ENGINE_MAX_POSITION_USD: '500',
     ENGINE_MAX_TOTAL_USD: '450',
@@ -47,9 +48,10 @@ async function runCycle(
     const { hostname, searchParams } = new URL(url);
     assert.equal(hostname, 'api.binance.com');
     const lastPrice = seedBtc && searchParams.get('symbol') === 'BTCUSDT' ? 99 : price;
+    const now = Date.now();
     const candles = Array.from({ length: 70 }, (_, i) => {
-      const ts = Date.now() - (69 - i) * 60_000;
-      return i === 69 ? [ts, 100, lastPrice + 1, 99, lastPrice, 1000] : [ts, 100, 101, 99, 100, 100];
+      const time = now - (69 - i) * 60_000;
+      return i === 69 ? [time, 100, lastPrice + 1, 99, lastPrice, 1000] : [time, 100, 101, 99, 100, 100];
     });
     return Response.json(candles);
   });
