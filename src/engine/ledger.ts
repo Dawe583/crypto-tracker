@@ -12,7 +12,7 @@ mkdirSync(LEDGER_DIR, { recursive: true });
 export interface LedgerRecord<T = unknown> {
   seq: number;
   ts: number;
-  type: 'decision' | 'fill' | 'equity' | 'risk' | 'settle';
+  type: 'decision' | 'fill' | 'equity' | 'risk' | 'settle' | 'checkpoint';
   prevHash: string;
   hash: string;
   data: T;
@@ -36,7 +36,7 @@ function recordHash(prevHash: string, seq: number, type: LedgerRecord['type'], d
   return createHash('sha256').update(`${prevHash}:${seq}:${type}:${JSON.stringify(data)}`).digest('hex');
 }
 
-export function ledgerResumeLatestFill<T>(): LedgerRecord<T> | undefined {
+export function ledgerResumeLatestCheckpoint<T>(): LedgerRecord<T> | undefined {
   const files = readdirSync(LEDGER_DIR).filter((file) => /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(file)).sort().reverse();
   let newer: LedgerRecord | undefined;
   for (const file of files) {
@@ -65,7 +65,7 @@ export function ledgerResumeLatestFill<T>(): LedgerRecord<T> | undefined {
         seq = record.seq + 1;
         lastHash = record.hash;
       }
-      if (record.type === 'fill') return record;
+      if (record.type === 'fill' || record.type === 'checkpoint') return record;
       if (record.seq === 0) return undefined;
       newer = record;
     }

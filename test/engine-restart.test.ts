@@ -21,8 +21,11 @@ function fixture(t: TestContext) {
   return root;
 }
 
-function runProcess(root: string, ts: number, prices: Record<string, number>, symbols = 'BTCUSDT,ETHUSDT') {
+function runProcess(root: string, ts: number, prices: Record<string, number>, symbols = 'BTCUSDT,ETHUSDT', env?: Record<string, string>) {
   return spawnSync(process.execPath, ['--import', 'tsx', '--input-type=module', '--eval', `
+    globalThis.Date = new Proxy(Date, {
+      construct: (RealDate, args) => new RealDate(...(args.length ? args : [${ts}])),
+    });
     Date.now = () => ${ts};
     const prices = ${JSON.stringify(prices)};
     globalThis.fetch = async (url) => {
@@ -39,16 +42,17 @@ function runProcess(root: string, ts: number, prices: Record<string, number>, sy
     cwd: root,
     encoding: 'utf8',
     env: {
-      ...process.env, LOG_LEVEL: 'silent',
+      ...process.env, LOG_LEVEL: 'silent', TZ: 'UTC',
       ENGINE_SYMBOLS: symbols, ENGINE_START_USD: '10000', ENGINE_FEE_PCT: '0.1',
       ENGINE_MAX_POSITION_USD: '500', ENGINE_MAX_TOTAL_USD: '1000', ENGINE_MAX_OPEN_POSITIONS: '8',
       ENGINE_MIN_CONFIDENCE: '0.5', ENGINE_DAILY_LOSS_PCT: '5', ENGINE_COOLDOWN_MIN: '60',
+      ...env,
     },
   });
 }
 
-function runCycle(root: string, ts: number, prices: Record<string, number>, symbols?: string): EngineSnapshot {
-  const result = runProcess(root, ts, prices, symbols);
+function runCycle(...args: Parameters<typeof runProcess>): EngineSnapshot {
+  const result = runProcess(...args);
   assert.equal(result.status, 0, result.stderr);
   return JSON.parse(result.stdout);
 }
@@ -152,4 +156,20 @@ test('keeps a strategy on cooldown after restarting', (t) => {
   assert.equal(skipped.stats.ema_cross?.trades, 2);
   const ledger = readFileSync(join(root, 'data', 'ledger', '2026-11-25.jsonl'), 'utf8');
   assert.match(ledger, /strategy cooldown until/);
+});
+
+test('keeps the new daily loss baseline after a cycle with no fill', (t) => {
+  const root = fixture(t);
+  const lossLimit = { ENGINE_DAILY_LOSS_PCT: '0.05' };
+  runCycle(root, today, { BTCUSDT: 110, ETHUSDT: 100 });
+  const vetoed = runCycle(root, tomorrow, { BTCUSDT: 115, ETHUSDT: 110 }, undefined, {
+    ...lossLimit, ENGINE_MAX_OPEN_POSITIONS: '1',
+  });
+  assert.deepEqual(vetoed.positions.map(({ symbol }) => symbol), ['BTCUSDT']);
+
+  const restarted = runCycle(root, tomorrow + 60_000, { BTCUSDT: 111, ETHUSDT: 110 }, undefined, lossLimit);
+  assert.deepEqual(restarted.positions.map(({ symbol }) => symbol), ['BTCUSDT']);
+  const ledger = readFileSync(join(root, 'data', 'ledger', '2026-11-25.jsonl'), 'utf8');
+  assert.match(ledger, /max open positions/);
+  assert.match(ledger, /daily loss breaker/);
 });

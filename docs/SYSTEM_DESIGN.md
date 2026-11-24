@@ -79,7 +79,7 @@ Exits are engine-managed (SL/TP/max-hold from the intent + strategy close signal
 
 ## Paper ledger (`data/ledger/YYYY-MM-DD.jsonl`)
 
-Append-only JSONL; each record `{seq, ts, type, prevHash, hash, data}`. Each fill checkpoints the paper portfolio, including open positions and their original exit rules, cash, PnL, fees, trade IDs, and risk state as of the fill. At startup the engine restores the latest checkpoint across UTC day files before evaluating trades.
+Append-only JSONL; each record `{seq, ts, type, prevHash, hash, data}`. Each fill checkpoints open positions and their original exit rules, cash, PnL, fees, trade IDs, and risk state. The engine also checkpoints when it sets a new daily loss baseline, even if the trade is vetoed. At startup it validates the ledger tail and restores the latest checkpoint before evaluating trades. If the clock moves backward, records keep their actual timestamps but are written to the newest UTC day file to preserve append order.
 
 Older fills lack the state needed for exact recovery. If the latest fill predates checkpoints, the engine starts a new paper portfolio and leaves the old ledger intact. An incomplete or invalid ledger tail stops paper trading until the ledger is repaired and the service restarted; it isn't silently discarded.
 

@@ -3,9 +3,9 @@
 import { logger } from '../logger.js';
 import { config } from '../config.js';
 import { refreshSymbol, getFeed, getPrice } from './market.js';
-import { PaperPortfolio, type PaperPortfolioCheckpoint } from './portfolio.js';
+import { PaperPortfolio } from './portfolio.js';
 import { RiskEngine } from './risk.js';
-import { ledgerAppend, ledgerResumeLatestFill } from './ledger.js';
+import { ledgerAppend, ledgerResumeLatestCheckpoint, type LedgerRecord } from './ledger.js';
 import { loadStrategies } from '../strategies/registry.js';
 import { listSignals } from '../store.js';
 import { getGoldSnapshot } from '../store.js';
@@ -29,21 +29,19 @@ const perStrategy = new Map<string, { pnl: number; trades: number; wins: number 
 let recovered = false;
 let ledgerFailed = false;
 
-type CheckpointedFill = Fill & {
-  checkpoint?: {
-    portfolio: PaperPortfolioCheckpoint;
-    risk: ReturnType<RiskEngine['checkpoint']>;
-    stats: [string, { pnl: number; trades: number; wins: number }][];
-  };
-};
+function checkpointState() {
+  return { portfolio: portfolio.checkpoint(), risk: risk.checkpoint(), stats: [...perStrategy] };
+}
 
 function recoverPortfolio() {
-  const previous = ledgerResumeLatestFill<CheckpointedFill>();
+  const previous = ledgerResumeLatestCheckpoint<{ checkpoint?: ReturnType<typeof checkpointState> }>();
   const checkpoint = previous?.data.checkpoint;
   if (checkpoint) {
     portfolio.restoreCheckpoint(checkpoint.portfolio);
     risk.restoreCheckpoint(checkpoint.risk);
     for (const [name, stats] of checkpoint.stats) perStrategy.set(name, stats);
+  } else if (previous?.type === 'checkpoint') {
+    throw new Error('invalid paper ledger checkpoint');
   } else if (previous) {
     logger.warn('legacy paper ledger fill has no checkpoint; starting a new simulated portfolio');
   }
@@ -56,6 +54,15 @@ function statFor(name: string) {
   return s;
 }
 
+function append(type: LedgerRecord['type'], data: unknown) {
+  try {
+    ledgerAppend(type, data);
+  } catch (err) {
+    ledgerFailed = true;
+    throw err;
+  }
+}
+
 function recordFill(fill: Fill) {
   if (fill.side === 'sell') {
     const pnl = fill.pnlUsd ?? 0;
@@ -65,15 +72,7 @@ function recordFill(fill: Fill) {
     stats.trades += 1;
     if (pnl > 0) stats.wins += 1;
   }
-  try {
-    ledgerAppend<CheckpointedFill>('fill', {
-      ...fill,
-      checkpoint: { portfolio: portfolio.checkpoint(), risk: risk.checkpoint(), stats: [...perStrategy] },
-    });
-  } catch (err) {
-    ledgerFailed = true;
-    throw err;
-  }
+  append('fill', { ...fill, checkpoint: checkpointState() });
 }
 
 function monitorSignals() {
@@ -137,7 +136,7 @@ export async function runEngineCycle() {
           const fill = portfolio.close(i.strategy, symbol, prices.get(symbol) ?? feed.price, config.engine.feePct, i.reason);
           if (fill) recordFill(fill);
           rec.vetoed = fill ? undefined : 'no position to close';
-          ledgerAppend('decision', rec);
+          append('decision', rec);
           engineState.decisions.unshift(rec);
           continue;
         }
@@ -146,15 +145,17 @@ export async function runEngineCycle() {
           const mark = prices.get(p.symbol) ?? p.entryPrice;
           return total + (mark === p.entryPrice ? p.sizeUsd : p.qty * mark);
         }, 0);
-        const veto = risk.check(i, positions, portfolio.equity(prices), exposure);
-        if (veto) { rec.vetoed = veto; ledgerAppend('decision', rec); ledgerAppend('risk', rec); engineState.decisions.unshift(rec); continue; }
+        const equity = portfolio.equity(prices);
+        if (risk.startDay(equity)) append('checkpoint', { checkpoint: checkpointState() });
+        const veto = risk.check(i, positions, equity, exposure);
+        if (veto) { rec.vetoed = veto; append('decision', rec); append('risk', rec); engineState.decisions.unshift(rec); continue; }
         const fill = portfolio.open(i, prices.get(symbol) ?? feed.price, config.engine.feePct);
         if (fill) {
           recordFill(fill);
-          ledgerAppend('decision', rec);
+          append('decision', rec);
           engineState.decisions.unshift(rec);
           logger.info({ symbol, strategy: i.strategy, usd: fill.usd }, 'position opened');
-        } else { rec.vetoed = 'insufficient cash or duplicate position'; ledgerAppend('decision', rec); engineState.decisions.unshift(rec); }
+        } else { rec.vetoed = 'insufficient cash or duplicate position'; append('decision', rec); engineState.decisions.unshift(rec); }
       }
     }
   }
@@ -162,7 +163,7 @@ export async function runEngineCycle() {
   const eq = portfolio.equity(prices);
   equityCurve.push({ ts: Date.now(), equityUsd: eq });
   if (equityCurve.length > 2000) equityCurve.shift();
-  ledgerAppend('equity', { equityUsd: eq, cashUsd: portfolio.cashUsd, unrealizedUsd: portfolio.unrealized(prices) });
+  append('equity', { equityUsd: eq, cashUsd: portfolio.cashUsd, unrealizedUsd: portfolio.unrealized(prices) });
   engineState.snapshot = {
     equityUsd: eq,
     cashUsd: portfolio.cashUsd,
