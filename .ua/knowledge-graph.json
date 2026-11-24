@@ -894,7 +894,11 @@
         "paper-trading",
         "method"
       ],
-      "complexity": "moderate"
+      "complexity": "moderate",
+      "lineRange": [
+        16,
+        16
+      ]
     },
     {
       "id": "function:src/engine/decisions.ts:JevModel.decide",
@@ -906,7 +910,11 @@
         "paper-trading",
         "method"
       ],
-      "complexity": "moderate"
+      "complexity": "moderate",
+      "lineRange": [
+        18,
+        45
+      ]
     },
     {
       "id": "file:src/engine/indicators.ts",
@@ -1070,10 +1078,10 @@
       "name": "macdHist",
       "filePath": "src/engine/indicators.ts",
       "lineRange": [
-        55,
-        63
+        66,
+        68
       ],
-      "summary": "Computes macdHist from supplied candle/numeric inputs.",
+      "summary": "Returns the histogram from the shared MACD helper for existing strategies.",
       "tags": [
         "runtime",
         "code"
@@ -1086,8 +1094,8 @@
       "name": "bollinger",
       "filePath": "src/engine/indicators.ts",
       "lineRange": [
-        65,
-        72
+        70,
+        77
       ],
       "summary": "Computes bollinger from supplied candle/numeric inputs.",
       "tags": [
@@ -1102,8 +1110,8 @@
       "name": "zscore",
       "filePath": "src/engine/indicators.ts",
       "lineRange": [
-        74,
-        81
+        79,
+        86
       ],
       "summary": "Computes zscore from supplied candle/numeric inputs.",
       "tags": [
@@ -1118,8 +1126,8 @@
       "name": "pctChange",
       "filePath": "src/engine/indicators.ts",
       "lineRange": [
-        83,
-        88
+        88,
+        93
       ],
       "summary": "Computes pctChange from supplied candle/numeric inputs.",
       "tags": [
@@ -1170,8 +1178,8 @@
       "name": "buy",
       "filePath": "src/strategies/library.ts",
       "lineRange": [
-        6,
-        7
+        7,
+        8
       ],
       "summary": "Provides buy for library.",
       "tags": [
@@ -1186,8 +1194,8 @@
       "name": "sell",
       "filePath": "src/strategies/library.ts",
       "lineRange": [
-        8,
-        9
+        9,
+        10
       ],
       "summary": "Provides sell for library.",
       "tags": [
@@ -1201,10 +1209,11 @@
       "type": "file",
       "name": "backtest.ts",
       "filePath": "src/engine/backtest.ts",
-      "summary": "Historical strategy replay with simulated fills, configurable execution costs and research statistics.",
+      "summary": "Replays earlier closed bars at the next open with shared stop logic, fees, slippage and deterministic risk limits; accepts verified Binance CSV history.",
       "tags": [
         "code",
-        "paper-trading"
+        "paper-trading",
+        "tested"
       ],
       "complexity": "moderate"
     },
@@ -1214,10 +1223,10 @@
       "name": "replayOne",
       "filePath": "src/engine/backtest.ts",
       "lineRange": [
-        26,
-        68
+        27,
+        86
       ],
-      "summary": "Replays a strategy over candle windows with paper positions and execution costs.",
+      "summary": "Replays a single strategy without lookahead and marks equity with round-trip execution costs.",
       "tags": [
         "runtime",
         "code"
@@ -1230,8 +1239,8 @@
       "name": "runBacktest",
       "filePath": "src/engine/backtest.ts",
       "lineRange": [
-        70,
-        83
+        102,
+        121
       ],
       "summary": "Runs historical strategy replay and aggregates research output.",
       "tags": [
@@ -1258,8 +1267,8 @@
       "name": "runStress",
       "filePath": "src/engine/stress.ts",
       "lineRange": [
-        13,
-        32
+        14,
+        37
       ],
       "summary": "Compares replay performance across execution-cost assumptions.",
       "tags": [
@@ -1286,8 +1295,8 @@
       "name": "runSweep",
       "filePath": "src/engine/sweep.ts",
       "lineRange": [
-        43,
-        67
+        44,
+        69
       ],
       "summary": "Compares parameter-grid candidates through historical replay.",
       "tags": [
@@ -1373,7 +1382,7 @@
       "type": "config",
       "name": "strategies.json",
       "filePath": "data/strategies.json",
-      "summary": "Enabled evaluators and tuned strategy parameter overrides.",
+      "summary": "Enables MACD/Bollinger as the sole default for new paper positions; preserves parameters for winding down disabled strategies.",
       "tags": [
         "config",
         "monitor"
@@ -2520,7 +2529,7 @@
       "filePath": "src/engine/portfolio.ts",
       "lineRange": [
         14,
-        108
+        114
       ],
       "summary": "Tracks paper cash, position keys, simulated fills, fees and realized/unrealized PnL; places no live orders.",
       "tags": [
@@ -2568,7 +2577,7 @@
       "filePath": "src/engine/portfolio.ts",
       "lineRange": [
         35,
-        48
+        51
       ],
       "summary": "Defines PaperPortfolio.restoreCheckpoint in portfolio.ts.",
       "tags": [
@@ -2583,8 +2592,8 @@
       "name": "PaperPortfolio.canOpen",
       "filePath": "src/engine/portfolio.ts",
       "lineRange": [
-        50,
-        52
+        53,
+        55
       ],
       "summary": "Implements canOpen for PaperPortfolio.",
       "tags": [
@@ -2599,8 +2608,8 @@
       "name": "PaperPortfolio.open",
       "filePath": "src/engine/portfolio.ts",
       "lineRange": [
-        54,
-        75
+        57,
+        81
       ],
       "summary": "Implements open for PaperPortfolio.",
       "tags": [
@@ -2615,8 +2624,8 @@
       "name": "PaperPortfolio.close",
       "filePath": "src/engine/portfolio.ts",
       "lineRange": [
-        77,
-        91
+        83,
+        97
       ],
       "summary": "Implements close for PaperPortfolio.",
       "tags": [
@@ -2631,8 +2640,8 @@
       "name": "PaperPortfolio.equity",
       "filePath": "src/engine/portfolio.ts",
       "lineRange": [
-        93,
-        97
+        99,
+        103
       ],
       "summary": "Implements equity for PaperPortfolio.",
       "tags": [
@@ -2647,8 +2656,8 @@
       "name": "PaperPortfolio.unrealized",
       "filePath": "src/engine/portfolio.ts",
       "lineRange": [
-        99,
-        103
+        105,
+        109
       ],
       "summary": "Implements unrealized for PaperPortfolio.",
       "tags": [
@@ -2663,8 +2672,8 @@
       "name": "PaperPortfolio.key",
       "filePath": "src/engine/portfolio.ts",
       "lineRange": [
-        105,
-        107
+        111,
+        113
       ],
       "summary": "Implements key for PaperPortfolio.",
       "tags": [
@@ -2767,8 +2776,8 @@
       "name": "checkSnapshotApi",
       "filePath": "test/engine-restart.test.ts",
       "lineRange": [
-        166,
-        188
+        184,
+        206
       ],
       "summary": "Defines checkSnapshotApi in engine-restart.test.ts.",
       "tags": [
@@ -2783,8 +2792,8 @@
       "name": "legacyFork",
       "filePath": "test/engine-restart.test.ts",
       "lineRange": [
-        406,
-        427
+        424,
+        445
       ],
       "summary": "Defines legacyFork in engine-restart.test.ts.",
       "tags": [
@@ -3014,22 +3023,6 @@
       "complexity": "simple"
     },
     {
-      "id": "function:src/engine/hosted.ts:rpc",
-      "type": "function",
-      "name": "rpc",
-      "filePath": "src/engine/hosted.ts",
-      "lineRange": [
-        40,
-        50
-      ],
-      "summary": "Defines rpc in hosted.ts.",
-      "tags": [
-        "paper-engine",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
       "id": "function:src/engine/hosted.ts:runHostedCycle",
       "type": "function",
       "name": "runHostedCycle",
@@ -3039,22 +3032,6 @@
         101
       ],
       "summary": "Loads the ledger head and engine checkpoint, runs one slot, and commits only if the loaded head is still current.",
-      "tags": [
-        "paper-engine",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/hosted.ts:append",
-      "type": "function",
-      "name": "append",
-      "filePath": "src/engine/hosted.ts",
-      "lineRange": [
-        74,
-        79
-      ],
-      "summary": "Defines append in hosted.ts.",
       "tags": [
         "paper-engine",
         "code"
@@ -3082,7 +3059,7 @@
       "type": "file",
       "name": "market.ts",
       "filePath": "src/engine/market.ts",
-      "summary": "Accepts fresh public candle data from Binance, Bybit, Coinbase or Kraken; skips stale or invalid feeds.",
+      "summary": "Fetches public marks, preferring exchanges with a fresh, contiguous closed window as of request start; preserves an exit mark if no window qualifies.",
       "tags": [
         "code",
         "paper-trading"
@@ -3175,8 +3152,8 @@
       "name": "fetchSymbol",
       "filePath": "src/engine/market.ts",
       "lineRange": [
-        75,
-        100
+        93,
+        121
       ],
       "summary": "Returns the first valid and fresh exchange feed; stale and future candles cannot be used for fills.",
       "tags": [
@@ -3191,8 +3168,8 @@
       "name": "refreshSymbol",
       "filePath": "src/engine/market.ts",
       "lineRange": [
-        102,
-        106
+        123,
+        127
       ],
       "summary": "Updates the local market cache only after a valid fresh exchange response.",
       "tags": [
@@ -3207,8 +3184,8 @@
       "name": "getFeed",
       "filePath": "src/engine/market.ts",
       "lineRange": [
-        108,
-        108
+        129,
+        129
       ],
       "summary": "Returns cached candles for a configured market.",
       "tags": [
@@ -3430,10 +3407,11 @@
       "type": "file",
       "name": "loop.ts",
       "filePath": "src/engine/loop.ts",
-      "summary": "Reusable paper-cycle evaluator with injected feeds, signals and ledger, and a separate local process adapter.",
+      "summary": "Runs exits before entries, deduplicates fresh closed-bar decisions, applies portfolio risk limits and checkpoints paper state for local and hosted adapters.",
       "tags": [
         "code",
-        "paper-trading"
+        "paper-trading",
+        "tested"
       ],
       "complexity": "moderate"
     },
@@ -3443,58 +3421,10 @@
       "name": "createPaperEngine",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        20,
-        192
+        22,
+        226
       ],
       "summary": "Creates an isolated paper engine with injected market, signals and ledger adapters.",
-      "tags": [
-        "paper-engine",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/loop.ts:createPaperEngine.statFor",
-      "type": "function",
-      "name": "createPaperEngine.statFor",
-      "filePath": "src/engine/loop.ts",
-      "lineRange": [
-        61,
-        65
-      ],
-      "summary": "Defines createPaperEngine.statFor in loop.ts.",
-      "tags": [
-        "paper-engine",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/loop.ts:createPaperEngine.checkExits",
-      "type": "function",
-      "name": "createPaperEngine.checkExits",
-      "filePath": "src/engine/loop.ts",
-      "lineRange": [
-        79,
-        96
-      ],
-      "summary": "Defines createPaperEngine.checkExits in loop.ts.",
-      "tags": [
-        "paper-engine",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/loop.ts:createPaperEngine.cycle",
-      "type": "function",
-      "name": "createPaperEngine.cycle",
-      "filePath": "src/engine/loop.ts",
-      "lineRange": [
-        98,
-        189
-      ],
-      "summary": "Defines createPaperEngine.cycle in loop.ts.",
       "tags": [
         "paper-engine",
         "code"
@@ -3507,8 +3437,8 @@
       "name": "monitorSignals",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        194,
-        203
+        228,
+        237
       ],
       "summary": "Collects local whale/pool signals and fresh gold spreads, preferring Base when both chains supply a quote.",
       "tags": [
@@ -3523,8 +3453,8 @@
       "name": "runEngineCycle",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        213,
-        228
+        248,
+        263
       ],
       "summary": "Runs one local file-ledger cycle while preventing a concurrent local cycle.",
       "tags": [
@@ -3539,8 +3469,8 @@
       "name": "startEngineLoop",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        230,
-        247
+        265,
+        282
       ],
       "summary": "Starts periodic paper-engine cycles when enabled by configuration.",
       "tags": [
@@ -3568,7 +3498,7 @@
       "filePath": "src/engine/risk.ts",
       "lineRange": [
         21,
-        67
+        69
       ],
       "summary": "Hard entry-risk vetoes for kill state, daily loss, confidence, position count, exposure and strategy cooldown.",
       "tags": [
@@ -3584,7 +3514,7 @@
       "filePath": "src/engine/risk.ts",
       "lineRange": [
         27,
-        29
+        31
       ],
       "summary": "Initializes RiskEngine.",
       "tags": [
@@ -3599,8 +3529,8 @@
       "name": "RiskEngine.checkpoint",
       "filePath": "src/engine/risk.ts",
       "lineRange": [
-        31,
-        33
+        33,
+        35
       ],
       "summary": "Defines RiskEngine.checkpoint in risk.ts.",
       "tags": [
@@ -3615,8 +3545,8 @@
       "name": "RiskEngine.restoreCheckpoint",
       "filePath": "src/engine/risk.ts",
       "lineRange": [
-        35,
-        39
+        37,
+        41
       ],
       "summary": "Defines RiskEngine.restoreCheckpoint in risk.ts.",
       "tags": [
@@ -3631,8 +3561,8 @@
       "name": "RiskEngine.baselineDay",
       "filePath": "src/engine/risk.ts",
       "lineRange": [
-        41,
-        41
+        43,
+        43
       ],
       "summary": "Defines RiskEngine.baselineDay in risk.ts.",
       "tags": [
@@ -3647,8 +3577,8 @@
       "name": "RiskEngine.check",
       "filePath": "src/engine/risk.ts",
       "lineRange": [
-        44,
-        59
+        46,
+        61
       ],
       "summary": "Implements check for RiskEngine.",
       "tags": [
@@ -3663,8 +3593,8 @@
       "name": "RiskEngine.recordClose",
       "filePath": "src/engine/risk.ts",
       "lineRange": [
-        61,
-        66
+        63,
+        68
       ],
       "summary": "Implements recordClose for RiskEngine.",
       "tags": [
@@ -3914,6 +3844,208 @@
       "tags": [
         "code",
         "test"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/backtest.ts:readBinanceCandles",
+      "type": "function",
+      "name": "readBinanceCandles",
+      "filePath": "src/engine/backtest.ts",
+      "lineRange": [
+        88,
+        100
+      ],
+      "summary": "Reads and validates fixed-interval Binance OHLCV data, accepting millisecond or microsecond timestamps.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/engine/execution.ts",
+      "type": "file",
+      "name": "execution.ts",
+      "filePath": "src/engine/execution.ts",
+      "summary": "Shares adverse paper slippage, fee-aware stop-risk sizing, and sampled stop, trailing, target and time exits between the engine and replay.",
+      "tags": [
+        "code",
+        "paper-trading",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/execution.ts:slippedPrice",
+      "type": "function",
+      "name": "slippedPrice",
+      "filePath": "src/engine/execution.ts",
+      "lineRange": [
+        5,
+        7
+      ],
+      "summary": "Applies configured adverse slippage to a simulated buy or sell.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/execution.ts:managedSize",
+      "type": "function",
+      "name": "managedSize",
+      "filePath": "src/engine/execution.ts",
+      "lineRange": [
+        9,
+        20
+      ],
+      "summary": "Caps equity-based stop-risk notional after accounting for two fees and adverse exit slippage.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/execution.ts:positionExit",
+      "type": "function",
+      "name": "positionExit",
+      "filePath": "src/engine/execution.ts",
+      "lineRange": [
+        22,
+        33
+      ],
+      "summary": "Updates the observed high-water mark and prioritizes stop, trailing stop, target and maximum hold exits.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/indicators.ts:macd",
+      "type": "function",
+      "name": "macd",
+      "filePath": "src/engine/indicators.ts",
+      "lineRange": [
+        55,
+        64
+      ],
+      "summary": "Aligns fast and slow EMA series and returns the MACD line and signal histogram.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/strategies/macd-bb.ts",
+      "type": "file",
+      "name": "macd-bb.ts",
+      "filePath": "src/strategies/macd-bb.ts",
+      "summary": "Adapts Hummingbot MACD and Bollinger signals to long-only spot paper entries with ATR stop distance, trailing activation and bounded duration.",
+      "tags": [
+        "code",
+        "paper-trading",
+        "tested"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:test/paper-strategy.test.ts",
+      "type": "file",
+      "name": "paper-strategy.test.ts",
+      "filePath": "test/paper-strategy.test.ts",
+      "summary": "Verifies managed sizing, fee accounting, closed-bar eligibility, next-open replay and the selected paper strategy.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/market.ts:intervalMs",
+      "type": "function",
+      "name": "intervalMs",
+      "filePath": "src/engine/market.ts",
+      "lineRange": [
+        75,
+        78
+      ],
+      "summary": "Converts a market interval string to its duration in milliseconds.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/market.ts:completedCandles",
+      "type": "function",
+      "name": "completedCandles",
+      "filePath": "src/engine/market.ts",
+      "lineRange": [
+        80,
+        83
+      ],
+      "summary": "Filters out bars that were still open when the market request started.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/market.ts:closedStrategyBars",
+      "type": "function",
+      "name": "closedStrategyBars",
+      "filePath": "src/engine/market.ts",
+      "lineRange": [
+        85,
+        91
+      ],
+      "summary": "Selects a complete, fresh and contiguous fixed-interval strategy window.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/HUMMINGBOT-LICENSE.txt",
+      "type": "document",
+      "name": "HUMMINGBOT-LICENSE.txt",
+      "filePath": "docs/HUMMINGBOT-LICENSE.txt",
+      "summary": "Apache-2.0 license notice for the Hummingbot controller and execution reference.",
+      "tags": [
+        "docs",
+        "paper-trading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/JESSE-LICENSE.txt",
+      "type": "document",
+      "name": "JESSE-LICENSE.txt",
+      "filePath": "docs/JESSE-LICENSE.txt",
+      "summary": "MIT license notice for the Jesse risk-sizing reference.",
+      "tags": [
+        "docs",
+        "paper-trading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/PAPER_STRATEGY.md",
+      "type": "document",
+      "name": "PAPER_STRATEGY.md",
+      "filePath": "docs/PAPER_STRATEGY.md",
+      "summary": "Documents upstream provenance, paper execution behavior and reproducible historical comparisons that did not establish a profitable edge.",
+      "tags": [
+        "docs",
+        "paper-trading"
       ],
       "complexity": "simple"
     }
@@ -4238,84 +4370,84 @@
       "source": "function:src/api.ts:health",
       "target": "function:src/store.ts:getGoldSnapshot",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/api.ts:health",
       "target": "function:src/store.ts:countSignals",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/api.ts:goldPayload",
       "target": "function:src/store.ts:getGoldSnapshot",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/api.ts:handle",
       "target": "function:src/api.ts:corsHeaders",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/api.ts:handle",
       "target": "function:src/api.ts:authorized",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/api.ts:handle",
       "target": "function:src/api.ts:send",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/api.ts:handle",
       "target": "function:src/api.ts:health",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/api.ts:handle",
       "target": "function:src/api.ts:goldPayload",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/api.ts:handle",
       "target": "function:src/store.ts:listSignals",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/api.ts:handle",
       "target": "function:src/api.ts:parseLimit",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/api.ts:startApi",
       "target": "function:src/api.ts:handle",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/api.ts:startApi",
       "target": "function:src/api.ts:send",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
@@ -4329,28 +4461,28 @@
       "source": "function:src/filter.ts:evaluateToken",
       "target": "function:src/filter.ts:checkHoneypot",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/filter.ts:evaluateToken",
       "target": "function:src/filter.ts:checkVerified",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/filter.ts:evaluateToken",
       "target": "function:src/filter.ts:checkLiquidityLock",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/filter.ts:evaluateToken",
       "target": "function:src/filter.ts:deployerProfile",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
@@ -4420,63 +4552,63 @@
       "source": "function:src/gold_rwa.ts:scanGold",
       "target": "function:src/gold_rwa.ts:fetchSpotGold",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/gold_rwa.ts:scanGold",
       "target": "function:src/gold_rwa.ts:dexQuote",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/gold_rwa.ts:scanGold",
       "target": "function:src/gold_rwa.ts:classify",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/gold_rwa.ts:runGoldCycle",
       "target": "function:src/gold_rwa.ts:scanGold",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/gold_rwa.ts:runGoldCycle",
       "target": "function:src/store.ts:setGoldSnapshot",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/gold_rwa.ts:runGoldCycle",
       "target": "function:src/gold_rwa.ts:loadState",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/gold_rwa.ts:runGoldCycle",
       "target": "function:src/gold_rwa.ts:renderGoldAlert",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/gold_rwa.ts:runGoldCycle",
       "target": "function:src/notifier.ts:dispatch",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/gold_rwa.ts:runGoldCycle",
       "target": "function:src/gold_rwa.ts:saveState",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
@@ -4525,133 +4657,133 @@
       "source": "function:src/listener.ts:onNewPool",
       "target": "function:src/filter.ts:makeClient",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:onNewPool",
       "target": "function:src/listener.ts:dedupe",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:onNewPool",
       "target": "function:src/filter.ts:tokenMeta",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:onNewPool",
       "target": "function:src/filter.ts:getMarket",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:onNewPool",
       "target": "function:src/filter.ts:txFrom",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:onNewPool",
       "target": "function:src/filter.ts:evaluateToken",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:onNewPool",
       "target": "function:src/notifier.ts:dispatch",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:onWatchedTransfer",
       "target": "function:src/filter.ts:makeClient",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:onWatchedTransfer",
       "target": "function:src/wallets.ts:lookupWallet",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:onWatchedTransfer",
       "target": "function:src/listener.ts:dedupe",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:onWatchedTransfer",
       "target": "function:src/filter.ts:tokenMeta",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:onWatchedTransfer",
       "target": "function:src/filter.ts:getMarket",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:onWatchedTransfer",
       "target": "function:src/filter.ts:evaluateToken",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:onWatchedTransfer",
       "target": "function:src/notifier.ts:dispatch",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:startListener",
       "target": "function:src/filter.ts:makeClient",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:startListener",
       "target": "function:src/listener.ts:watchWithResubscribe",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:startListener",
       "target": "function:src/listener.ts:onNewPool",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:startListener",
       "target": "function:src/wallets.ts:watchedAddresses",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/listener.ts:startListener",
       "target": "function:src/listener.ts:onWatchedTransfer",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
@@ -4665,21 +4797,21 @@
       "source": "function:src/notifier.ts:renderText",
       "target": "function:src/notifier.ts:fmtUsd",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/notifier.ts:dispatch",
       "target": "function:src/notifier.ts:renderText",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/notifier.ts:dispatch",
       "target": "function:src/store.ts:recordSignal",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
@@ -4903,28 +5035,21 @@
       "source": "function:src/engine/indicators.ts:ema",
       "target": "function:src/engine/indicators.ts:emaSeries",
       "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/indicators.ts:macdHist",
-      "target": "function:src/engine/indicators.ts:emaSeries",
-      "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/engine/indicators.ts:bollinger",
       "target": "function:src/engine/indicators.ts:sma",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/engine/indicators.ts:zscore",
       "target": "function:src/engine/indicators.ts:sma",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
@@ -5050,7 +5175,7 @@
       "source": "function:src/engine/backtest.ts:runBacktest",
       "target": "function:src/engine/backtest.ts:replayOne",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
@@ -5071,7 +5196,7 @@
       "source": "function:src/engine/stress.ts:runStress",
       "target": "function:src/engine/backtest.ts:replayOne",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
@@ -5085,7 +5210,7 @@
       "source": "function:src/engine/sweep.ts:runSweep",
       "target": "function:src/engine/backtest.ts:replayOne",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
@@ -5442,518 +5567,518 @@
       "source": "function:deck/app.js:updateMotion",
       "target": "function:deck/app.js:isStill",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:updateMotion",
       "target": "function:deck/app.js:$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:updateMotion",
       "target": "function:deck/app.js:drawSlow",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:setText",
       "target": "function:deck/app.js:$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:setText",
       "target": "function:deck/app.js:isStill",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:ctx2d",
       "target": "function:deck/app.js:$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:refresh",
       "target": "function:deck/app.js:api",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:refresh",
       "target": "function:deck/app.js:$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:refresh",
       "target": "function:deck/app.js:utc",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:refresh",
       "target": "function:deck/app.js:renderStatic",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:refresh",
       "target": "function:deck/app.js:drawSlow",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:refresh",
       "target": "function:deck/app.js:loadDemo",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:selectMarket",
       "target": "function:deck/app.js:renderStatic",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:selectMarket",
       "target": "function:deck/app.js:drawSlow",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:selectMarket",
       "target": "function:deck/app.js:refresh",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderMarkets",
       "target": "function:deck/app.js:$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderMarkets",
       "target": "function:deck/app.js:marketQuote",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderMarkets",
       "target": "function:deck/app.js:selectMarket",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderMarkets",
       "target": "function:deck/app.js:fmt$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderMarkets",
       "target": "function:deck/app.js:isStill",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderStatic",
       "target": "function:deck/app.js:$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderStatic",
       "target": "function:deck/app.js:setText",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderStatic",
       "target": "function:deck/app.js:fmt$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderStatic",
       "target": "function:deck/app.js:cls",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderStatic",
       "target": "function:deck/app.js:vwapN",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderStatic",
       "target": "function:deck/app.js:renderMarkets",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderStatic",
       "target": "function:deck/app.js:renderIndicators",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderStatic",
       "target": "function:deck/app.js:renderFeed",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderStatic",
       "target": "function:deck/app.js:utc",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderStatic",
       "target": "function:deck/app.js:stageColor",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderFeed",
       "target": "function:deck/app.js:$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderFeed",
       "target": "function:deck/app.js:isStill",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawNavChart",
       "target": "function:deck/app.js:ctx2d",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawTape",
       "target": "function:deck/app.js:ctx2d",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawTape",
       "target": "function:deck/app.js:fmt$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawBook",
       "target": "function:deck/app.js:isStill",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawBook",
       "target": "function:deck/app.js:$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawBook",
       "target": "function:deck/app.js:fmt$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:selectAgent",
       "target": "function:deck/app.js:$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:selectAgent",
       "target": "function:deck/app.js:drawBrain",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:growTree",
       "target": "function:deck/app.js:_norm",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:growTree",
       "target": "function:deck/app.js:_r",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:endDrag",
       "target": "function:deck/app.js:isStill",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:resetBrain",
       "target": "function:deck/app.js:drawBrain",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawBrain",
       "target": "function:deck/app.js:ctx2d",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawBrain",
       "target": "function:deck/app.js:isStill",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawBrain",
       "target": "function:deck/app.js:fmt$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawBrain",
       "target": "function:deck/app.js:$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawCortex",
       "target": "function:deck/app.js:ctx2d",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawCalcium",
       "target": "function:deck/app.js:ctx2d",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawWeights",
       "target": "function:deck/app.js:ctx2d",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawRotation",
       "target": "function:deck/app.js:ctx2d",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawRotation",
       "target": "function:deck/app.js:fmt$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderIndicators",
       "target": "function:deck/app.js:$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderIndicators",
       "target": "function:deck/app.js:rsiN",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderIndicators",
       "target": "function:deck/app.js:bollPctB",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderIndicators",
       "target": "function:deck/app.js:zsc",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderIndicators",
       "target": "function:deck/app.js:atrP",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderIndicators",
       "target": "function:deck/app.js:emaN",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderIndicators",
       "target": "function:deck/app.js:stochK",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderIndicators",
       "target": "function:deck/app.js:vwapN",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderIndicators",
       "target": "function:deck/app.js:chip",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderIndicators",
       "target": "function:deck/app.js:cls2",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:renderIndicators",
       "target": "function:deck/app.js:fmt$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawMembrane",
       "target": "function:deck/app.js:ctx2d",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawPricer",
       "target": "function:deck/app.js:ctx2d",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawPricer",
       "target": "function:deck/app.js:isStill",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawPricer",
       "target": "function:deck/app.js:fmt$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:frame",
       "target": "function:deck/app.js:isStill",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:frame",
       "target": "function:deck/app.js:drawVisible",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:frame",
       "target": "function:deck/app.js:$",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:frame",
       "target": "function:deck/app.js:drawBook",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:drawSlow",
       "target": "function:deck/app.js:redrawCanvas",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:deck/app.js:redrawCanvas",
       "target": "function:deck/app.js:drawBook",
       "type": "calls",
-      "weight": 0.8,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
@@ -6121,21 +6246,21 @@
       "source": "function:test/engine-restart.test.ts:runCycle",
       "target": "function:test/engine-restart.test.ts:runProcess",
       "type": "calls",
-      "weight": 1,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:test/engine-restart.test.ts:checkSnapshotApi",
       "target": "function:test/engine-restart.test.ts:runProcess",
       "type": "calls",
-      "weight": 1,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:test/engine-restart.test.ts:legacyFork",
       "target": "function:test/engine-restart.test.ts:fixture",
       "type": "calls",
-      "weight": 1,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
@@ -6245,20 +6370,6 @@
     },
     {
       "source": "file:src/engine/hosted.ts",
-      "target": "function:src/engine/hosted.ts:rpc",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/hosted.ts",
-      "target": "function:src/engine/hosted.ts:rpc",
-      "type": "exports",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/hosted.ts",
       "target": "function:src/engine/hosted.ts:runHostedCycle",
       "type": "contains",
       "weight": 1,
@@ -6268,13 +6379,6 @@
       "source": "file:src/engine/hosted.ts",
       "target": "function:src/engine/hosted.ts:runHostedCycle",
       "type": "exports",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/hosted.ts",
-      "target": "function:src/engine/hosted.ts:append",
-      "type": "contains",
       "weight": 1,
       "direction": "forward"
     },
@@ -6489,22 +6593,8 @@
       "direction": "forward"
     },
     {
-      "source": "function:src/engine/hosted.ts:createHostedStore",
-      "target": "function:src/engine/hosted.ts:rpc",
-      "type": "calls",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
       "source": "function:src/engine/hosted.ts:runHostedCycle",
       "target": "function:src/engine/hosted.ts:hostedStrategies",
-      "type": "calls",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/hosted.ts:append",
-      "target": "function:src/engine/ledger.ts:hashLedgerPayload",
       "type": "calls",
       "weight": 1,
       "direction": "forward"
@@ -6513,70 +6603,42 @@
       "source": "function:src/engine/hosted.ts:runHostedCycle",
       "target": "function:src/engine/loop.ts:createPaperEngine",
       "type": "calls",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/hosted.ts:runHostedCycle",
-      "target": "function:src/engine/hosted.ts:append",
-      "type": "calls",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/hosted.ts:rpc",
-      "target": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_load",
-      "type": "calls",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/hosted.ts:rpc",
-      "target": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_read",
-      "type": "calls",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/hosted.ts:rpc",
-      "target": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_commit",
-      "type": "calls",
-      "weight": 1,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/engine/market.ts:fromBinance",
       "target": "function:src/engine/market.ts:fetchMarket",
       "type": "calls",
-      "weight": 1,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/engine/market.ts:fromBybit",
       "target": "function:src/engine/market.ts:fetchMarket",
       "type": "calls",
-      "weight": 1,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/engine/market.ts:fromCoinbase",
       "target": "function:src/engine/market.ts:fetchMarket",
       "type": "calls",
-      "weight": 1,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/engine/market.ts:fromKraken",
       "target": "function:src/engine/market.ts:fetchMarket",
       "type": "calls",
-      "weight": 1,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/engine/market.ts:refreshSymbol",
       "target": "function:src/engine/market.ts:fetchSymbol",
       "type": "calls",
-      "weight": 1,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
@@ -6695,27 +6757,6 @@
       "source": "file:src/engine/loop.ts",
       "target": "function:src/engine/loop.ts:createPaperEngine",
       "type": "exports",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/loop.ts:createPaperEngine",
-      "target": "function:src/engine/loop.ts:createPaperEngine.statFor",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/loop.ts:createPaperEngine",
-      "target": "function:src/engine/loop.ts:createPaperEngine.checkExits",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/loop.ts:createPaperEngine",
-      "target": "function:src/engine/loop.ts:createPaperEngine.cycle",
-      "type": "contains",
       "weight": 1,
       "direction": "forward"
     },
@@ -6863,28 +6904,28 @@
       "source": "function:src/engine/loop.ts:createPaperEngine",
       "target": "function:src/strategies/registry.ts:loadStrategies",
       "type": "calls",
-      "weight": 1,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/engine/loop.ts:monitorSignals",
       "target": "function:src/store.ts:listSignals",
       "type": "calls",
-      "weight": 1,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/engine/loop.ts:monitorSignals",
       "target": "function:src/store.ts:getGoldSnapshot",
       "type": "calls",
-      "weight": 1,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
       "source": "function:src/engine/loop.ts:runEngineCycle",
       "target": "function:src/engine/ledger.ts:ledgerResumeLatestCheckpoint",
       "type": "calls",
-      "weight": 1,
+      "weight": 0.9,
       "direction": "forward"
     },
     {
@@ -7717,6 +7758,429 @@
       "direction": "forward",
       "weight": 0.7,
       "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/backtest.ts",
+      "target": "function:src/engine/backtest.ts:readBinanceCandles",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/backtest.ts:replayOne",
+      "target": "function:src/engine/execution.ts:positionExit",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/backtest.ts:replayOne",
+      "target": "function:src/engine/execution.ts:managedSize",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/backtest.ts:replayOne",
+      "target": "function:src/engine/execution.ts:slippedPrice",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/backtest.ts:runBacktest",
+      "target": "function:src/strategies/registry.ts:loadStrategies",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/backtest.ts:runBacktest",
+      "target": "function:src/engine/market.ts:intervalMs",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/backtest.ts:runBacktest",
+      "target": "function:src/engine/market.ts:refreshSymbol",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/backtest.ts:runBacktest",
+      "target": "function:src/engine/backtest.ts:readBinanceCandles",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/backtest.ts:runBacktest",
+      "target": "function:src/engine/market.ts:completedCandles",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/execution.ts",
+      "target": "function:src/engine/execution.ts:slippedPrice",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/execution.ts",
+      "target": "function:src/engine/execution.ts:managedSize",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/execution.ts",
+      "target": "function:src/engine/execution.ts:positionExit",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/execution.ts:managedSize",
+      "target": "function:src/engine/execution.ts:slippedPrice",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/indicators.ts",
+      "target": "function:src/engine/indicators.ts:macd",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/indicators.ts:macd",
+      "target": "function:src/engine/indicators.ts:emaSeries",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/indicators.ts:macdHist",
+      "target": "function:src/engine/indicators.ts:macd",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/stress.ts:runStress",
+      "target": "function:src/strategies/registry.ts:loadStrategies",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/stress.ts:runStress",
+      "target": "function:src/engine/market.ts:refreshSymbol",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/stress.ts:runStress",
+      "target": "function:src/engine/market.ts:completedCandles",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/stress.ts:runStress",
+      "target": "function:src/engine/market.ts:intervalMs",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/sweep.ts:runSweep",
+      "target": "function:src/strategies/registry.ts:loadStrategies",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/sweep.ts:runSweep",
+      "target": "function:src/engine/market.ts:refreshSymbol",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/sweep.ts:runSweep",
+      "target": "function:src/engine/market.ts:completedCandles",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/sweep.ts:runSweep",
+      "target": "function:src/engine/market.ts:intervalMs",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/execution.ts",
+      "target": "file:test/paper-strategy.test.ts",
+      "type": "tested_by",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/strategies/macd-bb.ts",
+      "target": "file:test/paper-strategy.test.ts",
+      "type": "tested_by",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/backtest.ts",
+      "target": "file:test/paper-strategy.test.ts",
+      "type": "tested_by",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:intervalMs",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:completedCandles",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:closedStrategyBars",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/market.ts:completedCandles",
+      "target": "function:src/engine/market.ts:intervalMs",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/market.ts:closedStrategyBars",
+      "target": "function:src/engine/market.ts:intervalMs",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/market.ts:closedStrategyBars",
+      "target": "function:src/engine/market.ts:completedCandles",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/market.ts:fetchSymbol",
+      "target": "function:src/engine/market.ts:intervalMs",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:test/hosted-paper.test.ts",
+      "type": "tested_by",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/api.ts:handle",
+      "target": "function:src/strategies/registry.ts:loadStrategies",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/api.ts:handle",
+      "target": "function:src/engine/ledger.ts:ledgerTail",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
+    },
+    {
+      "source": "config:data/strategies.json",
+      "target": "file:src/strategies/macd-bb.ts",
+      "type": "configures",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/PAPER_STRATEGY.md",
+      "target": "file:src/strategies/macd-bb.ts",
+      "type": "documents",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "document:docs/PAPER_STRATEGY.md",
+      "target": "file:src/engine/backtest.ts",
+      "type": "documents",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/backtest.ts",
+      "target": "file:src/engine/execution.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/backtest.ts",
+      "target": "file:src/engine/risk.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/execution.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/execution.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/stress.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/sweep.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/strategies/library.ts",
+      "target": "file:src/strategies/macd-bb.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/strategies/macd-bb.ts",
+      "target": "file:src/engine/indicators.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/strategies/macd-bb.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/paper-strategy.test.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/paper-strategy.test.ts",
+      "target": "file:src/engine/backtest.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/paper-strategy.test.ts",
+      "target": "file:src/engine/execution.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/paper-strategy.test.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/paper-strategy.test.ts",
+      "target": "file:src/engine/portfolio.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/paper-strategy.test.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/paper-strategy.test.ts",
+      "target": "file:src/strategies/macd-bb.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/paper-strategy.test.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "function:src/engine/market.ts:fetchSymbol",
+      "target": "function:src/engine/market.ts:closedStrategyBars",
+      "type": "calls",
+      "weight": 0.9,
+      "direction": "forward"
     }
   ],
   "version": "1.0.0",
@@ -7736,8 +8200,8 @@
     ],
     "frameworks": [],
     "description": "On-chain Base/Ethereum monitoring and a risk-gated paper-trading engine with an interactive animated live neural HUD deck.",
-    "analyzedAt": "2026-11-24T22:23:16.842Z",
-    "gitCommitHash": "137471f87212a04cc234c5ffbe1492440d8e06ed"
+    "analyzedAt": "2026-11-24T23:25:33.123Z",
+    "gitCommitHash": "8b75acade7c8dd367b21245f4d047b901f119d4f"
   },
   "layers": [
     {
@@ -7883,7 +8347,16 @@
         "file:test/engine-risk.test.ts",
         "file:test/engine-market.test.ts",
         "table:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine.state",
-        "table:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine.ledger"
+        "table:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine.ledger",
+        "file:src/engine/execution.ts",
+        "function:src/engine/execution.ts:slippedPrice",
+        "function:src/engine/execution.ts:managedSize",
+        "function:src/engine/execution.ts:positionExit",
+        "function:src/engine/indicators.ts:macd",
+        "file:src/strategies/macd-bb.ts",
+        "function:src/engine/market.ts:intervalMs",
+        "function:src/engine/market.ts:completedCandles",
+        "function:src/engine/market.ts:closedStrategyBars"
       ]
     },
     {
@@ -7916,7 +8389,10 @@
         "config:data/sweep-stoch_cross-15m.json",
         "config:data/sweep-vol_spike-15m.json",
         "config:data/sweep-vwap_reversion-15m.json",
-        "config:data/sweep-zscore_reversion-15m.json"
+        "config:data/sweep-zscore_reversion-15m.json",
+        "function:src/engine/backtest.ts:readBinanceCandles",
+        "file:test/paper-strategy.test.ts",
+        "document:docs/PAPER_STRATEGY.md"
       ]
     },
     {
@@ -8003,7 +8479,9 @@
         "file:deploy/install-service.sh",
         "file:deploy/whale-tracker.service",
         "file:scripts/build-deck.mjs",
-        "config:supabase/schedule-paper-engine.sql"
+        "config:supabase/schedule-paper-engine.sql",
+        "document:docs/HUMMINGBOT-LICENSE.txt",
+        "document:docs/JESSE-LICENSE.txt"
       ]
     }
   ],
@@ -8040,22 +8518,24 @@
     {
       "order": 4,
       "title": "Evaluate paper entries",
-      "description": "Trace source fallbacks, strategy defaults/configuration and engine decision cycles.",
+      "description": "Trace market fallback, fresh closed-bar eligibility and the Hummingbot-derived MACD/Bollinger signal.",
       "nodeIds": [
         "file:src/engine/market.ts",
         "file:src/engine/loop.ts",
         "file:src/strategies/library.ts",
-        "file:src/strategies/registry.ts"
+        "file:src/strategies/registry.ts",
+        "file:src/strategies/macd-bb.ts"
       ]
     },
     {
       "order": 5,
       "title": "Bound and audit execution",
-      "description": "Inspect risk vetoes, fee-aware paper positions and the hash-chained audit ledger.",
+      "description": "Inspect paper risk limits, fee-aware stop sizing, observed trailing exits and the hash-chained ledger.",
       "nodeIds": [
         "file:src/engine/risk.ts",
         "file:src/engine/portfolio.ts",
-        "file:src/engine/ledger.ts"
+        "file:src/engine/ledger.ts",
+        "file:src/engine/execution.ts"
       ]
     },
     {
@@ -8072,12 +8552,12 @@
     {
       "order": 7,
       "title": "Research offline",
-      "description": "Replay historical candles before changing strategy parameters; compare cost stress results.",
+      "description": "Replay earlier closed signals at the next open, include both costs, and compare out-of-sample results.",
       "nodeIds": [
         "file:src/engine/backtest.ts",
         "file:src/engine/sweep.ts",
         "file:src/engine/stress.ts",
-        "document:docs/BACKTEST_RESULTS.md"
+        "document:docs/PAPER_STRATEGY.md"
       ]
     },
     {

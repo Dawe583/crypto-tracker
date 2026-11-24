@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-24T21:25:27.648161+00:00",
+  "generatedAt": "2026-11-24T23:25:33.123Z",
   "files": {
     "src/api.ts": {
       "overview": "Serves authenticated monitor/engine JSON endpoints, the stop-engine action and zero-build deck static assets.",
@@ -55,8 +55,9 @@
       "sections": []
     },
     "src/engine/loop.ts": {
-      "overview": "Refreshes candles, processes exits, evaluates strategies, checks entry risk and publishes paper fills, decisions and snapshots.",
-      "sections": []
+      "overview": "Runs exits before entries, deduplicates fresh closed-bar decisions, applies portfolio risk limits and checkpoints paper state for local and hosted adapters.",
+      "sections": [],
+      "tourOrder": 4
     },
     "src/engine/portfolio.ts": {
       "overview": "Tracks paper cash, position keys, simulated fills, fees and realized/unrealized PnL; places no live orders.",
@@ -79,12 +80,14 @@
       "sections": []
     },
     "src/engine/backtest.ts": {
-      "overview": "Historical strategy replay with simulated fills, configurable execution costs and research statistics.",
-      "sections": []
+      "overview": "Replays earlier closed bars at the next open with shared stop logic, fees, slippage and deterministic risk limits; accepts verified Binance CSV history.",
+      "sections": [],
+      "tourOrder": 7
     },
     "src/engine/market.ts": {
-      "overview": "Public candle cache with Binance, Bybit, Coinbase and Kraken fallback sources.",
-      "sections": []
+      "overview": "Fetches public marks, preferring exchanges with a fresh, contiguous closed window as of request start; preserves an exit mark if no window qualifies.",
+      "sections": [],
+      "tourOrder": 4
     },
     "src/engine/stress.ts": {
       "overview": "Fee/slippage sensitivity research over strategy replay results.",
@@ -133,6 +136,21 @@
     "tests/hosting.test.mjs": {
       "overview": "Checks unset/unreachable engine origins, credential-preserving proxy behavior, explicit auth failures, request restrictions and malformed upstream responses.",
       "sections": []
+    },
+    "src/engine/execution.ts": {
+      "overview": "Shares adverse paper slippage, fee-aware stop-risk sizing, and sampled stop, trailing, target and time exits between the engine and replay.",
+      "sections": [],
+      "tourOrder": 5
+    },
+    "src/strategies/macd-bb.ts": {
+      "overview": "Adapts Hummingbot MACD and Bollinger signals to long-only spot paper entries with ATR stop distance, trailing activation and bounded duration.",
+      "sections": [],
+      "tourOrder": 4
+    },
+    "docs/PAPER_STRATEGY.md": {
+      "overview": "Documents upstream provenance, paper execution behavior and reproducible historical comparisons that did not establish a profitable edge.",
+      "sections": [],
+      "tourOrder": 7
     }
   }
 }
