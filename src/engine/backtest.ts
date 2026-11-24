@@ -71,7 +71,7 @@ export async function runBacktest(symbols: string[] = config.engine.symbols, int
     }
   }
   mkdirSync('data', { recursive: true });
-  writeFileSync('data/backtest.json', JSON.stringify({ at: new Date().toISOString(), interval, results }, null, 2));
+  writeFileSync(`data/backtest-${interval}.json`, JSON.stringify({ at: new Date().toISOString(), interval, results }, null, 2));
   return results;
 }
 
@@ -82,5 +82,5 @@ if (import.meta.url === `file://${process.argv[1]}`) {
   console.log(`${'STRATEGY'.padEnd(20)} ${'SYM'.padEnd(8)} ${'TRADES'.padStart(6)} ${'WIN%'.padStart(6)} ${'PNL$'.padStart(9)} ${'MAXDD$'.padStart(8)} ${'FEES$'.padStart(7)}`);
   for (const r of rows)
     console.log(`${r.strategy.padEnd(20)} ${r.symbol.padEnd(8)} ${String(r.trades).padStart(6)} ${r.winRate.toFixed(1).padStart(6)} ${r.pnlUsd.toFixed(2).padStart(9)} ${r.maxDdUsd.toFixed(2).padStart(8)} ${r.feesUsd.toFixed(2).padStart(7)}`);
-  console.log(`\nwrote data/backtest.json`);
+  console.log(`\nwrote data/backtest-${iv ?? '1m'}.json`);
 }
