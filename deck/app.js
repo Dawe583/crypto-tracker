@@ -258,7 +258,7 @@ function renderStatic() {
 
   const cd = STATE.candles[STATE.sym];
   const fetchedAt = STATE.marketAt[STATE.sym];
-  const cached = !demoMode && fetchedAt > 0 && Date.now() - fetchedAt > 90_000;
+  const cached = !demoMode && fetchedAt > 0 && Date.now() - fetchedAt > 5 * 60_000;
   if (cd?.length > 1) {
     const chg = ((cd[cd.length - 1].c - cd[0].c) / cd[0].c) * 100;
     $('tapeChg').innerHTML = `<span class="${cls(chg)}">${chg >= 0 ? '▲' : '▼'} ${chg.toFixed(2)}%</span>`;

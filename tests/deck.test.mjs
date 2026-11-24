@@ -95,7 +95,7 @@ test('first empty snapshot explains startup and disables stop until the engine r
 });
 
 test('successful polls label cached candles by market fetch time and clear the warning on recovery', async () => {
-  let fetchedAt = Date.now() - 120_000;
+  let fetchedAt = Date.now() - 360_000;
   let snapshot, candles;
   const app = runtime(async (path) => ({ ok: true, json: async () =>
     path.includes('snapshot') ? snapshot : path.includes('candles') ? { candles, lastFetch: fetchedAt }
@@ -107,6 +107,9 @@ test('successful polls label cached candles by market fetch time and clear the w
   assert.match(app.elements.get('bigPriceSub').innerHTML, /CACHED.*last market fetch/);
   assert.match(app.elements.get('wireMsg').textContent, /CACHED QUOTES/);
   assert.equal(app.elements.get('connection').textContent, 'CONNECTED');
+  fetchedAt = Date.now() - 120_000;
+  await app.run('refresh()');
+  assert.doesNotMatch(app.elements.get('bigPriceSub').innerHTML, /CACHED/);
   fetchedAt = Date.now();
   await app.run('refresh()');
   assert.doesNotMatch(app.elements.get('bigPriceSub').innerHTML, /CACHED/);
