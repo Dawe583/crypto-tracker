@@ -5,7 +5,6 @@
   "functions": {
     "api/cron/paper-engine.ts": { "maxDuration": 60 }
   },
-  "crons": [{ "path": "/api/cron/paper-engine", "schedule": "* * * * *" }],
   "rewrites": [
     { "source": "/api/engine/:endpoint*", "destination": "/api/read?__deck_path=engine/:endpoint*" },
     { "source": "/api/whales", "destination": "/api/read?__deck_path=whales" },

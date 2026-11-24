@@ -79,8 +79,9 @@ cd ~/crypto-tracker && git pull && npm i && sudo systemctl restart whale-tracker
 
 # Vercel paper engine and deck
 
-Use the existing Vercel project and a dedicated Supabase project. The hosted
-runner uses public exchange candles and simulated fills only. It does not
+Use the existing Vercel project and a dedicated Supabase project. Supabase
+Cron calls the Vercel function every minute, including on Vercel Hobby.
+The runner uses public exchange candles and simulated fills only. It does not
 start the chain listener or Gold RWA monitor, or offer a remote stop action.
 
 1. Apply the checked-in Supabase migration using the authorized database
@@ -91,15 +92,26 @@ start the chain listener or Gold RWA monitor, or offer a remote stop action.
    | --- | --- |
    | `SUPABASE_URL` | Supabase project HTTPS origin |
    | `SUPABASE_SECRET_KEY` | Supabase server-side `sb_secret_…` key |
-   | `CRON_SECRET` | Random secret used only by the Vercel cron job |
+   | `CRON_SECRET` | Random bearer secret shared only with Supabase Cron |
    | `API_TOKEN` | Different random token given to authorized deck viewers |
 
    Leave `ENGINE_API_ORIGIN` unset for the same-deployment reads. Do not
    copy production credentials into Preview or into the static deck.
-3. Deploy through the project's release workflow. The one-minute schedule
-   requires Vercel Pro or Enterprise. Confirm a successful cron invocation,
-   then open the deck, enter the read token, and confirm that the snapshot
-   has a recent `cycleAt` and the page is not labeled demo.
+3. Deploy through the project's release workflow. Keep the production cron
+   URL reachable from Supabase; the endpoint checks its own bearer token.
+4. In Supabase, enable [Cron](https://supabase.com/docs/guides/cron/quickstart)
+   and [pg_net](https://supabase.com/docs/guides/database/extensions/pg_net).
+   In [Vault](https://supabase.com/docs/guides/database/vault), add
+   `paper_engine_cron_url` (the production HTTPS URL ending in
+   `/api/cron/paper-engine`) and `paper_engine_cron_secret` (the same value as
+   `CRON_SECRET`). Run [the scheduling SQL](../supabase/schedule-paper-engine.sql)
+   as the database administrator. Never paste the bearer secret into SQL
+   Editor or job definitions.
+5. Confirm a 200 response with `committed: true` in the `pg_net` responses
+   or a fresh authenticated snapshot with a recent `cycleAt`. Confirm the
+   deck leaves demo mode after entering its separate read token. A successful
+   Cron job alone means the HTTP request was queued, not that the engine
+   committed.
 
 Postgres commits the position and risk checkpoint, deck snapshot and ledger
 batch together; an overlapping job cannot append to an old head. Check the

@@ -2,7 +2,7 @@
 
 ### Hosted crypto deck
 
-Vercel serves the deck at `/` and `/deck`. For the [Vercel paper engine](deploy/DEPLOY.md#vercel-paper-engine-and-deck), leave `ENGINE_API_ORIGIN` unset: the production cron writes simulated positions and fills to Supabase, and the deck reads the same state through its authenticated Vercel API. The whale, pool, and gold monitors do not run in this setup.
+Vercel serves the deck at `/` and `/deck`. For the [hosted paper engine](deploy/DEPLOY.md#vercel-paper-engine-and-deck), leave `ENGINE_API_ORIGIN` unset: Supabase Cron calls the Vercel engine, which saves simulated positions and fills in Supabase. The deck reads that state through its authenticated Vercel API. The whale, pool, and gold monitors do not run in this setup.
 
 Set `ENGINE_API_ORIGIN` only if deliberately using an external HTTPS engine instead. The proxy forwards only the browser's API bearer token and never adds server credentials or follows upstream redirects. Both modes are read-only: `/api/engine/kill` is unavailable, even with a token.
 
