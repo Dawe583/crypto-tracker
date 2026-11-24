@@ -243,23 +243,30 @@ test('gold API retains cached quotes without feeding stale spreads into paper tr
       now += 60_000;
       dexPrices.XAUT = 100;
       await runGoldCycle();
-      now += 180_001;
-      assert.equal((await gold()).stale, true);
-      await runEngineCycle();
-      assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['XAUTUSD']);
+      const beforeOutage = await gold();
+      assert.equal(beforeOutage.stale, false);
 
       now += 60_000;
       spotAvailable = false;
       await runGoldCycle();
       const outage = await gold();
-      assert.notEqual(outage.attemptedAt, outage.updatedAt);
+      assert.equal(outage.attemptedAt, new Date(now).toISOString());
+      assert.equal(outage.updatedAt, beforeOutage.updatedAt);
       assert.equal(outage.stale, true);
-      assert.ok(outage.assets.every((quote) => quote.stale));
+      assert.deepEqual(outage.assets, beforeOutage.assets.map((quote) => ({ ...quote, stale: true })));
+      await runEngineCycle();
+      assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['XAUTUSD']);
 
       now += 60_000;
       spotAvailable = true;
+      await runGoldCycle();
+      assert.equal((await gold()).stale, false);
+      now += 180_001;
+      assert.equal((await gold()).stale, true);
+      await runEngineCycle();
+      assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['XAUTUSD']);
+
       dexPrices.PAXG = 98;
-      dexPrices.XAUT = 100;
       await runGoldCycle();
       assert.ok((await gold()).assets.every((quote) => !quote.stale));
       await runEngineCycle();
