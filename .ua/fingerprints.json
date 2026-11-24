@@ -1,0 +1,905 @@
+{
+  "version": "1.0.0",
+  "gitCommitHash": "0918e96d945478679b5d45812568b284b0fc9464",
+  "generatedAt": "2026-11-24T20:29:13.500Z",
+  "files": {
+    ".env.example": {
+      "filePath": ".env.example",
+      "contentHash": "b3d03902b14dbd93ea4e13807d574c4646fdaaa6e0d8b72f521c72259498630e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 45,
+      "hasStructuralAnalysis": false
+    },
+    "README.md": {
+      "filePath": "README.md",
+      "contentHash": "f38d5a46c572941b9a392045074f0abb5bf4590fe2841c5a39ea061bad3fd3e7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 316,
+      "hasStructuralAnalysis": false
+    },
+    "data/watchlist.json": {
+      "filePath": "data/watchlist.json",
+      "contentHash": "a37b2fc68bb916abdc5bbccde8dbf3ef6869c5bd152d261714052871e9415ddd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": false
+    },
+    "deploy/DEPLOY.md": {
+      "filePath": "deploy/DEPLOY.md",
+      "contentHash": "43eaafe945c12f536af6d99aa277288ca65cf45d8e3c5ab589cc5ff236a077c4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 79,
+      "hasStructuralAnalysis": false
+    },
+    "deploy/install-service.sh": {
+      "filePath": "deploy/install-service.sh",
+      "contentHash": "7d92ad48ac4c2b61f9b22a79113652c5b1973f691fd38d6120a4d20a6a531a28",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 39,
+      "hasStructuralAnalysis": false
+    },
+    "deploy/whale-tracker.service": {
+      "filePath": "deploy/whale-tracker.service",
+      "contentHash": "d2e05c2eedbfd64f190f817b98a5d09a7865ab22fb13d38dbc241487c359dd6c",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 31,
+      "hasStructuralAnalysis": false
+    },
+    "docs/RPI4_DEPLOYMENT.md": {
+      "filePath": "docs/RPI4_DEPLOYMENT.md",
+      "contentHash": "153ff9d0da6fdff635ab0132be3bb36c62f285c801e7b1951d978438c592c115",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 110,
+      "hasStructuralAnalysis": false
+    },
+    "package.json": {
+      "filePath": "package.json",
+      "contentHash": "a2072cb09a44fcca8b0eb59f4743e8abf1fb9c9237983326eb0e625ddb0155c7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 28,
+      "hasStructuralAnalysis": false
+    },
+    "src/api.ts": {
+      "filePath": "src/api.ts",
+      "contentHash": "7975eb98a33252d8aab2df3b553788d89b254b5096545e3dd79c52d36a04d565",
+      "functions": [
+        {
+          "name": "corsHeaders",
+          "params": [
+            "origin"
+          ],
+          "returnType": "Record<string, string>",
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "send",
+          "params": [
+            "res",
+            "status",
+            "body",
+            "headers"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "authorized",
+          "params": [
+            "req"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "parseLimit",
+          "params": [
+            "raw"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "health",
+          "params": [],
+          "exported": false,
+          "lineCount": 21
+        },
+        {
+          "name": "goldPayload",
+          "params": [],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "handle",
+          "params": [
+            "req",
+            "res"
+          ],
+          "exported": false,
+          "lineCount": 35
+        },
+        {
+          "name": "startApi",
+          "params": [],
+          "returnType": "Server | null",
+          "exported": true,
+          "lineCount": 17
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:http",
+          "specifiers": [
+            "createServer",
+            "IncomingMessage",
+            "Server",
+            "ServerResponse"
+          ]
+        },
+        {
+          "source": "./config.js",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "./logger.js",
+          "specifiers": [
+            "logger"
+          ]
+        },
+        {
+          "source": "./wallets.js",
+          "specifiers": [
+            "WATCHLIST"
+          ]
+        },
+        {
+          "source": "./store.js",
+          "specifiers": [
+            "countSignals",
+            "getGoldSnapshot",
+            "listSignals",
+            "startedAt"
+          ]
+        }
+      ],
+      "exports": [
+        "startApi"
+      ],
+      "totalLines": 135,
+      "hasStructuralAnalysis": true
+    },
+    "src/config.ts": {
+      "filePath": "src/config.ts",
+      "contentHash": "8dfe02963da511283b4cb9ea72e0f3aedca67f009e1b478455eb8aa977317a86",
+      "functions": [
+        {
+          "name": "num",
+          "params": [
+            "v",
+            "d"
+          ],
+          "returnType": "number",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "str",
+          "params": [
+            "v",
+            "d"
+          ],
+          "returnType": "string",
+          "exported": false,
+          "lineCount": 1
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "dotenv/config",
+          "specifiers": []
+        }
+      ],
+      "exports": [
+        "CHAINS",
+        "QUOTE_TOKENS",
+        "config"
+      ],
+      "totalLines": 84,
+      "hasStructuralAnalysis": true
+    },
+    "src/filter.ts": {
+      "filePath": "src/filter.ts",
+      "contentHash": "acc0018aa25081d31f0c6e488ca923469855b27cc6ebb80bb2b390a7a409a50d",
+      "functions": [
+        {
+          "name": "makeClient",
+          "params": [
+            "chain"
+          ],
+          "returnType": "PublicClient",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "getMarket",
+          "params": [
+            "chain",
+            "token"
+          ],
+          "returnType": "Promise<MarketData | null>",
+          "exported": true,
+          "lineCount": 22
+        },
+        {
+          "name": "checkHoneypot",
+          "params": [
+            "chain",
+            "token"
+          ],
+          "returnType": "Promise<HoneypotResult>",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "checkVerified",
+          "params": [
+            "chain",
+            "token"
+          ],
+          "returnType": "Promise<boolean | null>",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "checkLiquidityLock",
+          "params": [
+            "client",
+            "pair",
+            "kind"
+          ],
+          "returnType": "Promise<{ status: string; burnedPct: number | null }>",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "deployerProfile",
+          "params": [
+            "client",
+            "deployer"
+          ],
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "tokenMeta",
+          "params": [
+            "client",
+            "token"
+          ],
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "evaluateToken",
+          "params": [
+            "params"
+          ],
+          "returnType": "Promise<SafetyVerdict>",
+          "exported": true,
+          "lineCount": 31
+        },
+        {
+          "name": "txFrom",
+          "params": [
+            "client",
+            "hash"
+          ],
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "viem",
+          "specifiers": [
+            "createPublicClient",
+            "http",
+            "webSocket",
+            "parseAbi",
+            "formatUnits",
+            "Address",
+            "Hash",
+            "PublicClient"
+          ]
+        },
+        {
+          "source": "viem/chains",
+          "specifiers": [
+            "base",
+            "mainnet"
+          ]
+        },
+        {
+          "source": "./config.js",
+          "specifiers": [
+            "CHAINS",
+            "config"
+          ]
+        },
+        {
+          "source": "./logger.js",
+          "specifiers": [
+            "logger"
+          ]
+        }
+      ],
+      "exports": [
+        "makeClient",
+        "getMarket",
+        "checkHoneypot",
+        "checkVerified",
+        "checkLiquidityLock",
+        "deployerProfile",
+        "tokenMeta",
+        "evaluateToken",
+        "txFrom"
+      ],
+      "totalLines": 174,
+      "hasStructuralAnalysis": true
+    },
+    "src/gold_rwa.ts": {
+      "filePath": "src/gold_rwa.ts",
+      "contentHash": "6eb7acb794fd0caad53fa6f178170e7c80d370e663f0ec7030a6956a1458c23e",
+      "functions": [
+        {
+          "name": "fetchSpotGold",
+          "params": [],
+          "returnType": "Promise<{ usd: number; source: string } | null>",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "dexQuote",
+          "params": [
+            "chain",
+            "address"
+          ],
+          "exported": false,
+          "lineCount": 15
+        },
+        {
+          "name": "classify",
+          "params": [
+            "deviationPct"
+          ],
+          "returnType": "GoldQuote['level']",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "scanGold",
+          "params": [],
+          "returnType": "Promise<GoldQuote[]>",
+          "exported": true,
+          "lineCount": 26
+        },
+        {
+          "name": "renderGoldAlert",
+          "params": [
+            "q"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 15
+        },
+        {
+          "name": "loadState",
+          "params": [],
+          "returnType": "Record<string, string>",
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "saveState",
+          "params": [
+            "s"
+          ],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "runGoldCycle",
+          "params": [],
+          "returnType": "Promise<GoldQuote[]>",
+          "exported": true,
+          "lineCount": 28
+        },
+        {
+          "name": "startGoldLoop",
+          "params": [],
+          "exported": true,
+          "lineCount": 5
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "viem",
+          "specifiers": [
+            "getAddress",
+            "Address"
+          ]
+        },
+        {
+          "source": "./config.js",
+          "specifiers": [
+            "CHAINS",
+            "config"
+          ]
+        },
+        {
+          "source": "./logger.js",
+          "specifiers": [
+            "logger"
+          ]
+        },
+        {
+          "source": "./notifier.js",
+          "specifiers": [
+            "dispatch",
+            "WhaleSignal"
+          ]
+        },
+        {
+          "source": "./store.js",
+          "specifiers": [
+            "setGoldSnapshot"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "readFileSync",
+            "writeFileSync",
+            "existsSync",
+            "mkdirSync"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "dirname",
+            "join"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        }
+      ],
+      "exports": [
+        "GOLD_ASSETS",
+        "fetchSpotGold",
+        "classify",
+        "scanGold",
+        "renderGoldAlert",
+        "runGoldCycle",
+        "startGoldLoop"
+      ],
+      "totalLines": 166,
+      "hasStructuralAnalysis": true
+    },
+    "src/index.ts": {
+      "filePath": "src/index.ts",
+      "contentHash": "7a499e586aeba9c9be6aed8bf0b75d78a13e8719836210ef53b5296b112332e6",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./listener.js",
+          "specifiers": [
+            "startListener"
+          ]
+        },
+        {
+          "source": "./gold_rwa.js",
+          "specifiers": [
+            "startGoldLoop"
+          ]
+        },
+        {
+          "source": "./api.js",
+          "specifiers": [
+            "startApi"
+          ]
+        },
+        {
+          "source": "./logger.js",
+          "specifiers": [
+            "logger"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": true
+    },
+    "src/listener.ts": {
+      "filePath": "src/listener.ts",
+      "contentHash": "357072ecfc28d8a775ca90946f14996781ae20f5674e23b1587531f7e43db624",
+      "functions": [
+        {
+          "name": "dedupe",
+          "params": [
+            "k"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "onNewPool",
+          "params": [
+            "chain",
+            "dex",
+            "kind",
+            "log"
+          ],
+          "exported": false,
+          "lineCount": 45
+        },
+        {
+          "name": "onWatchedTransfer",
+          "params": [
+            "chain",
+            "logs"
+          ],
+          "exported": false,
+          "lineCount": 32
+        },
+        {
+          "name": "startListener",
+          "params": [],
+          "exported": true,
+          "lineCount": 27
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "viem",
+          "specifiers": [
+            "parseAbiItem",
+            "getAddress",
+            "formatUnits",
+            "Address",
+            "Log"
+          ]
+        },
+        {
+          "source": "./config.js",
+          "specifiers": [
+            "CHAINS",
+            "QUOTE_TOKENS",
+            "config"
+          ]
+        },
+        {
+          "source": "./logger.js",
+          "specifiers": [
+            "logger"
+          ]
+        },
+        {
+          "source": "./wallets.js",
+          "specifiers": [
+            "WATCHLIST",
+            "lookupWallet",
+            "watchedAddresses"
+          ]
+        },
+        {
+          "source": "./filter.js",
+          "specifiers": [
+            "makeClient",
+            "getMarket",
+            "evaluateToken",
+            "tokenMeta",
+            "txFrom",
+            "ChainKey"
+          ]
+        },
+        {
+          "source": "./notifier.js",
+          "specifiers": [
+            "dispatch",
+            "WhaleSignal"
+          ]
+        }
+      ],
+      "exports": [
+        "startListener"
+      ],
+      "totalLines": 127,
+      "hasStructuralAnalysis": true
+    },
+    "src/logger.ts": {
+      "filePath": "src/logger.ts",
+      "contentHash": "b78c9e53dd3fdc05537e08f69b0d9bfe1454117ff9bd2e019693dd040bded498",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "pino",
+          "specifiers": [
+            "pino"
+          ]
+        }
+      ],
+      "exports": [
+        "logger"
+      ],
+      "totalLines": 5,
+      "hasStructuralAnalysis": true
+    },
+    "src/notifier.ts": {
+      "filePath": "src/notifier.ts",
+      "contentHash": "1949836cb07bb31f17504a65d77f38001c210861896a7df04510e483628197db",
+      "functions": [
+        {
+          "name": "fmtUsd",
+          "params": [
+            "n"
+          ],
+          "exported": false,
+          "lineCount": 2
+        },
+        {
+          "name": "renderText",
+          "params": [
+            "s"
+          ],
+          "returnType": "string",
+          "exported": true,
+          "lineCount": 19
+        },
+        {
+          "name": "dispatch",
+          "params": [
+            "s"
+          ],
+          "returnType": "Promise<void>",
+          "exported": true,
+          "lineCount": 31
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./config.js",
+          "specifiers": [
+            "CHAINS",
+            "config"
+          ]
+        },
+        {
+          "source": "./logger.js",
+          "specifiers": [
+            "logger"
+          ]
+        },
+        {
+          "source": "./store.js",
+          "specifiers": [
+            "recordSignal"
+          ]
+        },
+        {
+          "source": "./filter.js",
+          "specifiers": [
+            "SafetyVerdict"
+          ]
+        }
+      ],
+      "exports": [
+        "renderText",
+        "dispatch"
+      ],
+      "totalLines": 76,
+      "hasStructuralAnalysis": true
+    },
+    "src/store.ts": {
+      "filePath": "src/store.ts",
+      "contentHash": "6d837f672824b54f288506043b96935c097763dd962b36a4268d002953a4dfa2",
+      "functions": [
+        {
+          "name": "recordSignal",
+          "params": [
+            "s"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "listSignals",
+          "params": [
+            "kind",
+            "limit"
+          ],
+          "returnType": "WhaleSignal[]",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "countSignals",
+          "params": [],
+          "returnType": "Record<WhaleSignal['kind'], number>",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "setGoldSnapshot",
+          "params": [
+            "quotes"
+          ],
+          "returnType": "void",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "getGoldSnapshot",
+          "params": [],
+          "returnType": "GoldSnapshot",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./gold_rwa.js",
+          "specifiers": [
+            "GoldQuote"
+          ]
+        },
+        {
+          "source": "./notifier.js",
+          "specifiers": [
+            "WhaleSignal"
+          ]
+        }
+      ],
+      "exports": [
+        "startedAt",
+        "recordSignal",
+        "listSignals",
+        "countSignals",
+        "setGoldSnapshot",
+        "getGoldSnapshot"
+      ],
+      "totalLines": 46,
+      "hasStructuralAnalysis": true
+    },
+    "src/wallets.ts": {
+      "filePath": "src/wallets.ts",
+      "contentHash": "91276610eb0cf5fd23ea6c4464b1deaad2a7d88127d5ecbcb049bd692b2bd1cf",
+      "functions": [
+        {
+          "name": "loadWatchlist",
+          "params": [],
+          "returnType": "WatchedWallet[]",
+          "exported": true,
+          "lineCount": 23
+        },
+        {
+          "name": "lookupWallet",
+          "params": [
+            "addr"
+          ],
+          "returnType": "WatchedWallet | undefined",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "watchedAddresses",
+          "params": [
+            "chain"
+          ],
+          "returnType": "Address[]",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "readFileSync",
+            "existsSync"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "dirname",
+            "join"
+          ]
+        },
+        {
+          "source": "viem",
+          "specifiers": [
+            "isAddress",
+            "getAddress",
+            "Address"
+          ]
+        },
+        {
+          "source": "./logger.js",
+          "specifiers": [
+            "logger"
+          ]
+        }
+      ],
+      "exports": [
+        "loadWatchlist",
+        "WATCHLIST",
+        "lookupWallet",
+        "watchedAddresses"
+      ],
+      "totalLines": 56,
+      "hasStructuralAnalysis": true
+    },
+    "tsconfig.json": {
+      "filePath": "tsconfig.json",
+      "contentHash": "5e99a4624c441aab8775e051b58f9269a2615e8a632a98346e0ac3ea371ccd09",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 15,
+      "hasStructuralAnalysis": false
+    }
+  }
+}
