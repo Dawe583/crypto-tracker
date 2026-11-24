@@ -138,21 +138,28 @@ test('restored whales only drive paper entries if the wallet is still watched on
   writeFileSync(join(root, 'data', 'strategies.json'), JSON.stringify(Object.fromEntries(
     LIBRARY.map(({ name }) => [name, { enabled: name === 'whale_follow' }]),
   )));
-  run(root, `
-    store.initSignalHistory();
-    assert.equal((await request('/api/whales')).count, 2);
+  const engine = `
     const { runEngineCycle } = await import('./src/engine/loop.ts');
     const { engineState } = await import('./src/engine/state.ts');
     globalThis.fetch = async () => Response.json(
       Array.from({ length: 40 }, (_, i) => [Date.now() - (39 - i) * 60_000, 100, 101, 99, 100, 100]),
     );
     await runEngineCycle();
-    assert.equal(engineState.snapshot.positions.length, 0);
-    store.recordSignal({ ...signal(3), chain: 'ethereum', whale: { wallet: '${watched}' } });
-    await runEngineCycle();
-    assert.deepEqual(engineState.snapshot.positions.map((p) => p.strategy), ['whale_follow']);
-  `, {
+  `;
+  const env = {
     ENGINE_SYMBOLS: 'BTCUSDT', ENGINE_INTERVAL: '1m', ENGINE_START_USD: '10000', ENGINE_MAX_POSITION_USD: '500',
     ENGINE_MAX_TOTAL_USD: '1000', ENGINE_MAX_OPEN_POSITIONS: '8', ENGINE_MIN_CONFIDENCE: '0.5', ENGINE_FEE_PCT: '0.1',
-  });
+  };
+  run(root, `
+    store.initSignalHistory();
+    assert.equal((await request('/api/whales')).count, 2);
+    ${engine}
+    assert.equal(engineState.snapshot.positions.length, 0);
+    store.recordSignal({ ...signal(3), chain: 'ethereum', whale: { wallet: '${watched}' } });
+  `, env);
+  run(root, `
+    store.initSignalHistory();
+    ${engine}
+    assert.deepEqual(engineState.snapshot.positions.map((p) => p.strategy), ['whale_follow']);
+  `, env);
 });
