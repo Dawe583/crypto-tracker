@@ -1809,18 +1809,6 @@
       "complexity": "simple"
     },
     {
-      "id": "config:.env.example",
-      "type": "config",
-      "name": ".env.example",
-      "filePath": ".env.example",
-      "summary": "Template of every runtime environment variable: RPC endpoints, explorer keys, Telegram/webhook alert targets, whale and pool thresholds, Gold RWA settings, API host/port/token/CORS and log level.",
-      "tags": [
-        "config",
-        "monitor"
-      ],
-      "complexity": "simple"
-    },
-    {
       "id": "document:AGENTS.md",
       "type": "document",
       "name": "AGENTS.md",
@@ -1828,30 +1816,6 @@
       "summary": "Repository instructions for graph-first navigation and graph maintenance with commits.",
       "tags": [
         "docs",
-        "monitor"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "document:README.md",
-      "type": "document",
-      "name": "README.md",
-      "filePath": "README.md",
-      "summary": "Project overview covering features, architecture diagram, Raspberry Pi 4 quick start, systemd auto-start, the HTTP JSON API, configuration, layout, alerts, troubleshooting and limitations.",
-      "tags": [
-        "docs",
-        "monitor"
-      ],
-      "complexity": "complex"
-    },
-    {
-      "id": "config:package.json",
-      "type": "config",
-      "name": "package.json",
-      "filePath": "package.json",
-      "summary": "Node dependencies and commands for runtime, TypeScript checks, deck regressions and strategy research.",
-      "tags": [
-        "config",
         "monitor"
       ],
       "complexity": "simple"
@@ -2205,6 +2169,146 @@
       "complexity": "simple"
     },
     {
+      "id": "document:deploy/DEPLOY.md",
+      "type": "document",
+      "name": "DEPLOY.md",
+      "filePath": "deploy/DEPLOY.md",
+      "summary": "Step-by-step Raspberry Pi 4 deployment guide: prerequisites, clone, install, configure, smoke test, systemd install, operation and updates.",
+      "tags": [
+        "docs",
+        "monitor"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:deploy/install-service.sh",
+      "type": "file",
+      "name": "install-service.sh",
+      "filePath": "deploy/install-service.sh",
+      "summary": "Installer script that checks npm and .env, installs dependencies, renders the systemd unit with the current user and path, enables the service and prints an API health check command.",
+      "tags": [
+        "script",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:deploy/whale-tracker.service",
+      "type": "file",
+      "name": "whale-tracker.service",
+      "filePath": "deploy/whale-tracker.service",
+      "summary": "Hardened systemd unit running `npm start` for the tracker with always-restart, no start limit and an optional .env EnvironmentFile.",
+      "tags": [
+        "code",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/deck.test.mjs",
+      "type": "file",
+      "name": "deck.test.mjs",
+      "filePath": "tests/deck.test.mjs",
+      "summary": "Behavioral deck regressions for auth cancellation, stale replies, motion budgets, stable depth, startup, agent selection, simulated paths, stop acknowledgement and quote denominations.",
+      "tags": [
+        "code",
+        "monitor"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:tests/deck.test.mjs:runtime",
+      "type": "function",
+      "name": "runtime",
+      "filePath": "tests/deck.test.mjs",
+      "lineRange": [
+        8,
+        23
+      ],
+      "summary": "Builds a browser-like VM sandbox for behavioral deck regression checks.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": ".env.example",
+      "summary": "Template of every runtime environment variable: RPC endpoints, explorer keys, Telegram/webhook alert targets, whale and pool thresholds, Gold RWA settings, API host/port/token/CORS and log level.",
+      "tags": [
+        "config",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project overview covering features, architecture diagram, Raspberry Pi 4 quick start, systemd auto-start, the HTTP JSON API, configuration, layout, alerts, troubleshooting and limitations.",
+      "tags": [
+        "docs",
+        "monitor"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "Node dependencies and commands for runtime, TypeScript checks, deck regressions and strategy research.",
+      "tags": [
+        "config",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:vercel.json",
+      "type": "config",
+      "name": "vercel.json",
+      "filePath": "vercel.json",
+      "summary": "Existing-project Vercel build command, isolated static output and root/deck routing configuration.",
+      "tags": [
+        "config",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:api/[...path].js",
+      "type": "file",
+      "name": "[...path].js",
+      "filePath": "api/[...path].js",
+      "summary": "Allowlisted same-origin Vercel proxy to a configured HTTPS engine origin; forwards browser authorization, rejects redirects, bounds requests and preserves explicit upstream/auth failures.",
+      "tags": [
+        "code",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:api/[...path].js:handler",
+      "type": "function",
+      "name": "handler",
+      "filePath": "api/[...path].js",
+      "lineRange": [
+        4,
+        28
+      ],
+      "summary": "Provides handler for [...path].",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
       "id": "file:deck/app.js",
       "type": "file",
       "name": "app.js",
@@ -2352,7 +2456,7 @@
       "filePath": "deck/app.js",
       "lineRange": [
         36,
-        48
+        52
       ],
       "summary": "Sends an authenticated request with a coordinated token prompt and bounded retry.",
       "tags": [
@@ -2367,8 +2471,8 @@
       "name": "ctx2d",
       "filePath": "deck/app.js",
       "lineRange": [
-        50,
-        63
+        54,
+        67
       ],
       "summary": "Sizes a canvas at capped pixel density and resets drawing state without cumulative transforms.",
       "tags": [
@@ -2378,13 +2482,29 @@
       "complexity": "simple"
     },
     {
+      "id": "function:deck/app.js:loadDemo",
+      "type": "function",
+      "name": "loadDemo",
+      "filePath": "deck/app.js",
+      "lineRange": [
+        73,
+        98
+      ],
+      "summary": "Builds clearly identified generated candles, portfolio and decisions for hosted read-only fallback without starting or stopping an engine.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "moderate"
+    },
+    {
       "id": "function:deck/app.js:refresh",
       "type": "function",
       "name": "refresh",
       "filePath": "deck/app.js",
       "lineRange": [
-        69,
-        104
+        101,
+        151
       ],
       "summary": "Fetches current deck data and rejects obsolete request generations, with warming and reconnect states.",
       "tags": [
@@ -2399,8 +2519,8 @@
       "name": "selectMarket",
       "filePath": "deck/app.js",
       "lineRange": [
-        106,
-        112
+        153,
+        159
       ],
       "summary": "Synchronizes the selected market and resets its price-path simulation before fetching candles.",
       "tags": [
@@ -2415,8 +2535,8 @@
       "name": "marketQuote",
       "filePath": "deck/app.js",
       "lineRange": [
-        114,
-        114
+        161,
+        161
       ],
       "summary": "Provides marketQuote for app.",
       "tags": [
@@ -2431,8 +2551,8 @@
       "name": "renderMarkets",
       "filePath": "deck/app.js",
       "lineRange": [
-        115,
-        152
+        162,
+        199
       ],
       "summary": "Provides renderMarkets for app.",
       "tags": [
@@ -2447,8 +2567,8 @@
       "name": "renderStatic",
       "filePath": "deck/app.js",
       "lineRange": [
-        155,
-        244
+        202,
+        292
       ],
       "summary": "Provides renderStatic for app.",
       "tags": [
@@ -2463,8 +2583,8 @@
       "name": "renderFeed",
       "filePath": "deck/app.js",
       "lineRange": [
-        246,
-        271
+        294,
+        319
       ],
       "summary": "Reuses keyed feed rows and preserves scroll during live updates.",
       "tags": [
@@ -2479,8 +2599,8 @@
       "name": "stageColor",
       "filePath": "deck/app.js",
       "lineRange": [
-        274,
-        278
+        322,
+        326
       ],
       "summary": "Provides stageColor for app.",
       "tags": [
@@ -2495,8 +2615,8 @@
       "name": "drawNavChart",
       "filePath": "deck/app.js",
       "lineRange": [
-        281,
-        305
+        329,
+        353
       ],
       "summary": "Renders the nav chart visualization from deck state.",
       "tags": [
@@ -2511,8 +2631,8 @@
       "name": "drawTape",
       "filePath": "deck/app.js",
       "lineRange": [
-        307,
-        378
+        355,
+        426
       ],
       "summary": "Renders the tape visualization from deck state.",
       "tags": [
@@ -2527,8 +2647,8 @@
       "name": "drawBook",
       "filePath": "deck/app.js",
       "lineRange": [
-        381,
-        416
+        429,
+        464
       ],
       "summary": "Maintains illustrative depth rows while preserving synthetic sizes in still mode.",
       "tags": [
@@ -2543,8 +2663,8 @@
       "name": "selectAgent",
       "filePath": "deck/app.js",
       "lineRange": [
-        428,
-        439
+        476,
+        487
       ],
       "summary": "Toggles validated visual agent focus and updates accessible pressed states.",
       "tags": [
@@ -2559,8 +2679,8 @@
       "name": "_r",
       "filePath": "deck/app.js",
       "lineRange": [
-        446,
-        446
+        494,
+        494
       ],
       "summary": "Provides _r for app.",
       "tags": [
@@ -2575,8 +2695,8 @@
       "name": "_norm",
       "filePath": "deck/app.js",
       "lineRange": [
-        447,
-        447
+        495,
+        495
       ],
       "summary": "Provides _norm for app.",
       "tags": [
@@ -2591,8 +2711,8 @@
       "name": "growTree",
       "filePath": "deck/app.js",
       "lineRange": [
-        450,
-        466
+        498,
+        514
       ],
       "summary": "Provides growTree for app.",
       "tags": [
@@ -2607,8 +2727,8 @@
       "name": "endDrag",
       "filePath": "deck/app.js",
       "lineRange": [
-        516,
-        516
+        564,
+        564
       ],
       "summary": "Provides endDrag for app.",
       "tags": [
@@ -2623,8 +2743,8 @@
       "name": "resetBrain",
       "filePath": "deck/app.js",
       "lineRange": [
-        524,
-        524
+        572,
+        572
       ],
       "summary": "Provides resetBrain for app.",
       "tags": [
@@ -2639,8 +2759,8 @@
       "name": "drawBrain",
       "filePath": "deck/app.js",
       "lineRange": [
-        539,
-        676
+        587,
+        724
       ],
       "summary": "Renders the brain visualization from deck state.",
       "tags": [
@@ -2655,8 +2775,8 @@
       "name": "drawCortex",
       "filePath": "deck/app.js",
       "lineRange": [
-        681,
-        710
+        729,
+        758
       ],
       "summary": "Renders the cortex visualization from deck state.",
       "tags": [
@@ -2671,8 +2791,8 @@
       "name": "drawCalcium",
       "filePath": "deck/app.js",
       "lineRange": [
-        713,
-        751
+        761,
+        799
       ],
       "summary": "Renders the calcium visualization from deck state.",
       "tags": [
@@ -2687,8 +2807,8 @@
       "name": "drawWeights",
       "filePath": "deck/app.js",
       "lineRange": [
-        754,
-        772
+        802,
+        820
       ],
       "summary": "Renders the weights visualization from deck state.",
       "tags": [
@@ -2703,8 +2823,8 @@
       "name": "drawRotation",
       "filePath": "deck/app.js",
       "lineRange": [
-        775,
-        822
+        823,
+        870
       ],
       "summary": "Renders the rotation visualization from deck state.",
       "tags": [
@@ -2719,8 +2839,8 @@
       "name": "cls2",
       "filePath": "deck/app.js",
       "lineRange": [
-        825,
-        825
+        873,
+        873
       ],
       "summary": "Provides cls2 for app.",
       "tags": [
@@ -2735,8 +2855,8 @@
       "name": "emaN",
       "filePath": "deck/app.js",
       "lineRange": [
-        826,
-        832
+        874,
+        880
       ],
       "summary": "Provides emaN for app.",
       "tags": [
@@ -2751,8 +2871,8 @@
       "name": "rsiN",
       "filePath": "deck/app.js",
       "lineRange": [
-        833,
-        838
+        881,
+        886
       ],
       "summary": "Provides rsiN for app.",
       "tags": [
@@ -2767,8 +2887,8 @@
       "name": "bollPctB",
       "filePath": "deck/app.js",
       "lineRange": [
-        839,
-        845
+        887,
+        893
       ],
       "summary": "Provides bollPctB for app.",
       "tags": [
@@ -2783,8 +2903,8 @@
       "name": "zsc",
       "filePath": "deck/app.js",
       "lineRange": [
-        846,
-        851
+        894,
+        899
       ],
       "summary": "Provides zsc for app.",
       "tags": [
@@ -2799,8 +2919,8 @@
       "name": "atrP",
       "filePath": "deck/app.js",
       "lineRange": [
-        852,
-        858
+        900,
+        906
       ],
       "summary": "Provides atrP for app.",
       "tags": [
@@ -2815,8 +2935,8 @@
       "name": "vwapN",
       "filePath": "deck/app.js",
       "lineRange": [
-        859,
-        863
+        907,
+        911
       ],
       "summary": "Provides vwapN for app.",
       "tags": [
@@ -2831,8 +2951,8 @@
       "name": "stochK",
       "filePath": "deck/app.js",
       "lineRange": [
-        864,
-        868
+        912,
+        916
       ],
       "summary": "Provides stochK for app.",
       "tags": [
@@ -2847,8 +2967,8 @@
       "name": "chip",
       "filePath": "deck/app.js",
       "lineRange": [
-        870,
-        872
+        918,
+        920
       ],
       "summary": "Provides chip for app.",
       "tags": [
@@ -2863,8 +2983,8 @@
       "name": "renderIndicators",
       "filePath": "deck/app.js",
       "lineRange": [
-        874,
-        947
+        922,
+        995
       ],
       "summary": "Provides renderIndicators for app.",
       "tags": [
@@ -2879,8 +2999,8 @@
       "name": "drawMembrane",
       "filePath": "deck/app.js",
       "lineRange": [
-        950,
-        980
+        998,
+        1028
       ],
       "summary": "Renders the membrane visualization from deck state.",
       "tags": [
@@ -2895,8 +3015,8 @@
       "name": "drawPricer",
       "filePath": "deck/app.js",
       "lineRange": [
-        984,
-        1026
+        1032,
+        1074
       ],
       "summary": "Updates illustrative price simulations when real inputs change, holding identical inputs stable in still mode.",
       "tags": [
@@ -2911,8 +3031,8 @@
       "name": "drawVisible",
       "filePath": "deck/app.js",
       "lineRange": [
-        1042,
-        1042
+        1090,
+        1090
       ],
       "summary": "Renders the visible visualization from deck state.",
       "tags": [
@@ -2927,8 +3047,8 @@
       "name": "frame",
       "filePath": "deck/app.js",
       "lineRange": [
-        1044,
-        1062
+        1092,
+        1110
       ],
       "summary": "Advances permitted visual time and schedules bounded visible canvas work.",
       "tags": [
@@ -2943,8 +3063,8 @@
       "name": "drawSlow",
       "filePath": "deck/app.js",
       "lineRange": [
-        1064,
-        1067
+        1112,
+        1115
       ],
       "summary": "Redraws only observed visible canvases, skipping hidden documents.",
       "tags": [
@@ -2959,8 +3079,8 @@
       "name": "redrawCanvas",
       "filePath": "deck/app.js",
       "lineRange": [
-        1069,
-        1075
+        1117,
+        1123
       ],
       "summary": "Dispatches visible chart rendering and initializes tape depth.",
       "tags": [
@@ -2994,35 +3114,11 @@
       "complexity": "complex"
     },
     {
-      "id": "document:deploy/DEPLOY.md",
-      "type": "document",
-      "name": "DEPLOY.md",
-      "filePath": "deploy/DEPLOY.md",
-      "summary": "Step-by-step Raspberry Pi 4 deployment guide: prerequisites, clone, install, configure, smoke test, systemd install, operation and updates.",
-      "tags": [
-        "docs",
-        "monitor"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "file:deploy/install-service.sh",
+      "id": "file:scripts/build-deck.mjs",
       "type": "file",
-      "name": "install-service.sh",
-      "filePath": "deploy/install-service.sh",
-      "summary": "Installer script that checks npm and .env, installs dependencies, renders the systemd unit with the current user and path, enables the service and prints an API health check command.",
-      "tags": [
-        "script",
-        "monitor"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "file:deploy/whale-tracker.service",
-      "type": "file",
-      "name": "whale-tracker.service",
-      "filePath": "deploy/whale-tracker.service",
-      "summary": "Hardened systemd unit running `npm start` for the tracker with always-restart, no start limit and an optional .env EnvironmentFile.",
+      "name": "build-deck.mjs",
+      "filePath": "scripts/build-deck.mjs",
+      "summary": "Copies only public HUD assets into the Vercel output and enables the explicitly labeled read-only demo fallback for hosted pages.",
       "tags": [
         "code",
         "monitor"
@@ -3030,27 +3126,27 @@
       "complexity": "simple"
     },
     {
-      "id": "file:tests/deck.test.mjs",
+      "id": "file:tests/hosting.test.mjs",
       "type": "file",
-      "name": "deck.test.mjs",
-      "filePath": "tests/deck.test.mjs",
-      "summary": "Behavioral deck regressions for auth cancellation, stale replies, motion budgets, stable depth, startup, agent selection, simulated paths, stop acknowledgement and quote denominations.",
+      "name": "hosting.test.mjs",
+      "filePath": "tests/hosting.test.mjs",
+      "summary": "Checks unset/unreachable engine origins, credential-preserving proxy behavior, explicit auth failures, request restrictions and malformed upstream responses.",
       "tags": [
         "code",
         "monitor"
       ],
-      "complexity": "moderate"
+      "complexity": "simple"
     },
     {
-      "id": "function:tests/deck.test.mjs:runtime",
+      "id": "function:tests/hosting.test.mjs:request",
       "type": "function",
-      "name": "runtime",
-      "filePath": "tests/deck.test.mjs",
+      "name": "request",
+      "filePath": "tests/hosting.test.mjs",
       "lineRange": [
-        8,
-        23
+        12,
+        17
       ],
-      "summary": "Builds a browser-like VM sandbox for behavioral deck regression checks.",
+      "summary": "Provides request for hosting.test.",
       "tags": [
         "runtime",
         "code"
@@ -3407,237 +3503,6 @@
       "target": "function:src/wallets.ts:watchedAddresses",
       "type": "contains",
       "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/engine/ledger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/engine/risk.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/engine/state.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/store.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/wallets.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/ledger.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/filter.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/filter.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/gold_rwa.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/gold_rwa.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/gold_rwa.ts",
-      "target": "file:src/notifier.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/gold_rwa.ts",
-      "target": "file:src/store.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/api.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/engine/loop.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/gold_rwa.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/listener.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/filter.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/notifier.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/wallets.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/notifier.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/notifier.ts",
-      "target": "file:src/filter.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/notifier.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/notifier.ts",
-      "target": "file:src/store.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/store.ts",
-      "target": "file:src/gold_rwa.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/store.ts",
-      "target": "file:src/notifier.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/wallets.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
       "direction": "forward"
     },
     {
@@ -4215,13 +4080,6 @@
       "direction": "forward"
     },
     {
-      "source": "file:src/api.ts",
-      "target": "file:deck/index.html",
-      "type": "serves",
-      "weight": 0.5,
-      "direction": "forward"
-    },
-    {
       "source": "file:src/engine/decisions.ts",
       "target": "function:src/engine/decisions.ts:makeModel",
       "type": "contains",
@@ -4471,132 +4329,6 @@
       "target": "function:src/strategies/library.ts:sell",
       "type": "contains",
       "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/decisions.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/decisions.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/indicators.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/ledger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/portfolio.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/risk.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/state.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/store.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/portfolio.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/risk.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/state.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/library.ts",
-      "target": "file:src/engine/indicators.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/library.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
       "direction": "forward"
     },
     {
@@ -4908,132 +4640,6 @@
       "direction": "forward"
     },
     {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/engine/portfolio.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/stress.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/stress.ts",
-      "target": "file:src/engine/backtest.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/stress.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/stress.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/sweep.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/sweep.ts",
-      "target": "file:src/engine/backtest.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/sweep.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/sweep.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/registry.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/registry.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/registry.ts",
-      "target": "file:src/strategies/library.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
       "source": "function:src/engine/backtest.ts:runBacktest",
       "target": "function:src/strategies/registry.ts:loadStrategies",
       "type": "calls",
@@ -5160,6 +4766,34 @@
       "direction": "forward"
     },
     {
+      "source": "file:tests/deck.test.mjs",
+      "target": "function:tests/deck.test.mjs:runtime",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:deploy/install-service.sh",
+      "target": "file:deploy/whale-tracker.service",
+      "type": "deploys",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "file:deploy/whale-tracker.service",
+      "target": "file:src/index.ts",
+      "type": "triggers",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
+      "source": "file:api/[...path].js",
+      "target": "function:api/[...path].js:handler",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
       "source": "file:deck/app.js",
       "target": "function:deck/app.js:$",
       "type": "contains",
@@ -5225,6 +4859,13 @@
     {
       "source": "file:deck/app.js",
       "target": "function:deck/app.js:ctx2d",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:deck/app.js",
+      "target": "function:deck/app.js:loadDemo",
       "type": "contains",
       "weight": 1,
       "direction": "forward"
@@ -5489,10 +5130,10 @@
       "direction": "forward"
     },
     {
-      "source": "file:tests/deck.test.mjs",
-      "target": "function:tests/deck.test.mjs:runtime",
-      "type": "contains",
-      "weight": 1,
+      "source": "file:api/[...path].js",
+      "target": "function:api/[...path].js:handler",
+      "type": "exports",
+      "weight": 0.8,
       "direction": "forward"
     },
     {
@@ -5568,6 +5209,13 @@
     {
       "source": "function:deck/app.js:refresh",
       "target": "function:deck/app.js:drawSlow",
+      "type": "calls",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "function:deck/app.js:refresh",
+      "target": "function:deck/app.js:loadDemo",
       "type": "calls",
       "weight": 0.8,
       "direction": "forward"
@@ -6007,6 +5655,13 @@
       "direction": "forward"
     },
     {
+      "source": "file:src/api.ts",
+      "target": "file:deck/index.html",
+      "type": "serves",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
       "source": "file:deck/index.html",
       "target": "file:deck/app.js",
       "type": "depends_on",
@@ -6035,17 +5690,10 @@
       "direction": "forward"
     },
     {
-      "source": "file:deploy/install-service.sh",
-      "target": "file:deploy/whale-tracker.service",
-      "type": "deploys",
-      "weight": 0.5,
-      "direction": "forward"
-    },
-    {
-      "source": "file:deploy/whale-tracker.service",
-      "target": "file:src/index.ts",
-      "type": "triggers",
-      "weight": 0.5,
+      "source": "file:tests/hosting.test.mjs",
+      "target": "function:tests/hosting.test.mjs:request",
+      "type": "contains",
+      "weight": 1,
       "direction": "forward"
     }
   ],
@@ -6065,8 +5713,8 @@
     ],
     "frameworks": [],
     "description": "On-chain Base/Ethereum monitoring and a risk-gated paper-trading engine with an interactive animated live neural HUD deck.",
-    "analyzedAt": "2026-11-24T21:20:57.399154+00:00",
-    "gitCommitHash": "b196efa82210cc7458ac4473708d9eadfd4c3777"
+    "analyzedAt": "2026-11-24T21:25:27.648161+00:00",
+    "gitCommitHash": "cab38691f4d66d2bcbae09e184781d2557fa2504"
   },
   "layers": [
     {
@@ -6245,6 +5893,8 @@
       "name": "Interactive deck",
       "description": "Responsive animated HUD, accessible controls and browser-runtime regressions.",
       "nodeIds": [
+        "file:tests/deck.test.mjs",
+        "function:tests/deck.test.mjs:runtime",
         "file:deck/app.js",
         "function:deck/app.js:$",
         "function:deck/app.js:fmt$",
@@ -6256,6 +5906,7 @@
         "function:deck/app.js:utc",
         "function:deck/app.js:api",
         "function:deck/app.js:ctx2d",
+        "function:deck/app.js:loadDemo",
         "function:deck/app.js:refresh",
         "function:deck/app.js:selectMarket",
         "function:deck/app.js:marketQuote",
@@ -6295,8 +5946,8 @@
         "function:deck/app.js:redrawCanvas",
         "file:deck/index.html",
         "file:deck/style.css",
-        "file:tests/deck.test.mjs",
-        "function:tests/deck.test.mjs:runtime"
+        "file:tests/hosting.test.mjs",
+        "function:tests/hosting.test.mjs:request"
       ]
     },
     {
@@ -6304,10 +5955,7 @@
       "name": "Operations and documentation",
       "description": "Deployment, manifests, environment configuration and engineering guides.",
       "nodeIds": [
-        "config:.env.example",
         "document:AGENTS.md",
-        "document:README.md",
-        "config:package.json",
         "config:tsconfig.json",
         "document:docs/AUDIT_AND_TRADING_LANDSCAPE.md",
         "document:docs/BACKTEST_RESULTS.md",
@@ -6318,7 +5966,14 @@
         "config:.agent/work-state.json",
         "document:deploy/DEPLOY.md",
         "file:deploy/install-service.sh",
-        "file:deploy/whale-tracker.service"
+        "file:deploy/whale-tracker.service",
+        "config:.env.example",
+        "document:README.md",
+        "config:package.json",
+        "config:vercel.json",
+        "file:api/[...path].js",
+        "function:api/[...path].js:handler",
+        "file:scripts/build-deck.mjs"
       ]
     }
   ],
@@ -6403,6 +6058,17 @@
         "file:deploy/install-service.sh",
         "document:docs/SYSTEM_DESIGN.md",
         "document:docs/BROKER_ADAPTER.md"
+      ]
+    },
+    {
+      "order": 9,
+      "title": "Host the deck",
+      "description": "Follow the isolated Vercel static build and allowlisted proxy; configure an existing HTTPS engine origin or use the clearly labeled read-only demo fallback.",
+      "nodeIds": [
+        "config:vercel.json",
+        "file:scripts/build-deck.mjs",
+        "file:api/[...path].js",
+        "file:tests/hosting.test.mjs"
       ]
     }
   ]

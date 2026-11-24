@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-24T21:21:18.233300+00:00",
+  "generatedAt": "2026-11-24T21:25:27.648161+00:00",
   "files": {
     "src/api.ts": {
       "overview": "Serves authenticated monitor/engine JSON endpoints, the stop-engine action and zero-build deck static assets.",
@@ -98,6 +98,22 @@
       "overview": "Loads enabled strategy settings by merging JSON overrides with evaluator defaults.",
       "sections": []
     },
+    "deploy/install-service.sh": {
+      "overview": "Installer script that checks npm and .env, installs dependencies, renders the systemd unit with the current user and path, enables the service and prints an API health check command.",
+      "sections": []
+    },
+    "deploy/whale-tracker.service": {
+      "overview": "Hardened systemd unit running `npm start` for the tracker with always-restart, no start limit and an optional .env EnvironmentFile.",
+      "sections": []
+    },
+    "tests/deck.test.mjs": {
+      "overview": "Behavioral deck regressions for auth cancellation, stale replies, motion budgets, stable depth, startup, agent selection, simulated paths, stop acknowledgement and quote denominations.",
+      "sections": []
+    },
+    "api/[...path].js": {
+      "overview": "Allowlisted same-origin Vercel proxy to a configured HTTPS engine origin; forwards browser authorization, rejects redirects, bounds requests and preserves explicit upstream/auth failures.",
+      "sections": []
+    },
     "deck/app.js": {
       "overview": "Live HUD runtime: versioned polling, keyed feeds, market selection, expandable panels, selectable neural agents and canvas motion governed by visibility, pause and reduced-motion preferences.",
       "sections": []
@@ -110,16 +126,12 @@
       "overview": "Neon HUD design system with telemetry/orbit animations, panel/agent interaction states, responsive grids and still-mode fallbacks.",
       "sections": []
     },
-    "deploy/install-service.sh": {
-      "overview": "Installer script that checks npm and .env, installs dependencies, renders the systemd unit with the current user and path, enables the service and prints an API health check command.",
+    "scripts/build-deck.mjs": {
+      "overview": "Copies only public HUD assets into the Vercel output and enables the explicitly labeled read-only demo fallback for hosted pages.",
       "sections": []
     },
-    "deploy/whale-tracker.service": {
-      "overview": "Hardened systemd unit running `npm start` for the tracker with always-restart, no start limit and an optional .env EnvironmentFile.",
-      "sections": []
-    },
-    "tests/deck.test.mjs": {
-      "overview": "Behavioral deck regressions for auth cancellation, stale replies, motion budgets, stable depth, startup, agent selection, simulated paths, stop acknowledgement and quote denominations.",
+    "tests/hosting.test.mjs": {
+      "overview": "Checks unset/unreachable engine origins, credential-preserving proxy behavior, explicit auth failures, request restrictions and malformed upstream responses.",
       "sections": []
     }
   }

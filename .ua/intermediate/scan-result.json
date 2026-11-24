@@ -1,15 +1,6 @@
 {
-  "name": "base-evm-whale-tracker",
-  "description": "Always-on Base and Ethereum monitor for whale wallets, new DEX pools with safety checks, and PAXG/XAUt gold RWA spreads, with Telegram/webhook alerts and a small HTTP JSON API.",
-  "languages": [
-    "config",
-    "json",
-    "markdown",
-    "service",
-    "shell",
-    "typescript"
-  ],
-  "frameworks": [],
+  "scriptCompleted": true,
+  "contentDigest": "1822c9b68bca8d39960b7e3dfb58c7a66903fc6ffe117bb56bf8147485281f20",
   "files": [
     {
       "path": ".agent/work-state.json",
@@ -20,7 +11,7 @@
     {
       "path": ".env.example",
       "language": "config",
-      "sizeLines": 44,
+      "sizeLines": 47,
       "fileCategory": "config"
     },
     {
@@ -32,8 +23,14 @@
     {
       "path": "README.md",
       "language": "markdown",
-      "sizeLines": 315,
+      "sizeLines": 325,
       "fileCategory": "docs"
+    },
+    {
+      "path": "api/[...path].js",
+      "language": "javascript",
+      "sizeLines": 28,
+      "fileCategory": "code"
     },
     {
       "path": "data/backtest-15m.json",
@@ -164,19 +161,19 @@
     {
       "path": "deck/app.js",
       "language": "javascript",
-      "sizeLines": 1147,
+      "sizeLines": 1196,
       "fileCategory": "code"
     },
     {
       "path": "deck/index.html",
       "language": "html",
-      "sizeLines": 104,
+      "sizeLines": 106,
       "fileCategory": "markup"
     },
     {
       "path": "deck/style.css",
       "language": "css",
-      "sizeLines": 224,
+      "sizeLines": 226,
       "fileCategory": "markup"
     },
     {
@@ -236,8 +233,14 @@
     {
       "path": "package.json",
       "language": "json",
-      "sizeLines": 33,
+      "sizeLines": 35,
       "fileCategory": "config"
+    },
+    {
+      "path": "scripts/build-deck.mjs",
+      "language": "javascript",
+      "sizeLines": 9,
+      "fileCategory": "code"
     },
     {
       "path": "src/api.ts",
@@ -386,7 +389,13 @@
     {
       "path": "tests/deck.test.mjs",
       "language": "javascript",
-      "sizeLines": 130,
+      "sizeLines": 159,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/hosting.test.mjs",
+      "language": "javascript",
+      "sizeLines": 46,
       "fileCategory": "code"
     },
     {
@@ -394,166 +403,37 @@
       "language": "json",
       "sizeLines": 14,
       "fileCategory": "config"
+    },
+    {
+      "path": "vercel.json",
+      "language": "json",
+      "sizeLines": 10,
+      "fileCategory": "config"
     }
   ],
-  "totalFiles": 64,
+  "totalFiles": 68,
   "filteredByIgnore": 0,
   "estimatedComplexity": "moderate",
-  "importMap": {
-    ".agent/work-state.json": [],
-    ".env.example": [],
-    "AGENTS.md": [],
-    "README.md": [],
-    "data/backtest-15m.json": [],
-    "data/backtest-1h.json": [],
-    "data/backtest-1m.json": [],
-    "data/backtest.json": [],
-    "data/strategies.json": [],
-    "data/stress-15m.json": [],
-    "data/sweep-atr_trend-15m.json": [],
-    "data/sweep-bollinger_reversion-15m.json": [],
-    "data/sweep-breakout-15m.json": [],
-    "data/sweep-donchian-15m.json": [],
-    "data/sweep-ema_cross-15m.json": [],
-    "data/sweep-engulfing-15m.json": [],
-    "data/sweep-macd_momentum-15m.json": [],
-    "data/sweep-obv_drift-15m.json": [],
-    "data/sweep-roc_momentum-15m.json": [],
-    "data/sweep-rsi_reversion-15m.json": [],
-    "data/sweep-stoch_cross-15m.json": [],
-    "data/sweep-vol_spike-15m.json": [],
-    "data/sweep-vwap_reversion-15m.json": [],
-    "data/sweep-zscore_reversion-15m.json": [],
-    "data/watchlist.json": [],
-    "deck/app.js": [],
-    "deck/index.html": [],
-    "deck/style.css": [],
-    "deploy/DEPLOY.md": [],
-    "deploy/install-service.sh": [],
-    "deploy/whale-tracker.service": [],
-    "docs/AUDIT_AND_TRADING_LANDSCAPE.md": [],
-    "docs/BACKTEST_RESULTS.md": [],
-    "docs/BROKER_ADAPTER.md": [],
-    "docs/LOOP_ENGINEERING.md": [],
-    "docs/RPI4_DEPLOYMENT.md": [],
-    "docs/SYSTEM_DESIGN.md": [],
-    "package.json": [],
-    "src/api.ts": [
-      "src/config.ts",
-      "src/engine/ledger.ts",
-      "src/engine/risk.ts",
-      "src/engine/state.ts",
-      "src/logger.ts",
-      "src/store.ts",
-      "src/strategies/registry.ts",
-      "src/wallets.ts"
-    ],
-    "src/config.ts": [],
-    "src/engine/backtest.ts": [
-      "src/config.ts",
-      "src/engine/market.ts",
-      "src/engine/portfolio.ts",
-      "src/engine/types.ts",
-      "src/strategies/registry.ts"
-    ],
-    "src/engine/decisions.ts": [
-      "src/engine/types.ts",
-      "src/logger.ts"
-    ],
-    "src/engine/indicators.ts": [
-      "src/engine/types.ts"
-    ],
-    "src/engine/ledger.ts": [
-      "src/logger.ts"
-    ],
-    "src/engine/loop.ts": [
-      "src/config.ts",
-      "src/engine/ledger.ts",
-      "src/engine/market.ts",
-      "src/engine/portfolio.ts",
-      "src/engine/risk.ts",
-      "src/engine/state.ts",
-      "src/engine/types.ts",
-      "src/logger.ts",
-      "src/store.ts",
-      "src/strategies/registry.ts"
-    ],
-    "src/engine/market.ts": [
-      "src/engine/types.ts",
-      "src/logger.ts"
-    ],
-    "src/engine/portfolio.ts": [
-      "src/engine/types.ts"
-    ],
-    "src/engine/risk.ts": [
-      "src/engine/types.ts"
-    ],
-    "src/engine/state.ts": [
-      "src/engine/types.ts"
-    ],
-    "src/engine/stress.ts": [
-      "src/config.ts",
-      "src/engine/backtest.ts",
-      "src/engine/market.ts",
-      "src/strategies/registry.ts"
-    ],
-    "src/engine/sweep.ts": [
-      "src/config.ts",
-      "src/engine/backtest.ts",
-      "src/engine/market.ts",
-      "src/strategies/registry.ts"
-    ],
-    "src/engine/types.ts": [],
-    "src/filter.ts": [
-      "src/config.ts",
-      "src/logger.ts"
-    ],
-    "src/gold_rwa.ts": [
-      "src/config.ts",
-      "src/logger.ts",
-      "src/notifier.ts",
-      "src/store.ts"
-    ],
-    "src/index.ts": [
-      "src/api.ts",
-      "src/config.ts",
-      "src/engine/loop.ts",
-      "src/gold_rwa.ts",
-      "src/listener.ts",
-      "src/logger.ts"
-    ],
-    "src/listener.ts": [
-      "src/config.ts",
-      "src/filter.ts",
-      "src/logger.ts",
-      "src/notifier.ts",
-      "src/wallets.ts"
-    ],
-    "src/logger.ts": [],
-    "src/notifier.ts": [
-      "src/config.ts",
-      "src/filter.ts",
-      "src/logger.ts",
-      "src/store.ts"
-    ],
-    "src/store.ts": [
-      "src/gold_rwa.ts",
-      "src/notifier.ts"
-    ],
-    "src/strategies/library.ts": [
-      "src/engine/indicators.ts",
-      "src/engine/types.ts"
-    ],
-    "src/strategies/registry.ts": [
-      "src/engine/types.ts",
-      "src/logger.ts",
-      "src/strategies/library.ts"
-    ],
-    "src/wallets.ts": [
-      "src/logger.ts"
-    ],
-    "tests/deck.test.mjs": [],
-    "tsconfig.json": []
-  },
-  "contentDigest": "6ae28fcfe5d7eb90a6212c842ba07ad3a0970296e93f740c5890fc870dbbca40"
+  "failures": [],
+  "stats": {
+    "filesScanned": 68,
+    "byCategory": {
+      "config": 26,
+      "docs": 9,
+      "code": 30,
+      "markup": 2,
+      "script": 1
+    },
+    "byLanguage": {
+      "json": 25,
+      "config": 1,
+      "markdown": 9,
+      "javascript": 5,
+      "html": 1,
+      "css": 1,
+      "shell": 1,
+      "service": 1,
+      "typescript": 24
+    }
+  }
 }

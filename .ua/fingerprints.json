@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "b196efa82210cc7458ac4473708d9eadfd4c3777",
-  "generatedAt": "2026-11-24T21:20:58.440Z",
+  "gitCommitHash": "cab38691f4d66d2bcbae09e184781d2557fa2504",
+  "generatedAt": "2026-11-24T21:25:28.074Z",
   "files": {
     ".agent/work-state.json": {
       "filePath": ".agent/work-state.json",
@@ -15,12 +15,12 @@
     },
     ".env.example": {
       "filePath": ".env.example",
-      "contentHash": "63e101d03d530bfcc3287ee744b4cad2cfc0be50594c5b5eba929d805b611b90",
+      "contentHash": "1e96f8eddba8689a50b26b09f0418207fbaca56fbbe858f956133452c94f1528",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 45,
+      "totalLines": 48,
       "hasStructuralAnalysis": false
     },
     "AGENTS.md": {
@@ -35,13 +35,35 @@
     },
     "README.md": {
       "filePath": "README.md",
-      "contentHash": "f38d5a46c572941b9a392045074f0abb5bf4590fe2841c5a39ea061bad3fd3e7",
+      "contentHash": "83a8ec6806d1ad881c6a5f913cfad6080041e33eb4a0b96a4c65bc1cfbbbcbc2",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 316,
+      "totalLines": 326,
       "hasStructuralAnalysis": false
+    },
+    "api/[...path].js": {
+      "filePath": "api/[...path].js",
+      "contentHash": "c91a2efe2215473cedd49e75081cf21cf756ec54555fec1fb7e589c871170894",
+      "functions": [
+        {
+          "name": "handler",
+          "params": [
+            "req",
+            "res"
+          ],
+          "exported": true,
+          "lineCount": 25
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [
+        "handler"
+      ],
+      "totalLines": 29,
+      "hasStructuralAnalysis": true
     },
     "data/backtest-15m.json": {
       "filePath": "data/backtest-15m.json",
@@ -255,7 +277,7 @@
     },
     "deck/app.js": {
       "filePath": "deck/app.js",
-      "contentHash": "ff3658f971757528691da0227824849de6ff49b0de49729aa977eb946f0e4251",
+      "contentHash": "a601ccdebc8c06793ccf180689e1c70b4bf8c795ed10143a31f5d696109e08ea",
       "functions": [
         {
           "name": "$",
@@ -324,7 +346,7 @@
             "path"
           ],
           "exported": false,
-          "lineCount": 13
+          "lineCount": 17
         },
         {
           "name": "ctx2d",
@@ -335,10 +357,16 @@
           "lineCount": 14
         },
         {
+          "name": "loadDemo",
+          "params": [],
+          "exported": false,
+          "lineCount": 26
+        },
+        {
           "name": "refresh",
           "params": [],
           "exported": false,
-          "lineCount": 36
+          "lineCount": 51
         },
         {
           "name": "selectMarket",
@@ -366,7 +394,7 @@
           "name": "renderStatic",
           "params": [],
           "exported": false,
-          "lineCount": 90
+          "lineCount": 91
         },
         {
           "name": "renderFeed",
@@ -626,27 +654,27 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 1148,
+      "totalLines": 1197,
       "hasStructuralAnalysis": true
     },
     "deck/index.html": {
       "filePath": "deck/index.html",
-      "contentHash": "ce44e277520dd70e5b9b492c06dab14fb4bda74be53f0d3365e3e38cedd8a3b6",
+      "contentHash": "28e643ad590c76a186d9870bd1fa19e2c0b5715a30b56bd24ec835925564ff5c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 105,
+      "totalLines": 107,
       "hasStructuralAnalysis": false
     },
     "deck/style.css": {
       "filePath": "deck/style.css",
-      "contentHash": "a71a90386157b530ea759b8a601ff51337fc9b4ee420165cf571acd70be28e93",
+      "contentHash": "fe6f2366f2d2dab598c67372ecaab395ce705a90474f957b8f70468f3f203697",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 225,
+      "totalLines": 227,
       "hasStructuralAnalysis": false
     },
     "deploy/DEPLOY.md": {
@@ -741,13 +769,33 @@
     },
     "package.json": {
       "filePath": "package.json",
-      "contentHash": "cb24cc753cc1763a28e460e134a7fe7840826538d93c6daf9c8afb70bc1988d1",
+      "contentHash": "eae1b4ba11fb23b517cc8224a6b8424ce953dec481fef42e8b36cc3f5fdcb47c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 34,
+      "totalLines": 36,
       "hasStructuralAnalysis": false
+    },
+    "scripts/build-deck.mjs": {
+      "filePath": "scripts/build-deck.mjs",
+      "contentHash": "78e9df9b7be3b760be4d9b79e28c891901f5f93444839a8ab321bab8868c1611",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:fs/promises",
+          "specifiers": [
+            "mkdir",
+            "copyFile",
+            "readFile",
+            "writeFile"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
     },
     "src/api.ts": {
       "filePath": "src/api.ts",
@@ -2591,7 +2639,7 @@
     },
     "tests/deck.test.mjs": {
       "filePath": "tests/deck.test.mjs",
-      "contentHash": "d31876e6a1d8ac4bf9ae3a6dc5eb89f7f157b3bea60422d38cd82bbf56f87188",
+      "contentHash": "5ee7490e80e37b8d50bfcb956df03e515b861f71efd79c479d7f0c9f1e6b0723",
       "functions": [
         {
           "name": "runtime",
@@ -2628,7 +2676,47 @@
         }
       ],
       "exports": [],
-      "totalLines": 131,
+      "totalLines": 160,
+      "hasStructuralAnalysis": true
+    },
+    "tests/hosting.test.mjs": {
+      "filePath": "tests/hosting.test.mjs",
+      "contentHash": "9c023e5cd9240f804cacd07b1d3182e4603a4d217e0b4f31c7ef8b8bad1abac1",
+      "functions": [
+        {
+          "name": "request",
+          "params": [
+            "url",
+            "authorization"
+          ],
+          "exported": false,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test",
+            "afterEach"
+          ]
+        },
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "../api/[...path].js",
+          "specifiers": [
+            "handler"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 47,
       "hasStructuralAnalysis": true
     },
     "tsconfig.json": {
@@ -2639,6 +2727,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 15,
+      "hasStructuralAnalysis": false
+    },
+    "vercel.json": {
+      "filePath": "vercel.json",
+      "contentHash": "e33802b9b33a002d0e1044fe7ebb779d77e60ef2e8c1af9eca41f9c1f794e821",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 11,
       "hasStructuralAnalysis": false
     }
   }
