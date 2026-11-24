@@ -107,23 +107,25 @@ export async function runBacktest(symbols: string[] = config.engine.symbols, int
   const stepMs = intervalMs(interval);
   if (!Number.isSafeInteger(stepMs) || stepMs <= 0 || interval.endsWith('M')) throw new Error('Replay requires a fixed candle interval');
   const results: BacktestRow[] = [];
+  let file = `data/replay/backtest-${interval}.json`;
   for (const symbol of symbols) {
     const feed = archive ? null : await refreshSymbol(symbol, interval);
     const candles = archive ? readBinanceCandles(archive, stepMs) : feed ? completedCandles(feed, interval) : [];
+    if (archive) file = `data/replay/backtest-${interval}-${encodeURIComponent(symbol)}-${candles[0].t}-${candles.at(-1)!.t}.json`;
     for (const st of strats)
       results.push(replayOne(st.strategy, st.params, symbol, candles, undefined, undefined, stepMs));
   }
   mkdirSync('data/replay', { recursive: true });
-  writeFileSync(`data/replay/backtest-${interval}.json`, JSON.stringify({ at: new Date().toISOString(), interval, results }, null, 2));
-  return results;
+  writeFileSync(file, JSON.stringify({ at: new Date().toISOString(), interval, results }, null, 2));
+  return { file, results };
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const syms = process.argv[2] ? process.argv[2].split(',') : undefined;
   const iv = process.argv[3];
-  const rows = await runBacktest(syms, iv, process.argv[4], process.argv[5]?.split(','));
+  const { results: rows, file } = await runBacktest(syms, iv, process.argv[4], process.argv[5]?.split(','));
   console.log(`${'STRATEGY'.padEnd(20)} ${'SYM'.padEnd(8)} ${'TRADES'.padStart(6)} ${'WIN%'.padStart(6)} ${'PNL$'.padStart(9)} ${'MAXDD$'.padStart(8)} ${'FEES$'.padStart(7)}`);
   for (const r of rows)
     console.log(`${r.strategy.padEnd(20)} ${r.symbol.padEnd(8)} ${String(r.trades).padStart(6)} ${r.winRate.toFixed(1).padStart(6)} ${r.pnlUsd.toFixed(2).padStart(9)} ${r.maxDdUsd.toFixed(2).padStart(8)} ${r.feesUsd.toFixed(2).padStart(7)}`);
-  console.log(`\nwrote data/replay/backtest-${iv ?? config.engine.interval}.json`);
+  console.log(`\nwrote ${file}`);
 }

@@ -44,4 +44,4 @@ unzip -p "$file" > "/tmp/$symbol-september.csv"
 TZ=UTC npm run backtest -- "$symbol" 1m "/tmp/$symbol-september.csv" macd_bb_v1,ema_cross,breakout
 ```
 
-Reports are written to `data/replay/` without overwriting the legacy checked-in results. For July–August, concatenate the verified July and August CSVs in order. The higher-cost case calls `replayOne` with `feePct=0.2`, `slipBps=10`, and `barMs=60000`. Replay ignores partial fills, exchange/source switches, intraminute stops, latency differences, and correlation across symbols.
+Reports are written to `data/replay/`. Archive reports are keyed by pair, interval and candle time range, separate from the legacy checked-in results. For July–August, concatenate the verified July and August CSVs in order. The higher-cost case calls `replayOne` with `feePct=0.2`, `slipBps=10`, and `barMs=60000`. Replay ignores partial fills, exchange/source switches, intraminute stops, latency differences, and correlation across symbols.

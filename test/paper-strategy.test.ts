@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { test } from 'node:test';
 import { config } from '../src/config.js';
-import { replayOne } from '../src/engine/backtest.js';
+import { replayOne, runBacktest } from '../src/engine/backtest.js';
 import { managedSize } from '../src/engine/execution.js';
 import { closedStrategyBars } from '../src/engine/market.js';
 import { PaperPortfolio } from '../src/engine/portfolio.js';
@@ -75,4 +78,18 @@ test('replay buys at next open, charges both sides on a gap stop and includes th
   assert.ok(config.engine.startUsd > 300);
   assert.equal(replayOne(fixture, {}, symbol, [candles[0], candles[2]], 0.2, 10, minute).bars, 0);
   assert.equal(replayOne(fixture, {}, symbol, candles.slice(0, 1), 0.2, 10, minute).trades, 0);
+});
+
+test('archive reports for different symbols and windows do not overwrite each other', async (t) => {
+  const root = mkdtempSync(join(tmpdir(), 'crypto-tracker-replay-'));
+  const cwd = process.cwd();
+  t.after(() => { process.chdir(cwd); rmSync(root, { recursive: true, force: true }); });
+  process.chdir(root);
+  writeFileSync('first.csv', '60000,100,101,99,100,1\n120000,100,101,99,100,1\n');
+  writeFileSync('next.csv', '180000,100,101,99,100,1\n240000,100,101,99,100,1\n');
+  const first = await runBacktest([symbol], '1m', 'first.csv');
+  const otherSymbol = await runBacktest(['ETHUSDT'], '1m', 'first.csv');
+  const next = await runBacktest([symbol], '1m', 'next.csv');
+  assert.equal(new Set([first.file, otherSymbol.file, next.file]).size, 3);
+  assert.ok([first, otherSymbol, next].every(({ file }) => existsSync(file)));
 });
