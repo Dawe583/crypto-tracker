@@ -185,3 +185,25 @@ test('warmup after generated data clears every displayed demo balance and count'
   for (const id of metrics) assert.equal(app.elements.get(id).textContent, '—');
   assert.equal(app.elements.get('kill').disabled, true);
 });
+
+test('ledger halt overrides running, stop and startup labels, and clears after a healthy restart', async () => {
+  let snapshot = { empty: true, halted: true };
+  const app = runtime(async (path) => ({ ok: true, json: async () => path.includes('snapshot') ? snapshot
+    : path.includes('strategies') || path.includes('decisions') ? [] : {} }));
+  await app.run('refresh()');
+  assert.equal(app.elements.get('connection').textContent, 'HALTED');
+  assert.equal(app.elements.get('running').textContent, 'HALTED');
+  assert.match(app.elements.get('wireMsg').textContent, /ledger.*restart/i);
+  assert.equal(app.elements.get('kill').disabled, true);
+  app.run('loadDemo(); STATE.halted = true; STATE.snap.killed = true; renderStatic();');
+  assert.equal(app.elements.get('running').textContent, 'HALTED');
+  assert.match(app.elements.get('wireMsg').textContent, /HALTED/);
+  assert.doesNotMatch(app.elements.get('wireMsg').textContent, /ONLINE|scanning|LIVE WIRE/);
+  snapshot = { empty: true, halted: false };
+  await app.run('refresh()');
+  assert.equal(app.elements.get('connection').textContent, 'WARMING UP');
+  assert.equal(app.elements.get('running').textContent, 'WARMING UP');
+  delete snapshot.halted;
+  await app.run('refresh()');
+  assert.equal(app.elements.get('connection').textContent, 'WARMING UP');
+});

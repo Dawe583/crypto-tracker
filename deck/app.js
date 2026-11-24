@@ -66,7 +66,7 @@ const ctx2d = (id) => {
   return { x, w, h };
 };
 
-const STATE = { snap: null, strats: [], decisions: [], candles: {}, sym: 'BTCUSDT', whales: 0, pools: 0, gold: [], book: null, bookAt: 0 };
+const STATE = { snap: null, halted: false, strats: [], decisions: [], candles: {}, sym: 'BTCUSDT', whales: 0, pools: 0, gold: [], book: null, bookAt: 0 };
 let demoMode = false;
 
 function loadDemo() {
@@ -116,6 +116,7 @@ async function refresh() {
   }
   demoMode = false;
   $('demoBanner').hidden = true;
+  STATE.halted = snap?.halted === true;
   if (snap?.empty) STATE.snap = null;
   else if (snap) STATE.snap = snap;
   STATE.strats = strats || STATE.strats;
@@ -125,16 +126,16 @@ async function refresh() {
   STATE.pools = pools?.count ?? 0;
   STATE.gold = gold?.assets || [];
   lastSync = Date.now();
-  document.body.classList.remove('data-stale');
-  $('connection').textContent = snap?.killed ? 'STOPPED' : snap?.empty ? 'WARMING UP' : 'CONNECTED';
-  $('lastSync').textContent = `LAST SYNC ${utc(lastSync)} UTC`;
+  document.body.classList.toggle('data-stale', STATE.halted);
+  $('connection').textContent = STATE.halted ? 'HALTED' : snap?.killed ? 'STOPPED' : snap?.empty ? 'WARMING UP' : 'CONNECTED';
+  $('lastSync').textContent = STATE.halted ? 'ENGINE HALTED · LAST RECEIVED PORTFOLIO MAY BE STALE' : `LAST SYNC ${utc(lastSync)} UTC`;
   const progress = document.querySelector('.sync-progress');
   progress.getAnimations().forEach((a) => { a.currentTime = 0; });
   renderStatic();
   drawSlow();
   } catch (err) {
     if (version !== refreshVersion) return;
-    if (window.DECK_DEMO_FALLBACK && err.status !== 401 && err.status !== 403) {
+    if (window.DECK_DEMO_FALLBACK && !STATE.halted && err.status !== 401 && err.status !== 403) {
       demoMode = true;
       loadDemo();
       document.body.classList.remove('data-stale');
@@ -201,19 +202,20 @@ function renderMarkets() {
 // ---------- static-ish DOM (per refresh) ----------
 function renderStatic() {
   const s = STATE.snap;
-  if (!s) {
+  if (!s || STATE.halted) {
     for (const id of ['sNav', 'sPnl', 'sWin', 'sOpen', 'bigNav', 'bigPrice', 'stTickets', 'stWin', 'stEdge', 'stDD', 'openTickets', 'tapeRsi', 'tapeChg', 'biasTxt', 'invTxt']) {
       $(id).textContent = '—';
       $(id).classList.remove('pos', 'neg', 'up', 'dn');
     }
     for (const id of ['biasUp', 'biasDn', 'invB', 'invS']) $(id).style.width = '0%';
-    $('running').textContent = 'WARMING UP';
-    $('bigDelta').textContent = 'Waiting for the first portfolio snapshot';
-    $('bigPriceSub').textContent = 'Waiting for market data';
-    $('wireMsg').textContent = 'ENGINE CONNECTED · waiting for first snapshot · checking every 12 seconds';
+    $('running').textContent = STATE.halted ? 'HALTED' : 'WARMING UP';
+    $('running').className = `right ${STATE.halted ? 'neg' : ''}`;
+    $('bigDelta').textContent = STATE.halted ? 'Portfolio unavailable while the engine is halted' : 'Waiting for the first portfolio snapshot';
+    $('bigPriceSub').textContent = STATE.halted ? 'Last received market data may be stale' : 'Waiting for market data';
+    $('wireMsg').textContent = STATE.halted ? 'ENGINE HALTED · ledger unavailable · repair the ledger and restart the engine' : 'ENGINE CONNECTED · waiting for first snapshot · checking every 12 seconds';
     $('kill').disabled = true;
-    $('kill').textContent = 'Awaiting engine';
-    const waiting = '<div class="empty-state">Waiting for the first engine snapshot…</div>';
+    $('kill').textContent = STATE.halted ? 'Engine halted' : 'Awaiting engine';
+    const waiting = `<div class="empty-state">${STATE.halted ? 'Engine halted · ledger recovery required' : 'Waiting for the first engine snapshot…'}</div>`;
     for (const id of ['marketRail', 'cortexList', 'indChips', 'modelRows', 'kellyBox', 'thoughts', 'trace', 'orderBook']) $(id).innerHTML = waiting;
     return;
   }
@@ -724,7 +726,7 @@ function drawBrain(now) {
   x.fillStyle = g2; x.beginPath(); x.arc(c.X, c.Y, 60 * pulse * c.s, 0, 7); x.fill();
   x.fillStyle = '#e8f4ff'; x.font = '10px monospace'; x.textAlign = 'center';
   x.fillText(`NAV ${fmt$(STATE.snap?.equityUsd || 0, 0)}`, c.X, c.Y + 40 * c.s);
-  const meta = `${AGENTS.length} AGENTS / ${STATE.strats.length} STRATEGIES / ${recent} DECISIONS/MIN`;
+  const meta = STATE.halted ? 'ENGINE HALTED / LAST RECEIVED NETWORK STATE' : `${AGENTS.length} AGENTS / ${STATE.strats.length} STRATEGIES / ${recent} DECISIONS/MIN`;
   if ($('brainMeta').textContent !== meta) $('brainMeta').textContent = meta;
 }
 
@@ -1134,7 +1136,7 @@ setInterval(() => {
 }, 1000);
 
 $('kill').onclick = async () => {
-  if (demoMode || window.DECK_DEMO_FALLBACK) return;
+  if (demoMode || window.DECK_DEMO_FALLBACK || STATE.halted) return;
   if (!confirm('Stop the paper engine? New entries stay blocked until the server kill file is removed.')) return;
   $('kill').disabled = true;
   $('kill').textContent = 'Stopping…';
