@@ -65,6 +65,24 @@ function runCycle(...args: Parameters<typeof runProcess>): EngineSnapshot {
 const today = Date.UTC(2026, 10, 24, 23, 58);
 const tomorrow = today + 3 * 60_000;
 
+test('a local restart retains a trailing peak recorded without a fill', (t) => {
+  const root = fixture(t, 'none');
+  const seed = runProcess(root, today, {}, 'BTCUSDT', {}, `
+    const { portfolio, risk } = await import('./src/engine/loop.ts');
+    const { ledgerAppend } = await import('./src/engine/ledger.ts');
+    portfolio.open({ strategy: 'managed', symbol: 'BTCUSDT', side: 'buy', confidence: 1,
+      reason: 'fixture', sizeUsd: 100, stopLossPct: 1, takeProfitPct: 10, maxHoldMin: 60,
+      management: { riskPct: 0.25, trailAfterPct: 1 } }, 100, 0.1, now);
+    ledgerAppend('checkpoint', { checkpoint: { portfolio: portfolio.checkpoint(), risk: risk.checkpoint(), stats: [] } });
+  `);
+  assert.equal(seed.status, 0, seed.stderr);
+  const peak = runCycle(root, today + 60_000, { BTCUSDT: 104 }, 'BTCUSDT');
+  assert.equal(peak.positions[0].trailing?.peak, 104);
+  const stopped = runCycle(root, today + 120_000, { BTCUSDT: 102 }, 'BTCUSDT');
+  assert.equal(stopped.positions.length, 0);
+  assert.equal(stopped.stats.managed.trades, 1);
+});
+
 test('does not fill a max-hold exit from cached candles during a total outage', (t) => {
   const result = runProcess(fixture(t), today, { BTCUSDT: 101.12 }, 'BTCUSDT', {}, `
     import assert from 'node:assert/strict';

@@ -35,7 +35,10 @@ export class PaperPortfolio {
   restoreCheckpoint(c: PaperPortfolioCheckpoint) {
     if (![c.cashUsd, c.realizedUsd, c.feesUsd, c.tradesClosed, c.wins, c.seq].every(Number.isFinite)
       || !Array.isArray(c.positions) || c.positions.some((p) =>
-        ![p.qty, p.entryPrice, p.entryTs, p.sizeUsd].every(Number.isFinite))) {
+        ![p.qty, p.entryPrice, p.entryTs, p.sizeUsd].every(Number.isFinite)
+        || (p.entryFeeUsd !== undefined && (!Number.isFinite(p.entryFeeUsd) || p.entryFeeUsd < 0))
+        || (p.trailing !== undefined && (!p.trailing || !Number.isFinite(p.trailing.peak)
+          || p.trailing.peak < p.entryPrice || !Number.isFinite(p.trailing.afterPct) || p.trailing.afterPct <= 0)))) {
       throw new Error('invalid paper portfolio ledger checkpoint');
     }
     this.cashUsd = c.cashUsd;
@@ -51,12 +54,13 @@ export class PaperPortfolio {
     return !this.positions.has(this.key(i));
   }
 
-  open(i: TradeIntent, price: number, feePct: number): Fill | null {
-    const usd = Math.min(i.sizeUsd ?? 500, this.cashUsd);
-    if (usd < 5 || !this.canOpen(i)) return null;
+  open(i: TradeIntent, price: number, feePct: number, ts = Date.now()): Fill | null {
+    const usd = Math.min(i.sizeUsd ?? 500, this.cashUsd / (1 + feePct / 100));
+    if (!Number.isFinite(usd) || usd < 5 || !Number.isFinite(price) || price <= 0
+      || !Number.isFinite(feePct) || feePct < 0 || !this.canOpen(i)) return null;
     const qty = usd / price;
     const fee = usd * (feePct / 100);
-    this.cashUsd -= usd + fee;
+    this.cashUsd = Math.max(0, this.cashUsd - usd - fee);
     this.feesUsd += fee;
     const pos: Position = {
       id: `p${++this.seq}`,
@@ -64,30 +68,32 @@ export class PaperPortfolio {
       symbol: i.symbol,
       qty,
       entryPrice: price,
-      entryTs: Date.now(),
+      entryTs: ts,
       sizeUsd: usd,
+      entryFeeUsd: fee,
       stopLossPct: i.stopLossPct ?? null,
       takeProfitPct: i.takeProfitPct ?? null,
       maxHoldMin: i.maxHoldMin ?? null,
+      ...(i.management && { trailing: { afterPct: i.management.trailAfterPct, peak: price } }),
     };
     this.positions.set(this.key(i), pos);
-    return { id: pos.id, strategy: i.strategy, symbol: i.symbol, side: 'buy', qty, price, usd, feeUsd: fee, reason: i.reason, ts: Date.now() };
+    return { id: pos.id, strategy: i.strategy, symbol: i.symbol, side: 'buy', qty, price, usd, feeUsd: fee, reason: i.reason, ts };
   }
 
-  close(strategy: string, symbol: string, price: number, feePct: number, reason: string): Fill | null {
+  close(strategy: string, symbol: string, price: number, feePct: number, reason: string, ts = Date.now()): Fill | null {
     const key = `${strategy}|${symbol}`;
     const pos = this.positions.get(key);
-    if (!pos) return null;
+    if (!pos || !Number.isFinite(price) || price <= 0 || !Number.isFinite(feePct) || feePct < 0) return null;
     const usd = pos.qty * price;
     const fee = usd * (feePct / 100);
     this.cashUsd += usd - fee;
     this.feesUsd += fee;
-    const pnl = usd - fee - pos.sizeUsd;
+    const pnl = usd - fee - pos.sizeUsd - (pos.entryFeeUsd ?? 0);
     this.realizedUsd += pnl;
     this.tradesClosed += 1;
     if (pnl > 0) this.wins += 1;
     this.positions.delete(key);
-    return { id: pos.id, strategy, symbol, side: 'sell', qty: pos.qty, price, usd, feeUsd: fee, reason, ts: Date.now(), pnlUsd: pnl };
+    return { id: pos.id, strategy, symbol, side: 'sell', qty: pos.qty, price, usd, feeUsd: fee, reason, ts, pnlUsd: pnl };
   }
 
   equity(prices: Map<string, number>): number {
@@ -98,7 +104,7 @@ export class PaperPortfolio {
 
   unrealized(prices: Map<string, number>): number {
     let u = 0;
-    for (const p of this.positions.values()) u += p.qty * (prices.get(p.symbol) ?? p.entryPrice) - p.sizeUsd;
+    for (const p of this.positions.values()) u += p.qty * (prices.get(p.symbol) ?? p.entryPrice) - p.sizeUsd - (p.entryFeeUsd ?? 0);
     return u;
   }
 
