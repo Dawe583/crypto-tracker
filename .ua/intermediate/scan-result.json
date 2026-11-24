@@ -12,10 +12,22 @@
   "frameworks": [],
   "files": [
     {
+      "path": ".agent/work-state.json",
+      "language": "json",
+      "sizeLines": 120,
+      "fileCategory": "config"
+    },
+    {
       "path": ".env.example",
       "language": "config",
       "sizeLines": 44,
       "fileCategory": "config"
+    },
+    {
+      "path": "AGENTS.md",
+      "language": "markdown",
+      "sizeLines": 6,
+      "fileCategory": "docs"
     },
     {
       "path": "README.md",
@@ -24,10 +36,148 @@
       "fileCategory": "docs"
     },
     {
+      "path": "data/backtest-15m.json",
+      "language": "json",
+      "sizeLines": 1193,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/backtest-1h.json",
+      "language": "json",
+      "sizeLines": 599,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/backtest-1m.json",
+      "language": "json",
+      "sizeLines": 599,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/backtest.json",
+      "language": "json",
+      "sizeLines": 599,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/strategies.json",
+      "language": "json",
+      "sizeLines": 174,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/stress-15m.json",
+      "language": "json",
+      "sizeLines": 391,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-atr_trend-15m.json",
+      "language": "json",
+      "sizeLines": 270,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-bollinger_reversion-15m.json",
+      "language": "json",
+      "sizeLines": 294,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-breakout-15m.json",
+      "language": "json",
+      "sizeLines": 238,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-donchian-15m.json",
+      "language": "json",
+      "sizeLines": 170,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-ema_cross-15m.json",
+      "language": "json",
+      "sizeLines": 294,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-engulfing-15m.json",
+      "language": "json",
+      "sizeLines": 118,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-macd_momentum-15m.json",
+      "language": "json",
+      "sizeLines": 62,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-obv_drift-15m.json",
+      "language": "json",
+      "sizeLines": 170,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-roc_momentum-15m.json",
+      "language": "json",
+      "sizeLines": 294,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-rsi_reversion-15m.json",
+      "language": "json",
+      "sizeLines": 314,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-stoch_cross-15m.json",
+      "language": "json",
+      "sizeLines": 314,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-vol_spike-15m.json",
+      "language": "json",
+      "sizeLines": 182,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-vwap_reversion-15m.json",
+      "language": "json",
+      "sizeLines": 294,
+      "fileCategory": "config"
+    },
+    {
+      "path": "data/sweep-zscore_reversion-15m.json",
+      "language": "json",
+      "sizeLines": 254,
+      "fileCategory": "config"
+    },
+    {
       "path": "data/watchlist.json",
       "language": "json",
       "sizeLines": 23,
       "fileCategory": "config"
+    },
+    {
+      "path": "deck/app.js",
+      "language": "javascript",
+      "sizeLines": 1147,
+      "fileCategory": "code"
+    },
+    {
+      "path": "deck/index.html",
+      "language": "html",
+      "sizeLines": 104,
+      "fileCategory": "markup"
+    },
+    {
+      "path": "deck/style.css",
+      "language": "css",
+      "sizeLines": 224,
+      "fileCategory": "markup"
     },
     {
       "path": "deploy/DEPLOY.md",
@@ -48,27 +198,129 @@
       "fileCategory": "code"
     },
     {
+      "path": "docs/AUDIT_AND_TRADING_LANDSCAPE.md",
+      "language": "markdown",
+      "sizeLines": 111,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/BACKTEST_RESULTS.md",
+      "language": "markdown",
+      "sizeLines": 52,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/BROKER_ADAPTER.md",
+      "language": "markdown",
+      "sizeLines": 40,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/LOOP_ENGINEERING.md",
+      "language": "markdown",
+      "sizeLines": 21,
+      "fileCategory": "docs"
+    },
+    {
       "path": "docs/RPI4_DEPLOYMENT.md",
       "language": "markdown",
       "sizeLines": 109,
       "fileCategory": "docs"
     },
     {
+      "path": "docs/SYSTEM_DESIGN.md",
+      "language": "markdown",
+      "sizeLines": 96,
+      "fileCategory": "docs"
+    },
+    {
       "path": "package.json",
       "language": "json",
-      "sizeLines": 27,
+      "sizeLines": 33,
       "fileCategory": "config"
     },
     {
       "path": "src/api.ts",
       "language": "typescript",
-      "sizeLines": 134,
+      "sizeLines": 180,
       "fileCategory": "code"
     },
     {
       "path": "src/config.ts",
       "language": "typescript",
-      "sizeLines": 83,
+      "sizeLines": 99,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/backtest.ts",
+      "language": "typescript",
+      "sizeLines": 93,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/decisions.ts",
+      "language": "typescript",
+      "sizeLines": 50,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/indicators.ts",
+      "language": "typescript",
+      "sizeLines": 88,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/ledger.ts",
+      "language": "typescript",
+      "sizeLines": 72,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/loop.ts",
+      "language": "typescript",
+      "sizeLines": 133,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/market.ts",
+      "language": "typescript",
+      "sizeLines": 68,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/portfolio.ts",
+      "language": "typescript",
+      "sizeLines": 75,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/risk.ts",
+      "language": "typescript",
+      "sizeLines": 55,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/state.ts",
+      "language": "typescript",
+      "sizeLines": 21,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/stress.ts",
+      "language": "typescript",
+      "sizeLines": 47,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/sweep.ts",
+      "language": "typescript",
+      "sizeLines": 78,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/types.ts",
+      "language": "typescript",
+      "sizeLines": 86,
       "fileCategory": "code"
     },
     {
@@ -86,13 +338,13 @@
     {
       "path": "src/index.ts",
       "language": "typescript",
-      "sizeLines": 14,
+      "sizeLines": 17,
       "fileCategory": "code"
     },
     {
       "path": "src/listener.ts",
       "language": "typescript",
-      "sizeLines": 126,
+      "sizeLines": 146,
       "fileCategory": "code"
     },
     {
@@ -114,9 +366,27 @@
       "fileCategory": "code"
     },
     {
+      "path": "src/strategies/library.ts",
+      "language": "typescript",
+      "sizeLines": 319,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/strategies/registry.ts",
+      "language": "typescript",
+      "sizeLines": 24,
+      "fileCategory": "code"
+    },
+    {
       "path": "src/wallets.ts",
       "language": "typescript",
       "sizeLines": 55,
+      "fileCategory": "code"
+    },
+    {
+      "path": "tests/deck.test.mjs",
+      "language": "javascript",
+      "sizeLines": 130,
       "fileCategory": "code"
     },
     {
@@ -126,25 +396,114 @@
       "fileCategory": "config"
     }
   ],
-  "totalFiles": 19,
-  "filteredByIgnore": 14,
-  "estimatedComplexity": "small",
+  "totalFiles": 64,
+  "filteredByIgnore": 0,
+  "estimatedComplexity": "moderate",
   "importMap": {
+    ".agent/work-state.json": [],
     ".env.example": [],
+    "AGENTS.md": [],
     "README.md": [],
+    "data/backtest-15m.json": [],
+    "data/backtest-1h.json": [],
+    "data/backtest-1m.json": [],
+    "data/backtest.json": [],
+    "data/strategies.json": [],
+    "data/stress-15m.json": [],
+    "data/sweep-atr_trend-15m.json": [],
+    "data/sweep-bollinger_reversion-15m.json": [],
+    "data/sweep-breakout-15m.json": [],
+    "data/sweep-donchian-15m.json": [],
+    "data/sweep-ema_cross-15m.json": [],
+    "data/sweep-engulfing-15m.json": [],
+    "data/sweep-macd_momentum-15m.json": [],
+    "data/sweep-obv_drift-15m.json": [],
+    "data/sweep-roc_momentum-15m.json": [],
+    "data/sweep-rsi_reversion-15m.json": [],
+    "data/sweep-stoch_cross-15m.json": [],
+    "data/sweep-vol_spike-15m.json": [],
+    "data/sweep-vwap_reversion-15m.json": [],
+    "data/sweep-zscore_reversion-15m.json": [],
     "data/watchlist.json": [],
+    "deck/app.js": [],
+    "deck/index.html": [],
+    "deck/style.css": [],
     "deploy/DEPLOY.md": [],
     "deploy/install-service.sh": [],
     "deploy/whale-tracker.service": [],
+    "docs/AUDIT_AND_TRADING_LANDSCAPE.md": [],
+    "docs/BACKTEST_RESULTS.md": [],
+    "docs/BROKER_ADAPTER.md": [],
+    "docs/LOOP_ENGINEERING.md": [],
     "docs/RPI4_DEPLOYMENT.md": [],
+    "docs/SYSTEM_DESIGN.md": [],
     "package.json": [],
     "src/api.ts": [
       "src/config.ts",
+      "src/engine/ledger.ts",
+      "src/engine/risk.ts",
+      "src/engine/state.ts",
       "src/logger.ts",
       "src/store.ts",
+      "src/strategies/registry.ts",
       "src/wallets.ts"
     ],
     "src/config.ts": [],
+    "src/engine/backtest.ts": [
+      "src/config.ts",
+      "src/engine/market.ts",
+      "src/engine/portfolio.ts",
+      "src/engine/types.ts",
+      "src/strategies/registry.ts"
+    ],
+    "src/engine/decisions.ts": [
+      "src/engine/types.ts",
+      "src/logger.ts"
+    ],
+    "src/engine/indicators.ts": [
+      "src/engine/types.ts"
+    ],
+    "src/engine/ledger.ts": [
+      "src/logger.ts"
+    ],
+    "src/engine/loop.ts": [
+      "src/config.ts",
+      "src/engine/ledger.ts",
+      "src/engine/market.ts",
+      "src/engine/portfolio.ts",
+      "src/engine/risk.ts",
+      "src/engine/state.ts",
+      "src/engine/types.ts",
+      "src/logger.ts",
+      "src/store.ts",
+      "src/strategies/registry.ts"
+    ],
+    "src/engine/market.ts": [
+      "src/engine/types.ts",
+      "src/logger.ts"
+    ],
+    "src/engine/portfolio.ts": [
+      "src/engine/types.ts"
+    ],
+    "src/engine/risk.ts": [
+      "src/engine/types.ts"
+    ],
+    "src/engine/state.ts": [
+      "src/engine/types.ts"
+    ],
+    "src/engine/stress.ts": [
+      "src/config.ts",
+      "src/engine/backtest.ts",
+      "src/engine/market.ts",
+      "src/strategies/registry.ts"
+    ],
+    "src/engine/sweep.ts": [
+      "src/config.ts",
+      "src/engine/backtest.ts",
+      "src/engine/market.ts",
+      "src/strategies/registry.ts"
+    ],
+    "src/engine/types.ts": [],
     "src/filter.ts": [
       "src/config.ts",
       "src/logger.ts"
@@ -157,6 +516,8 @@
     ],
     "src/index.ts": [
       "src/api.ts",
+      "src/config.ts",
+      "src/engine/loop.ts",
       "src/gold_rwa.ts",
       "src/listener.ts",
       "src/logger.ts"
@@ -179,9 +540,20 @@
       "src/gold_rwa.ts",
       "src/notifier.ts"
     ],
+    "src/strategies/library.ts": [
+      "src/engine/indicators.ts",
+      "src/engine/types.ts"
+    ],
+    "src/strategies/registry.ts": [
+      "src/engine/types.ts",
+      "src/logger.ts",
+      "src/strategies/library.ts"
+    ],
     "src/wallets.ts": [
       "src/logger.ts"
     ],
+    "tests/deck.test.mjs": [],
     "tsconfig.json": []
-  }
+  },
+  "contentDigest": "6ae28fcfe5d7eb90a6212c842ba07ad3a0970296e93f740c5890fc870dbbca40"
 }

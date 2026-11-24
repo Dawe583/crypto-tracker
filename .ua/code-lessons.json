@@ -1,436 +1,113 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-24T20:28:57Z",
+  "generatedAt": "2026-11-24T21:21:18.233300+00:00",
   "files": {
-    "src/index.ts": {
-      "overview": "Process entry point that installs signal and unhandled-rejection handlers, then starts the on-chain listener, the Gold RWA loop and the JSON API in one Node process.",
+    "src/api.ts": {
+      "overview": "Serves authenticated monitor/engine JSON endpoints, the stop-engine action and zero-build deck static assets.",
       "sections": []
     },
     "src/config.ts": {
       "overview": "Central env-driven configuration: chain definitions (RPCs, explorers, DEX factories), quote tokens, alert thresholds, API settings and Gold RWA parameters.",
       "sections": []
     },
-    "src/listener.ts": {
-      "overview": "Subscribes to DEX factory pool-creation events and watched-wallet Transfer logs on Base and Ethereum, enriches them with market and safety data, and dispatches new-pool and whale-buy signals.",
-      "sections": [
-        {
-          "title": "Imports and module setup",
-          "lineRange": [
-            1,
-            18
-          ],
-          "explanation": "Header comment, imports and module-level constants or types that the functions below rely on.",
-          "tourOrder": 4
-        },
-        {
-          "title": "onNewPool",
-          "lineRange": [
-            19,
-            63
-          ],
-          "explanation": "Handles a pool-creation log: picks the non-quote token, waits for indexing, gathers metadata, market and deployer, filters by safety and liquidity, and dispatches a new_pool signal.",
-          "tourOrder": 4
-        },
-        {
-          "title": "onWatchedTransfer",
-          "lineRange": [
-            65,
-            96
-          ],
-          "explanation": "Handles Transfer logs into watched wallets, prices the amount and dispatches whale_buy signals above WHALE_MIN_USD with a safety verdict.",
-          "tourOrder": 4
-        },
-        {
-          "title": "startListener",
-          "lineRange": [
-            98,
-            124
-          ],
-          "explanation": "Registers factory and watched-wallet Transfer subscriptions for Base and Ethereum.",
-          "tourOrder": 4
-        }
-      ]
-    },
-    "src/wallets.ts": {
-      "overview": "Loads the smart-money/VC/insider watchlist from data/watchlist.json, skipping invalid addresses, and offers lookups by address and by chain.",
-      "sections": [
-        {
-          "title": "Imports and module setup",
-          "lineRange": [
-            1,
-            21
-          ],
-          "explanation": "Header comment, imports and module-level constants or types that the functions below rely on.",
-          "tourOrder": 4
-        },
-        {
-          "title": "loadWatchlist",
-          "lineRange": [
-            22,
-            44
-          ],
-          "explanation": "Reads data/watchlist.json, keeps entries with valid 0x addresses, checksums them and fills label, category and chain defaults.",
-          "tourOrder": 4
-        },
-        {
-          "title": "lookupWallet",
-          "lineRange": [
-            49,
-            51
-          ],
-          "explanation": "Case-insensitive lookup of a watched wallet by address.",
-          "tourOrder": 4
-        },
-        {
-          "title": "watchedAddresses",
-          "lineRange": [
-            53,
-            55
-          ],
-          "explanation": "Returns the watched addresses enabled for a given chain.",
-          "tourOrder": 4
-        }
-      ]
+    "src/engine/ledger.ts": {
+      "overview": "Daily append-only JSONL paper ledger with a record hash chain and bounded API reads.",
+      "sections": []
     },
     "src/filter.ts": {
       "overview": "Token safety and market-data layer: viem clients, DexScreener market lookup, honeypot/tax simulation, explorer verification, LP burn check and deployer profile, combined into a PASS/WARN/REJECT verdict.",
-      "sections": [
-        {
-          "title": "Imports and module setup",
-          "lineRange": [
-            1,
-            15
-          ],
-          "explanation": "Header comment, imports and module-level constants or types that the functions below rely on.",
-          "tourOrder": 5
-        },
-        {
-          "title": "makeClient",
-          "lineRange": [
-            16,
-            20
-          ],
-          "explanation": "Creates a viem public client for Base or Ethereum, preferring WebSocket RPC when configured.",
-          "tourOrder": 5
-        },
-        {
-          "title": "getMarket",
-          "lineRange": [
-            33,
-            54
-          ],
-          "explanation": "Fetches DexScreener pairs for a token and returns price, liquidity and market cap of the deepest-liquidity pair on the chain.",
-          "tourOrder": 5
-        },
-        {
-          "title": "checkHoneypot",
-          "lineRange": [
-            64,
-            78
-          ],
-          "explanation": "Queries honeypot.is to simulate buy/sell and report honeypot status and buy/sell tax.",
-          "tourOrder": 5
-        },
-        {
-          "title": "checkVerified",
-          "lineRange": [
-            81,
-            93
-          ],
-          "explanation": "Checks Basescan/Etherscan for verified contract source when an API key is configured.",
-          "tourOrder": 5
-        },
-        {
-          "title": "checkLiquidityLock",
-          "lineRange": [
-            97,
-            109
-          ],
-          "explanation": "Estimates the share of V2-style LP tokens sent to dead/zero addresses as a burn/lock heuristic.",
-          "tourOrder": 5
-        },
-        {
-          "title": "deployerProfile",
-          "lineRange": [
-            112,
-            118
-          ],
-          "explanation": "Returns the deployer's native balance and transaction count as a throwaway-wallet signal.",
-          "tourOrder": 5
-        },
-        {
-          "title": "tokenMeta",
-          "lineRange": [
-            120,
-            127
-          ],
-          "explanation": "Reads ERC-20 symbol, decimals and total supply with safe fallbacks.",
-          "tourOrder": 5
-        },
-        {
-          "title": "evaluateToken",
-          "lineRange": [
-            139,
-            169
-          ],
-          "explanation": "Runs all safety checks in parallel and folds them into PASS/WARN/REJECT with human-readable reasons.",
-          "tourOrder": 5
-        },
-        {
-          "title": "txFrom",
-          "lineRange": [
-            171,
-            173
-          ],
-          "explanation": "Resolves the sender of a transaction hash, or undefined on failure.",
-          "tourOrder": 5
-        }
-      ]
+      "sections": []
     },
     "src/gold_rwa.ts": {
       "overview": "Gold RWA monitor comparing PAXG and XAUt DEX prices with a spot gold feed, classifying spreads into alert/major levels and alerting only on level changes persisted in data/gold_state.json.",
-      "sections": [
-        {
-          "title": "Imports and module setup",
-          "lineRange": [
-            1,
-            36
-          ],
-          "explanation": "Header comment, imports and module-level constants or types that the functions below rely on.",
-          "tourOrder": 6
-        },
-        {
-          "title": "fetchSpotGold",
-          "lineRange": [
-            37,
-            49
-          ],
-          "explanation": "Fetches the spot gold price per troy ounce from GOLD_SPOT_URL.",
-          "tourOrder": 6
-        },
-        {
-          "title": "dexQuote",
-          "lineRange": [
-            52,
-            66
-          ],
-          "explanation": "Gets the deepest-liquidity DexScreener price for a gold token on a chain.",
-          "tourOrder": 6
-        },
-        {
-          "title": "classify",
-          "lineRange": [
-            68,
-            73
-          ],
-          "explanation": "Maps an absolute spread percentage to none, alert or major.",
-          "tourOrder": 6
-        },
-        {
-          "title": "scanGold",
-          "lineRange": [
-            75,
-            100
-          ],
-          "explanation": "Builds one GoldQuote per configured asset with deviation, level and premium/discount direction.",
-          "tourOrder": 6
-        },
-        {
-          "title": "renderGoldAlert",
-          "lineRange": [
-            102,
-            116
-          ],
-          "explanation": "Formats the gold spread alert text with DEX vs spot prices, liquidity, status and thresholds.",
-          "tourOrder": 6
-        },
-        {
-          "title": "runGoldCycle",
-          "lineRange": [
-            128,
-            155
-          ],
-          "explanation": "One scan cycle: updates the snapshot, alerts on level changes per asset and persists levels to gold_state.json.",
-          "tourOrder": 6
-        },
-        {
-          "title": "startGoldLoop",
-          "lineRange": [
-            157,
-            161
-          ],
-          "explanation": "Runs a gold cycle now and then every GOLD_POLL_MS.",
-          "tourOrder": 6
-        }
-      ]
+      "sections": []
     },
-    "src/notifier.ts": {
-      "overview": "Defines the WhaleSignal shape and dispatches rendered alerts to stdout, Telegram and a generic webhook, recording every signal in the in-memory store.",
-      "sections": [
-        {
-          "title": "Imports and module setup",
-          "lineRange": [
-            1,
-            24
-          ],
-          "explanation": "Header comment, imports and module-level constants or types that the functions below rely on.",
-          "tourOrder": 7
-        },
-        {
-          "title": "renderText",
-          "lineRange": [
-            25,
-            43
-          ],
-          "explanation": "Renders a signal into the multi-line alert text, or returns pre-rendered text for gold alerts.",
-          "tourOrder": 7
-        },
-        {
-          "title": "dispatch",
-          "lineRange": [
-            45,
-            75
-          ],
-          "explanation": "Records the signal, logs and prints it, then posts to Telegram and the webhook when configured.",
-          "tourOrder": 7
-        }
-      ]
+    "src/index.ts": {
+      "overview": "Starts on-chain listeners, gold monitoring, the HTTP API and paper engine with process-level error/shutdown handling.",
+      "sections": []
     },
-    "src/store.ts": {
-      "overview": "In-memory ring buffer of the last 200 signals plus the latest Gold RWA snapshot, read by the HTTP API; resets on restart.",
-      "sections": [
-        {
-          "title": "Imports and module setup",
-          "lineRange": [
-            1,
-            18
-          ],
-          "explanation": "Header comment, imports and module-level constants or types that the functions below rely on.",
-          "tourOrder": 7
-        },
-        {
-          "title": "recordSignal",
-          "lineRange": [
-            19,
-            22
-          ],
-          "explanation": "Prepends a signal to the bounded buffer, trimming it to 200 entries.",
-          "tourOrder": 7
-        },
-        {
-          "title": "listSignals",
-          "lineRange": [
-            24,
-            26
-          ],
-          "explanation": "Returns the newest signals of one kind up to a limit.",
-          "tourOrder": 7
-        },
-        {
-          "title": "countSignals",
-          "lineRange": [
-            28,
-            32
-          ],
-          "explanation": "Counts buffered signals per kind.",
-          "tourOrder": 7
-        },
-        {
-          "title": "setGoldSnapshot",
-          "lineRange": [
-            34,
-            41
-          ],
-          "explanation": "Stores the latest gold quotes, keeping the previous quotes when a scan returned none.",
-          "tourOrder": 7
-        },
-        {
-          "title": "getGoldSnapshot",
-          "lineRange": [
-            43,
-            45
-          ],
-          "explanation": "Returns the current gold snapshot.",
-          "tourOrder": 7
-        }
-      ]
-    },
-    "src/api.ts": {
-      "overview": "Dependency-free node:http JSON API exposing /api/health, /api/gold, /api/whales and /api/pools with optional bearer-token auth and an origin allowlist for CORS.",
-      "sections": [
-        {
-          "title": "Imports and module setup",
-          "lineRange": [
-            1,
-            47
-          ],
-          "explanation": "Header comment, imports and module-level constants or types that the functions below rely on.",
-          "tourOrder": 8
-        },
-        {
-          "title": "health",
-          "lineRange": [
-            48,
-            68
-          ],
-          "explanation": "Builds the /api/health payload: uptime, watched wallet count, auth flag, gold scan timestamps and per-kind signal counts.",
-          "tourOrder": 8
-        },
-        {
-          "title": "goldPayload",
-          "lineRange": [
-            70,
-            80
-          ],
-          "explanation": "Builds the /api/gold payload with the latest quotes, thresholds and a stale flag when the snapshot is older than three poll intervals.",
-          "tourOrder": 8
-        },
-        {
-          "title": "handle",
-          "lineRange": [
-            82,
-            116
-          ],
-          "explanation": "Request router: answers CORS preflight, rejects non-GET methods, serves health without auth, enforces the bearer token, then routes gold/whales/pools.",
-          "tourOrder": 8
-        },
-        {
-          "title": "startApi",
-          "lineRange": [
-            118,
-            134
-          ],
-          "explanation": "Starts the HTTP server on the configured host and port unless API_ENABLED=false, logging request and server errors.",
-          "tourOrder": 8
-        }
-      ]
+    "src/listener.ts": {
+      "overview": "Subscribes to DEX factory pool-creation events and watched-wallet Transfer logs on Base and Ethereum, enriches them with market and safety data, and dispatches new-pool and whale-buy signals.",
+      "sections": []
     },
     "src/logger.ts": {
       "overview": "Creates the shared pino structured logger whose level comes from LOG_LEVEL.",
       "sections": []
     },
-    ".env.example": {
-      "overview": "Template of every runtime environment variable: RPC endpoints, explorer keys, Telegram/webhook alert targets, whale and pool thresholds, Gold RWA settings, API host/port/token/CORS and log level.",
+    "src/notifier.ts": {
+      "overview": "Defines the WhaleSignal shape and dispatches rendered alerts to stdout, Telegram and a generic webhook, recording every signal in the in-memory store.",
       "sections": []
     },
-    "README.md": {
-      "overview": "Project overview covering features, architecture diagram, Raspberry Pi 4 quick start, systemd auto-start, the HTTP JSON API, configuration, layout, alerts, troubleshooting and limitations.",
+    "src/store.ts": {
+      "overview": "In-memory ring buffer of the last 200 signals plus the latest Gold RWA snapshot, read by the HTTP API; resets on restart.",
       "sections": []
     },
-    "package.json": {
-      "overview": "npm manifest for an ESM TypeScript app run with tsx, with start/listen/gold/typecheck/build scripts and viem, pino and dotenv dependencies.",
+    "src/wallets.ts": {
+      "overview": "Loads the smart-money/VC/insider watchlist from data/watchlist.json, skipping invalid addresses, and offers lookups by address and by chain.",
       "sections": []
     },
-    "tsconfig.json": {
-      "overview": "Strict TypeScript compiler settings targeting ES2022 ESM with bundler resolution, compiling src/ to dist/.",
+    "src/engine/decisions.ts": {
+      "overview": "Optional Jev/TypeSafe adapter converts recent candle context into validated trade intents.",
       "sections": []
     },
-    "data/watchlist.json": {
-      "overview": "Seed watchlist template with placeholder smart-money, VC and insider-cluster wallets that must be replaced with verified addresses.",
+    "src/engine/indicators.ts": {
+      "overview": "Pure OHLCV projections and technical indicators shared by strategies and historical research.",
       "sections": []
     },
-    "deploy/DEPLOY.md": {
-      "overview": "Step-by-step Raspberry Pi 4 deployment guide: prerequisites, clone, install, configure, smoke test, systemd install, operation and updates.",
+    "src/engine/loop.ts": {
+      "overview": "Refreshes candles, processes exits, evaluates strategies, checks entry risk and publishes paper fills, decisions and snapshots.",
+      "sections": []
+    },
+    "src/engine/portfolio.ts": {
+      "overview": "Tracks paper cash, position keys, simulated fills, fees and realized/unrealized PnL; places no live orders.",
+      "sections": []
+    },
+    "src/engine/risk.ts": {
+      "overview": "Hard entry-risk vetoes for kill state, daily loss, confidence, position count, exposure and strategy cooldown.",
+      "sections": []
+    },
+    "src/engine/state.ts": {
+      "overview": "In-memory snapshot and recent decision state consumed by the engine HTTP API.",
+      "sections": []
+    },
+    "src/engine/types.ts": {
+      "overview": "Shared candle, trade-intent, strategy, position, fill, decision and snapshot contracts.",
+      "sections": []
+    },
+    "src/strategies/library.ts": {
+      "overview": "Nineteen pure strategy evaluators emit narrow buy/sell intents; risk and execution remain in the engine.",
+      "sections": []
+    },
+    "src/engine/backtest.ts": {
+      "overview": "Historical strategy replay with simulated fills, configurable execution costs and research statistics.",
+      "sections": []
+    },
+    "src/engine/market.ts": {
+      "overview": "Public candle cache with Binance, Bybit, Coinbase and Kraken fallback sources.",
+      "sections": []
+    },
+    "src/engine/stress.ts": {
+      "overview": "Fee/slippage sensitivity research over strategy replay results.",
+      "sections": []
+    },
+    "src/engine/sweep.ts": {
+      "overview": "Parameter-grid research using the offline strategy replay harness.",
+      "sections": []
+    },
+    "src/strategies/registry.ts": {
+      "overview": "Loads enabled strategy settings by merging JSON overrides with evaluator defaults.",
+      "sections": []
+    },
+    "deck/app.js": {
+      "overview": "Live HUD runtime: versioned polling, keyed feeds, market selection, expandable panels, selectable neural agents and canvas motion governed by visibility, pause and reduced-motion preferences.",
+      "sections": []
+    },
+    "deck/index.html": {
+      "overview": "Accessible zero-build deck structure with portfolio, interactive brain, model, tape, cortex and trace panels plus live status controls.",
+      "sections": []
+    },
+    "deck/style.css": {
+      "overview": "Neon HUD design system with telemetry/orbit animations, panel/agent interaction states, responsive grids and still-mode fallbacks.",
       "sections": []
     },
     "deploy/install-service.sh": {
@@ -441,8 +118,8 @@
       "overview": "Hardened systemd unit running `npm start` for the tracker with always-restart, no start limit and an optional .env EnvironmentFile.",
       "sections": []
     },
-    "docs/RPI4_DEPLOYMENT.md": {
-      "overview": "Raspberry Pi 4 deployment and OpenTerminal integration guide covering setup, verification, API settings, endpoints, CORS, custom wallets, Gold RWA parameters and troubleshooting.",
+    "tests/deck.test.mjs": {
+      "overview": "Behavioral deck regressions for auth cancellation, stale replies, motion budgets, stable depth, startup, agent selection, simulated paths, stop acknowledgement and quote denominations.",
       "sections": []
     }
   }
