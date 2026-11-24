@@ -7,7 +7,6 @@ import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
 export const LEDGER_DIR = join(here, '..', '..', 'data', 'ledger');
-mkdirSync(LEDGER_DIR, { recursive: true });
 
 export interface LedgerRecord<T = unknown> {
   seq: number;
@@ -32,8 +31,12 @@ function rollDay(ts: number) {
   }
 }
 
+export function hashLedgerPayload(prevHash: string, seq: number, type: LedgerRecord['type'], payload: string) {
+  return createHash('sha256').update(`${prevHash}:${seq}:${type}:${payload}`).digest('hex');
+}
+
 function recordHash(prevHash: string, seq: number, type: LedgerRecord['type'], data: unknown) {
-  return createHash('sha256').update(`${prevHash}:${seq}:${type}:${JSON.stringify(data)}`).digest('hex');
+  return hashLedgerPayload(prevHash, seq, type, JSON.stringify(data));
 }
 
 function* readLedgerBackwards<T>(file: string): Generator<LedgerRecord<T>> {
@@ -86,6 +89,7 @@ function validateLegacyLedger<T>(files: string[]): LedgerRecord<T> | undefined {
 }
 
 export function ledgerResumeLatestCheckpoint<T>(): LedgerRecord<T> | undefined {
+  if (!existsSync(LEDGER_DIR)) return undefined;
   const files = readdirSync(LEDGER_DIR).filter((file) => /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(file)).sort().reverse();
   let newer: LedgerRecord | undefined;
   for (const file of files) {
@@ -111,6 +115,7 @@ export function ledgerResumeLatestCheckpoint<T>(): LedgerRecord<T> | undefined {
 }
 
 export function ledgerAppend<T>(type: LedgerRecord['type'], data: T, ts = Date.now()): LedgerRecord<T> {
+  if (!path) mkdirSync(LEDGER_DIR, { recursive: true });
   rollDay(ts);
   const hash = recordHash(lastHash, seq, type, data);
   const rec: LedgerRecord<T> = { seq, ts, type, prevHash: lastHash, hash, data };

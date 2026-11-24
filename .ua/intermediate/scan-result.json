@@ -1,5 +1,5 @@
 {
-  "contentDigest": "4639325675921be8c7a8feae63a6e85ed470c6d627926c5b9279c06bd3998cad",
+  "contentDigest": "244e69f8882b722e7a5425a278dfd1a5e7d1f065cddedc6e091bc0384efe9e8f",
   "files": [
     {
       "path": ".agent/work-state.json",
@@ -22,13 +22,19 @@
     {
       "path": "README.md",
       "language": "markdown",
-      "sizeLines": 325,
+      "sizeLines": 327,
       "fileCategory": "docs"
     },
     {
-      "path": "api/[...path].js",
+      "path": "api/cron/paper-engine.ts",
+      "language": "typescript",
+      "sizeLines": 10,
+      "fileCategory": "code"
+    },
+    {
+      "path": "api/read.js",
       "language": "javascript",
-      "sizeLines": 29,
+      "sizeLines": 34,
       "fileCategory": "code"
     },
     {
@@ -160,7 +166,7 @@
     {
       "path": "deck/app.js",
       "language": "javascript",
-      "sizeLines": 1212,
+      "sizeLines": 1225,
       "fileCategory": "code"
     },
     {
@@ -178,7 +184,7 @@
     {
       "path": "deploy/DEPLOY.md",
       "language": "markdown",
-      "sizeLines": 78,
+      "sizeLines": 121,
       "fileCategory": "docs"
     },
     {
@@ -220,19 +226,19 @@
     {
       "path": "docs/RPI4_DEPLOYMENT.md",
       "language": "markdown",
-      "sizeLines": 109,
+      "sizeLines": 111,
       "fileCategory": "docs"
     },
     {
       "path": "docs/SYSTEM_DESIGN.md",
       "language": "markdown",
-      "sizeLines": 96,
+      "sizeLines": 102,
       "fileCategory": "docs"
     },
     {
       "path": "package.json",
       "language": "json",
-      "sizeLines": 35,
+      "sizeLines": 36,
       "fileCategory": "config"
     },
     {
@@ -244,7 +250,7 @@
     {
       "path": "src/api.ts",
       "language": "typescript",
-      "sizeLines": 182,
+      "sizeLines": 184,
       "fileCategory": "code"
     },
     {
@@ -266,6 +272,18 @@
       "fileCategory": "code"
     },
     {
+      "path": "src/engine/hosted-api.ts",
+      "language": "typescript",
+      "sizeLines": 79,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/hosted.ts",
+      "language": "typescript",
+      "sizeLines": 103,
+      "fileCategory": "code"
+    },
+    {
       "path": "src/engine/indicators.ts",
       "language": "typescript",
       "sizeLines": 88,
@@ -274,37 +292,37 @@
     {
       "path": "src/engine/ledger.ts",
       "language": "typescript",
-      "sizeLines": 72,
+      "sizeLines": 144,
       "fileCategory": "code"
     },
     {
       "path": "src/engine/loop.ts",
       "language": "typescript",
-      "sizeLines": 133,
+      "sizeLines": 247,
       "fileCategory": "code"
     },
     {
       "path": "src/engine/market.ts",
       "language": "typescript",
-      "sizeLines": 68,
+      "sizeLines": 108,
       "fileCategory": "code"
     },
     {
       "path": "src/engine/portfolio.ts",
       "language": "typescript",
-      "sizeLines": 75,
+      "sizeLines": 108,
       "fileCategory": "code"
     },
     {
       "path": "src/engine/risk.ts",
       "language": "typescript",
-      "sizeLines": 55,
+      "sizeLines": 67,
       "fileCategory": "code"
     },
     {
       "path": "src/engine/state.ts",
       "language": "typescript",
-      "sizeLines": 21,
+      "sizeLines": 22,
       "fileCategory": "code"
     },
     {
@@ -334,7 +352,7 @@
     {
       "path": "src/gold_rwa.ts",
       "language": "typescript",
-      "sizeLines": 165,
+      "sizeLines": 186,
       "fileCategory": "code"
     },
     {
@@ -358,13 +376,13 @@
     {
       "path": "src/notifier.ts",
       "language": "typescript",
-      "sizeLines": 75,
+      "sizeLines": 79,
       "fileCategory": "code"
     },
     {
       "path": "src/store.ts",
       "language": "typescript",
-      "sizeLines": 45,
+      "sizeLines": 57,
       "fileCategory": "code"
     },
     {
@@ -376,7 +394,7 @@
     {
       "path": "src/strategies/registry.ts",
       "language": "typescript",
-      "sizeLines": 24,
+      "sizeLines": 25,
       "fileCategory": "code"
     },
     {
@@ -386,15 +404,63 @@
       "fileCategory": "code"
     },
     {
+      "path": "supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "language": "sql",
+      "sizeLines": 87,
+      "fileCategory": "data"
+    },
+    {
+      "path": "supabase/schedule-paper-engine.sql",
+      "language": "sql",
+      "sizeLines": 28,
+      "fileCategory": "data"
+    },
+    {
+      "path": "test/engine-market.test.ts",
+      "language": "typescript",
+      "sizeLines": 91,
+      "fileCategory": "code"
+    },
+    {
+      "path": "test/engine-restart.test.ts",
+      "language": "typescript",
+      "sizeLines": 501,
+      "fileCategory": "code"
+    },
+    {
+      "path": "test/engine-risk.test.ts",
+      "language": "typescript",
+      "sizeLines": 99,
+      "fileCategory": "code"
+    },
+    {
+      "path": "test/gold-rwa.test.ts",
+      "language": "typescript",
+      "sizeLines": 61,
+      "fileCategory": "code"
+    },
+    {
+      "path": "test/hosted-paper.test.ts",
+      "language": "typescript",
+      "sizeLines": 133,
+      "fileCategory": "code"
+    },
+    {
+      "path": "test/market.test.ts",
+      "language": "typescript",
+      "sizeLines": 23,
+      "fileCategory": "code"
+    },
+    {
       "path": "tests/deck.test.mjs",
       "language": "javascript",
-      "sizeLines": 241,
+      "sizeLines": 289,
       "fileCategory": "code"
     },
     {
       "path": "tests/hosting.test.mjs",
       "language": "javascript",
-      "sizeLines": 54,
+      "sizeLines": 93,
       "fileCategory": "code"
     },
     {
@@ -406,11 +472,11 @@
     {
       "path": "vercel.json",
       "language": "json",
-      "sizeLines": 10,
+      "sizeLines": 17,
       "fileCategory": "config"
     }
   ],
-  "totalFiles": 68,
+  "totalFiles": 79,
   "filteredByIgnore": 0,
   "estimatedComplexity": "moderate",
   "failures": [],
@@ -419,7 +485,12 @@
     ".env.example": [],
     "AGENTS.md": [],
     "README.md": [],
-    "api/[...path].js": [],
+    "api/cron/paper-engine.ts": [
+      "src/engine/hosted-api.ts"
+    ],
+    "api/read.js": [
+      "src/engine/hosted-api.ts"
+    ],
     "data/backtest-15m.json": [],
     "data/backtest-1h.json": [],
     "data/backtest-1m.json": [],
@@ -477,12 +548,26 @@
       "src/engine/types.ts",
       "src/logger.ts"
     ],
+    "src/engine/hosted-api.ts": [
+      "src/engine/hosted.ts",
+      "src/engine/market.ts",
+      "src/engine/state.ts",
+      "src/logger.ts"
+    ],
+    "src/engine/hosted.ts": [
+      "data/strategies.json",
+      "src/config.ts",
+      "src/engine/ledger.ts",
+      "src/engine/loop.ts",
+      "src/engine/market.ts",
+      "src/engine/state.ts",
+      "src/engine/types.ts",
+      "src/strategies/registry.ts"
+    ],
     "src/engine/indicators.ts": [
       "src/engine/types.ts"
     ],
-    "src/engine/ledger.ts": [
-      "src/logger.ts"
-    ],
+    "src/engine/ledger.ts": [],
     "src/engine/loop.ts": [
       "src/config.ts",
       "src/engine/ledger.ts",
@@ -554,6 +639,7 @@
       "src/store.ts"
     ],
     "src/store.ts": [
+      "src/config.ts",
       "src/gold_rwa.ts",
       "src/notifier.ts"
     ],
@@ -569,9 +655,35 @@
     "src/wallets.ts": [
       "src/logger.ts"
     ],
+    "supabase/migrations/20261124215149_hosted_paper_engine.sql": [],
+    "supabase/schedule-paper-engine.sql": [],
+    "test/engine-market.test.ts": [
+      "src/engine/market.ts"
+    ],
+    "test/engine-restart.test.ts": [
+      "src/engine/state.ts",
+      "src/strategies/library.ts"
+    ],
+    "test/engine-risk.test.ts": [
+      "src/strategies/library.ts"
+    ],
+    "test/gold-rwa.test.ts": [
+      "src/config.ts",
+      "src/gold_rwa.ts"
+    ],
+    "test/hosted-paper.test.ts": [
+      "src/config.ts",
+      "src/engine/hosted-api.ts",
+      "src/engine/hosted.ts",
+      "src/engine/market.ts",
+      "src/strategies/registry.ts"
+    ],
+    "test/market.test.ts": [
+      "src/engine/market.ts"
+    ],
     "tests/deck.test.mjs": [],
     "tests/hosting.test.mjs": [
-      "api/[...path].js"
+      "api/read.js"
     ],
     "tsconfig.json": [],
     "vercel.json": []

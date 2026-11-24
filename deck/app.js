@@ -126,8 +126,8 @@ async function refresh() {
     STATE.candles[symbol] = candles.candles;
     STATE.marketAt[symbol] = Number.isFinite(candles.lastFetch) && candles.lastFetch > 0 ? candles.lastFetch : 0;
   }
-  STATE.whales = whales?.count ?? 0;
-  STATE.pools = pools?.count ?? 0;
+  STATE.whales = whales?.available === false ? null : whales?.count ?? 0;
+  STATE.pools = pools?.available === false ? null : pools?.count ?? 0;
   STATE.gold = gold?.assets || [];
   lastSync = Date.now();
   document.body.classList.toggle('data-stale', STATE.halted);
@@ -218,7 +218,7 @@ function renderStatic() {
     $('bigPriceSub').textContent = STATE.halted ? 'Last received market data may be stale' : 'Waiting for market data';
     $('wireMsg').textContent = STATE.halted ? 'ENGINE HALTED · ledger unavailable · repair the ledger and restart the engine' : 'ENGINE CONNECTED · waiting for first snapshot · checking every 12 seconds';
     $('kill').disabled = true;
-    $('kill').textContent = STATE.halted ? 'Engine halted' : 'Awaiting engine';
+    $('kill').textContent = window.DECK_DEMO_FALLBACK ? 'Hosted · read only' : STATE.halted ? 'Engine halted' : 'Awaiting engine';
     delete $('marketRail').dataset.symbols;
     $('symTabs').replaceChildren();
     $('rotLegend').textContent = '';
@@ -302,9 +302,10 @@ function renderStatic() {
     `<span><i style="background:${STRAT_COLORS[i % STRAT_COLORS.length]}"></i>${s.name}${s.enabled ? '' : ' (off)'}</span>`).join('');
 
   const last = STATE.decisions[0];
-  $('wireMsg').textContent = last
-    ? `LIVE WIRE — ${last.strategy} ${last.action} ${last.symbol} @${(last.confidence * 100) | 0}% · whale signals ${STATE.whales} · new pools ${STATE.pools}`
-    : `LIVE WIRE — ${s.killed ? 'engine stopped' : 'scanning for signals'}`;
+  const wire = last
+    ? `${last.strategy} ${last.action} ${last.symbol} @${(last.confidence * 100) | 0}%`
+    : s.killed ? 'engine stopped' : 'scanning for signals';
+  $('wireMsg').textContent = `LIVE WIRE — ${wire} · whale signals ${STATE.whales ?? 'unavailable'} · new pools ${STATE.pools ?? 'unavailable'}`;
   if (demoMode) $('wireMsg').textContent = 'SIMULATED DEMO · generated prices, portfolio and decisions · no live engine connected';
   if (cached) $('wireMsg').textContent = `CACHED QUOTES · ${$('wireMsg').textContent}`;
 }
@@ -1149,6 +1150,10 @@ setInterval(() => {
   $('syncLabel').textContent = lastSync ? `SYNC ${ago(lastSync)} AGO` : 'SYNC —';
 }, 1000);
 
+if (window.DECK_DEMO_FALLBACK) {
+  $('kill').disabled = true;
+  $('kill').textContent = 'Hosted · read only';
+}
 $('kill').onclick = async () => {
   if (demoMode || window.DECK_DEMO_FALLBACK || STATE.halted) return;
   if (!confirm('Stop the paper engine? New entries stay blocked until the server kill file is removed.')) return;

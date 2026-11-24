@@ -5,7 +5,7 @@ import vm from 'node:vm';
 
 // Run the browser runtime without bootstrap/network or a graphics environment.
 const source = readFileSync(new URL('../deck/app.js', import.meta.url), 'utf8').split('updateMotion();\nwindow.STATE')[0];
-function runtime(fetch = async () => ({ ok: true, json: async () => ({}) })) {
+function runtime(fetch = async () => ({ ok: true, json: async () => ({}) }), hosted = false) {
   const elements = new Map();
   const element = () => ({ textContent: '', innerHTML: '', children: [], dataset: {},
     style: {},
@@ -16,7 +16,7 @@ function runtime(fetch = async () => ({ ok: true, json: async () => ({}) })) {
   const context = vm.createContext({
     console, fetch, document: { hidden: true, body, createElement: element, addEventListener() {}, querySelectorAll: () => [],
       getElementById: (id) => { if (!elements.has(id)) elements.set(id, element()); return elements.get(id); }, querySelector: element,
-    }, window: { addEventListener() {} }, sessionStorage: { getItem: () => null, setItem() {} },
+    }, window: { DECK_DEMO_FALLBACK: hosted, addEventListener() {} }, sessionStorage: { getItem: () => null, setItem() {} },
     matchMedia: () => ({ matches: false, addEventListener() {} }), IntersectionObserver: class { observe() {} },
     requestAnimationFrame() {}, setInterval() {}, prompt: () => null,
   });
@@ -63,6 +63,19 @@ test('hidden and paused frames do not advance visual time', () => {
   assert.equal(app.run('visualTime'), 0);
   app.run('motionPaused = false; frame(1080)');
   assert.equal(app.run('visualTime'), 40);
+});
+
+test('connected deck distinguishes unavailable monitors from zero activity', async () => {
+  const app = runtime(async (path) => ({ ok: true, json: async () => {
+    if (path.startsWith('/api/whales')) return { count: 0, available: false };
+    if (path.startsWith('/api/pools')) return { count: 0 };
+    if (path.includes('/snapshot')) return { positions: [], equityCurve: [] };
+    if (path.includes('/strategies') || path.includes('/decisions')) return [];
+    return {};
+  } }));
+  await app.run('refresh()');
+  assert.equal(app.elements.get('connection').textContent, 'CONNECTED');
+  assert.match(app.elements.get('wireMsg').textContent, /whale signals unavailable · new pools 0/);
 });
 
 test('slow redraw never invokes offscreen chart or book work', () => {
@@ -193,11 +206,15 @@ test('hosted fallback is labeled, cannot stop an engine, and fully clears before
 });
 
 test('hosted mode never hides an authorization failure behind demo data', async () => {
-  const app = runtime(async () => ({ ok: false, status: 401 }));
-  app.context.window.DECK_DEMO_FALLBACK = true;
+  const app = runtime(async () => ({ ok: false, status: 401 }), true);
+  const stop = app.elements.get('kill');
+  assert.equal(stop.disabled, true);
+  assert.equal(stop.textContent, 'Hosted · read only');
   await app.run('refresh()');
   assert.equal(app.run('demoMode'), false);
   assert.equal(app.run('STATE.snap'), null);
+  assert.equal(stop.disabled, true);
+  assert.equal(stop.textContent, 'Hosted · read only');
 });
 
 test('hosted controls cannot send stop requests even when live state is available', async () => {

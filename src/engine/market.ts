@@ -20,7 +20,7 @@ const KRAKEN_INTERVALS: Record<string, string | undefined> = {
   '1d': '1440', '1w': '10080', '15d': '21600',
 };
 
-interface Feed { candles: Candle[]; price: number; source: 'binance' | 'bybit' | 'coinbase' | 'kraken'; lastFetch: number }
+export interface Feed { candles: Candle[]; price: number; source: 'binance' | 'bybit' | 'coinbase' | 'kraken'; lastFetch: number }
 const feeds = new Map<string, Feed>();
 
 const fetchMarket = (url: string) => fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
@@ -72,7 +72,7 @@ const sources = [
   ['kraken', fromKraken, KRAKEN_INTERVALS],
 ] as const;
 
-export async function refreshSymbol(symbol: string, interval: string, { requireRecent = false } = {}): Promise<Feed | null> {
+export async function fetchSymbol(symbol: string, interval: string, { requireRecent = true } = {}): Promise<Feed | null> {
   const [, count, unit] = /^(\d+)([smhdwM])$/.exec(interval) ?? [];
   const maxAgeMs = 2 * Number(count) * CANDLE_UNIT_MS[unit];
   if (requireRecent && (!Number.isSafeInteger(maxAgeMs) || maxAgeMs <= 0)) {
@@ -91,14 +91,18 @@ export async function refreshSymbol(symbol: string, interval: string, { requireR
       const lastFetch = Date.now();
       const age = lastFetch - latest.t;
       if (requireRecent && (age > maxAgeMs || age < -CLOCK_SKEW_MS)) throw new Error('market candle timestamp out of range');
-      const feed: Feed = { candles, price: latest.c, source, lastFetch };
-      feeds.set(symbol, feed);
-      return feed;
+      return { candles, price: latest.c, source, lastFetch };
     } catch (err) {
       logger.warn({ err: String(err), symbol, source }, 'market feed failed');
     }
   }
   return null;
+}
+
+export async function refreshSymbol(symbol: string, interval: string, { requireRecent = false } = {}): Promise<Feed | null> {
+  const feed = await fetchSymbol(symbol, interval, { requireRecent });
+  if (feed) feeds.set(symbol, feed);
+  return feed;
 }
 
 export const getFeed = (symbol: string) => feeds.get(symbol) ?? null;

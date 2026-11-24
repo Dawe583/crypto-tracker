@@ -3,11 +3,14 @@ import assert from 'node:assert/strict';
 import handler from '../api/read.js';
 
 const originalFetch = globalThis.fetch;
-const originalOrigin = process.env.ENGINE_API_ORIGIN;
+const envKeys = ['ENGINE_API_ORIGIN', 'API_TOKEN', 'SUPABASE_URL', 'SUPABASE_SECRET_KEY'];
+const originalEnv = Object.fromEntries(envKeys.map((key) => [key, process.env[key]]));
 afterEach(() => {
   globalThis.fetch = originalFetch;
-  if (originalOrigin === undefined) delete process.env.ENGINE_API_ORIGIN;
-  else process.env.ENGINE_API_ORIGIN = originalOrigin;
+  for (const key of envKeys) {
+    if (originalEnv[key] === undefined) delete process.env[key];
+    else process.env[key] = originalEnv[key];
+  }
 });
 async function request(url, method = 'GET', authorization, query) {
   const result = { code: 200, headers: {}, setHeader(k, v) { this.headers[k] = v; },
@@ -17,6 +20,7 @@ async function request(url, method = 'GET', authorization, query) {
 }
 test('unset and unreachable origins fail explicitly without inventing engine responses', async () => {
   delete process.env.ENGINE_API_ORIGIN;
+  delete process.env.SUPABASE_URL;
   assert.equal((await request('/api/engine/snapshot')).code, 503);
   process.env.ENGINE_API_ORIGIN = 'https://engine.example';
   globalThis.fetch = async () => { throw new Error('offline'); };
@@ -24,6 +28,7 @@ test('unset and unreachable origins fail explicitly without inventing engine res
 });
 test('Vercel rewrites preserve the engine path and user query without leaking the routing parameter', async () => {
   delete process.env.ENGINE_API_ORIGIN;
+  delete process.env.SUPABASE_URL;
   assert.equal((await request('/api/read?__deck_path=engine/snapshot')).code, 503);
   assert.equal((await request('/api/read?__deck_path=engine/kill')).code, 404);
   process.env.ENGINE_API_ORIGIN = 'https://engine.example';
@@ -62,4 +67,27 @@ test('non-JSON gateway authentication failures keep their original status', asyn
     globalThis.fetch = async () => new Response('<html>access denied</html>', { status, headers: { 'content-type': 'text/html' } });
     assert.equal((await request('/api/engine/snapshot')).code, status);
   }
+});
+
+test('the rewritten Vercel route can serve Supabase paper data without an upstream origin', async () => {
+  delete process.env.ENGINE_API_ORIGIN;
+  Object.assign(process.env, {
+    API_TOKEN: 'deck-test', SUPABASE_URL: 'https://storage.example', SUPABASE_SECRET_KEY: 'secret-test',
+  });
+  let calls = 0;
+  globalThis.fetch = async (url, options) => {
+    calls++;
+    assert.equal(String(url), 'https://storage.example/rest/v1/rpc/paper_engine_read');
+    assert.deepEqual(JSON.parse(options.body), { p_key: 'candles', p_symbol: 'ETHUSDT' });
+    return Response.json({ source: 'coinbase', candles: [{ c: 2500 }], lastFetch: 42 });
+  };
+  const url = '/api/read?__deck_path=engine/candles&symbol=ethusdt';
+  assert.equal((await request(url)).code, 401);
+  const result = await request(url, 'GET', 'Bearer deck-test');
+  assert.equal(result.code, 200);
+  assert.equal(result.headers['Cache-Control'], 'no-store');
+  assert.deepEqual(result.data, { source: 'coinbase', candles: [{ c: 2500 }], lastFetch: 42, symbol: 'ETHUSDT' });
+  assert.deepEqual((await request('/api/read?__deck_path=whales', 'GET', 'Bearer deck-test')).data,
+    { count: 0, signals: [], available: false });
+  assert.equal(calls, 1);
 });
