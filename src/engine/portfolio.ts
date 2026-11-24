@@ -1,6 +1,16 @@
 // Paper portfolio: cash, positions, realized/unrealized PnL, fee accounting.
 import type { Fill, Position, TradeIntent } from './types.js';
 
+export interface PaperPortfolioCheckpoint {
+  cashUsd: number;
+  positions: Position[];
+  realizedUsd: number;
+  feesUsd: number;
+  tradesClosed: number;
+  wins: number;
+  seq: number;
+}
+
 export class PaperPortfolio {
   cashUsd: number;
   positions = new Map<string, Position>(); // key: strategy|symbol
@@ -12,6 +22,29 @@ export class PaperPortfolio {
 
   constructor(startUsd = 10_000) {
     this.cashUsd = startUsd;
+  }
+
+  checkpoint(): PaperPortfolioCheckpoint {
+    return {
+      cashUsd: this.cashUsd, positions: [...this.positions.values()],
+      realizedUsd: this.realizedUsd, feesUsd: this.feesUsd,
+      tradesClosed: this.tradesClosed, wins: this.wins, seq: this.seq,
+    };
+  }
+
+  restoreCheckpoint(c: PaperPortfolioCheckpoint) {
+    if (![c.cashUsd, c.realizedUsd, c.feesUsd, c.tradesClosed, c.wins, c.seq].every(Number.isFinite)
+      || !Array.isArray(c.positions) || c.positions.some((p) =>
+        ![p.qty, p.entryPrice, p.entryTs, p.sizeUsd].every(Number.isFinite))) {
+      throw new Error('invalid paper portfolio ledger checkpoint');
+    }
+    this.cashUsd = c.cashUsd;
+    this.realizedUsd = c.realizedUsd;
+    this.feesUsd = c.feesUsd;
+    this.tradesClosed = c.tradesClosed;
+    this.wins = c.wins;
+    this.seq = c.seq;
+    this.positions = new Map(c.positions.map((p) => [this.key(p), p]));
   }
 
   canOpen(i: TradeIntent): boolean {
