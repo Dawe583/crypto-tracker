@@ -18,6 +18,9 @@ export default async function handler(req, res) {
     const upstream = await fetch(new URL(requested.pathname + requested.search, origin), {
       method, headers: authorization ? { authorization } : {}, redirect: 'error', signal: AbortSignal.timeout(8000),
     });
+    if (upstream.status === 401 || upstream.status === 403) {
+      return res.status(upstream.status).json({ error: 'Engine access denied' });
+    }
     if (!upstream.headers.get('content-type')?.includes('application/json')) {
       return res.status(502).json({ error: 'Engine returned a non-JSON response' });
     }

@@ -44,3 +44,11 @@ test('proxy restricts paths, methods, mutation auth and malformed upstream respo
   globalThis.fetch = async () => new Response('<html>unavailable</html>', { headers: { 'content-type': 'text/html' } });
   assert.equal((await request('/api/engine/snapshot')).code, 502);
 });
+
+test('non-JSON gateway authentication failures keep their original status', async () => {
+  process.env.ENGINE_API_ORIGIN = 'https://engine.example';
+  for (const status of [401, 403]) {
+    globalThis.fetch = async () => new Response('<html>access denied</html>', { status, headers: { 'content-type': 'text/html' } });
+    assert.equal((await request('/api/engine/snapshot')).code, status);
+  }
+});
