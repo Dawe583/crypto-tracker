@@ -1,10 +1,9 @@
 // Append-only hash-chained JSONL ledger (ai-hedge-fund pattern): every record
 // carries prevHash + sha256 hash so the NAV track record is tamper-evident.
-import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, readdirSync, readFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { logger } from '../logger.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 export const LEDGER_DIR = join(here, '..', '..', 'data', 'ledger');
@@ -40,12 +39,42 @@ function rollDay(ts: number) {
   }
 }
 
-const h = (s: string) => createHash('sha256').update(s).digest('hex');
+function recordHash(prevHash: string, seq: number, type: LedgerRecord['type'], data: unknown) {
+  return createHash('sha256').update(`${prevHash}:${seq}:${type}:${JSON.stringify(data)}`).digest('hex');
+}
+
+export function ledgerResumeLatestFill<T>(): LedgerRecord<T> | undefined {
+  const files = readdirSync(LEDGER_DIR).filter((file) => /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(file)).sort().reverse();
+  let newest: LedgerRecord | undefined;
+  for (const file of files) {
+    const contents = readFileSync(join(LEDGER_DIR, file), 'utf8');
+    if (contents && !contents.endsWith('\n')) throw new Error(`incomplete paper ledger row in ${file}`);
+    const lines = contents.trim().split('\n');
+    for (let i = lines.length - 1; i >= 0; i--) {
+      if (!lines[i].trim()) continue;
+      let record: LedgerRecord<T>;
+      try {
+        record = JSON.parse(lines[i]) as LedgerRecord<T>;
+      } catch {
+        throw new Error(`invalid paper ledger row in ${file}:${i + 1}`);
+      }
+      if (!record || !Number.isSafeInteger(record.seq) || record.seq < 0
+        || record.hash !== recordHash(record.prevHash, record.seq, record.type, record.data)) {
+        throw new Error(`invalid paper ledger hash in ${file}:${i + 1}`);
+      }
+      if (!newest) {
+        newest = record;
+        seq = record.seq + 1;
+        lastHash = record.hash;
+      }
+      if (record.type === 'fill') return record;
+    }
+  }
+}
 
 export function ledgerAppend<T>(type: LedgerRecord['type'], data: T, ts = Date.now()): LedgerRecord<T> {
   rollDay(ts);
-  const body = JSON.stringify(data);
-  const hash = h(`${lastHash}:${seq}:${type}:${body}`);
+  const hash = recordHash(lastHash, seq, type, data);
   const rec: LedgerRecord<T> = { seq, ts, type, prevHash: lastHash, hash, data };
   appendFileSync(path, JSON.stringify(rec) + '\n');
   seq += 1;

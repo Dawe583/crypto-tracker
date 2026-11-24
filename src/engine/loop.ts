@@ -2,15 +2,15 @@
 // paper fill -> ledger -> snapshot. One decision unit per cycle, hold when late.
 import { logger } from '../logger.js';
 import { config } from '../config.js';
-import { refreshSymbol, getPrice } from './market.js';
-import { PaperPortfolio } from './portfolio.js';
+import { refreshSymbol, getFeed, getPrice } from './market.js';
+import { PaperPortfolio, type PaperPortfolioCheckpoint } from './portfolio.js';
 import { RiskEngine } from './risk.js';
-import { ledgerAppend } from './ledger.js';
+import { ledgerAppend, ledgerResumeLatestFill } from './ledger.js';
 import { loadStrategies } from '../strategies/registry.js';
 import { listSignals } from '../store.js';
 import { getGoldSnapshot } from '../store.js';
 import { engineState } from './state.js';
-import type { DecisionRecord, TradeIntent } from './types.js';
+import type { DecisionRecord, Fill, TradeIntent } from './types.js';
 
 export const portfolio = new PaperPortfolio(config.engine.startUsd);
 export const risk = new RiskEngine({
@@ -26,11 +26,54 @@ export const risk = new RiskEngine({
 const strategies = loadStrategies();
 const equityCurve: { ts: number; equityUsd: number }[] = [];
 const perStrategy = new Map<string, { pnl: number; trades: number; wins: number }>();
+let recovered = false;
+let ledgerFailed = false;
+
+type CheckpointedFill = Fill & {
+  checkpoint?: {
+    portfolio: PaperPortfolioCheckpoint;
+    risk: ReturnType<RiskEngine['checkpoint']>;
+    stats: [string, { pnl: number; trades: number; wins: number }][];
+  };
+};
+
+function recoverPortfolio() {
+  const previous = ledgerResumeLatestFill<CheckpointedFill>();
+  const checkpoint = previous?.data.checkpoint;
+  if (checkpoint) {
+    portfolio.restoreCheckpoint(checkpoint.portfolio);
+    risk.restoreCheckpoint(checkpoint.risk);
+    for (const [name, stats] of checkpoint.stats) perStrategy.set(name, stats);
+  } else if (previous) {
+    logger.warn('legacy paper ledger fill has no checkpoint; starting a new simulated portfolio');
+  }
+  recovered = true;
+}
 
 function statFor(name: string) {
   let s = perStrategy.get(name);
   if (!s) { s = { pnl: 0, trades: 0, wins: 0 }; perStrategy.set(name, s); }
   return s;
+}
+
+function recordFill(fill: Fill) {
+  if (fill.side === 'sell') {
+    const pnl = fill.pnlUsd ?? 0;
+    risk.recordClose(fill.strategy, pnl);
+    const stats = statFor(fill.strategy);
+    stats.pnl += pnl;
+    stats.trades += 1;
+    if (pnl > 0) stats.wins += 1;
+  }
+  try {
+    ledgerAppend<CheckpointedFill>('fill', {
+      ...fill,
+      checkpoint: { portfolio: portfolio.checkpoint(), risk: risk.checkpoint(), stats: [...perStrategy] },
+    });
+  } catch (err) {
+    ledgerFailed = true;
+    throw err;
+  }
 }
 
 function monitorSignals() {
@@ -54,18 +97,27 @@ function checkExits(prices: Map<string, number>) {
     if (!reason) continue;
     const fill = portfolio.close(p.strategy, p.symbol, px, config.engine.feePct, reason);
     if (fill) {
-      risk.recordClose(p.strategy, fill.pnlUsd ?? 0);
-      const st = statFor(p.strategy); st.pnl += fill.pnlUsd ?? 0; st.trades += 1; if ((fill.pnlUsd ?? 0) > 0) st.wins += 1;
-      ledgerAppend('fill', fill);
+      recordFill(fill);
       logger.info({ symbol: p.symbol, strategy: p.strategy, pnl: fill.pnlUsd }, 'position closed');
     }
   }
 }
 
 export async function runEngineCycle() {
+  if (ledgerFailed) throw new Error('paper ledger unavailable; restart required');
+  if (!recovered) {
+    try {
+      recoverPortfolio();
+    } catch (err) {
+      ledgerFailed = true;
+      throw err;
+    }
+  }
   const symbols = config.engine.symbols;
-  await Promise.all(symbols.map((s) => refreshSymbol(s, config.engine.interval)));
-  const prices = new Map(symbols.map((s) => [s, getPrice(s) ?? 0]).filter(([, p]) => (p as number) > 0) as [string, number][]);
+  const marketSymbols = [...new Set([...symbols, ...Array.from(portfolio.positions.values(), (p) => p.symbol)])];
+  await Promise.all(marketSymbols.map((s) => refreshSymbol(s, config.engine.interval)));
+  if (ledgerFailed) return;
+  const prices = new Map(marketSymbols.map((s) => [s, getPrice(s) ?? 0]).filter(([, p]) => (p as number) > 0) as [string, number][]);
 
   checkExits(prices);
   const signals = monitorSignals();
@@ -73,7 +125,7 @@ export async function runEngineCycle() {
   for (const { strategy, params, enabled } of strategies) {
     if (!enabled) continue;
     for (const symbol of symbols) {
-      const feed = await import('./market.js').then((m) => m.getFeed(symbol));
+      const feed = getFeed(symbol);
       if (!feed || feed.candles.length < 30) continue;
       let intents: TradeIntent[] = [];
       try {
@@ -83,7 +135,7 @@ export async function runEngineCycle() {
         const rec: DecisionRecord = { strategy: i.strategy, symbol, action: i.side, confidence: i.confidence, reason: i.reason, ts: Date.now() };
         if (i.side === 'sell') {
           const fill = portfolio.close(i.strategy, symbol, prices.get(symbol) ?? feed.price, config.engine.feePct, i.reason);
-          if (fill) { risk.recordClose(i.strategy, fill.pnlUsd ?? 0); const st = statFor(i.strategy); st.pnl += fill.pnlUsd ?? 0; st.trades += 1; if ((fill.pnlUsd ?? 0) > 0) st.wins += 1; ledgerAppend('fill', fill); }
+          if (fill) recordFill(fill);
           rec.vetoed = fill ? undefined : 'no position to close';
           ledgerAppend('decision', rec);
           engineState.decisions.unshift(rec);
@@ -98,8 +150,8 @@ export async function runEngineCycle() {
         if (veto) { rec.vetoed = veto; ledgerAppend('decision', rec); ledgerAppend('risk', rec); engineState.decisions.unshift(rec); continue; }
         const fill = portfolio.open(i, prices.get(symbol) ?? feed.price, config.engine.feePct);
         if (fill) {
+          recordFill(fill);
           ledgerAppend('decision', rec);
-          ledgerAppend('fill', fill);
           engineState.decisions.unshift(rec);
           logger.info({ symbol, strategy: i.strategy, usd: fill.usd }, 'position opened');
         } else { rec.vetoed = 'insufficient cash or duplicate position'; ledgerAppend('decision', rec); engineState.decisions.unshift(rec); }
