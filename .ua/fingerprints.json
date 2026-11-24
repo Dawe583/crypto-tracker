@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "f058390444fa566554c41a8274601f4cdba0b256",
-  "generatedAt": "2026-11-24T21:44:52.248Z",
+  "gitCommitHash": "29abf761b576427c5d76cf387aec00405b99ce23",
+  "generatedAt": "2026-11-24T21:49:17.635Z",
   "files": {
     ".agent/work-state.json": {
       "filePath": ".agent/work-state.json",
@@ -2639,7 +2639,7 @@
     },
     "tests/deck.test.mjs": {
       "filePath": "tests/deck.test.mjs",
-      "contentHash": "4e1dec1a7d9b093f8cb41ac3ac06857ee507203779d0b0137ce9140d243da26f",
+      "contentHash": "0964ed306cda9af4937f34ad58f2d9e0dbe4aa5c5a2f32db0a38fe7e8e9440b5",
       "functions": [
         {
           "name": "runtime",
@@ -2676,7 +2676,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 241,
+      "totalLines": 242,
       "hasStructuralAnalysis": true
     },
     "tests/hosting.test.mjs": {
