@@ -9,6 +9,8 @@ node_modules/
 # Build output
 dist/
 build/
+public/
+.vercel/
 
 # Logs and runtime state
 *.log
@@ -28,3 +30,9 @@ Thumbs.db
 # Trading engine runtime artifacts
 data/ledger/
 data/KILL
+supabase/.temp/
+supabase/.branches/
+
+# Knowledge-graph scratch files
+.ua/tmp/
+.ua/.trash-*/

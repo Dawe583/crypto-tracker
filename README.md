@@ -1,5 +1,15 @@
 # Base & EVM Whale Tracker
 
+### Hosted crypto deck
+
+Vercel serves the deck at `/` and `/deck`. For the [hosted paper engine](deploy/DEPLOY.md#vercel-paper-engine-and-deck), leave `ENGINE_API_ORIGIN` unset: Supabase Cron calls the Vercel engine, which saves simulated positions and fills in Supabase. The deck reads that state through its authenticated Vercel API. The whale, pool, and gold monitors do not run in this setup.
+
+Set `ENGINE_API_ORIGIN` only if deliberately using an external HTTPS engine instead. The proxy forwards only the browser's API bearer token and never adds server credentials or follows upstream redirects. Both modes are read-only: `/api/engine/kill` is unavailable, even with a token.
+
+If no fresh paper snapshot is available, **the hosted page uses clearly labeled, generated DEMO data**. Its stop control remains disabled, and it retries the API every 12 seconds. Authentication errors are not hidden by switching to demo. Returning to live data clears generated candles and portfolio state first. Local `npm start` does not use demo data.
+
+Validate hosting with `npm run test:hosting` and `npm run build:deck`; deck behavior with `npm run test:deck`.
+
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![viem](https://img.shields.io/badge/viem-2.x-000000)](https://viem.sh/)

@@ -140,7 +140,12 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
       return send(res, 200, { count: signals.length, signals }, cors);
     }
     case '/api/engine/snapshot':
-      return send(res, 200, { ...(engineState.snapshot ?? { empty: true }), halted: engineState.halted }, cors);
+      return send(res, 200, {
+        ...(engineState.snapshot
+          ? { ...engineState.snapshot, killed: engineState.snapshot.killed || existsSync(KILL_FILE) }
+          : { empty: true }),
+        halted: engineState.halted,
+      }, cors);
     case '/api/engine/strategies':
       return send(res, 200, loadStrategies().map(({ strategy, params, enabled }) => ({ name: strategy.name, description: strategy.description, params, enabled })), cors);
     case '/api/engine/decisions': {

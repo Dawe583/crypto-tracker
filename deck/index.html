@@ -3,23 +3,28 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>GROK DESK — crypto-tracker</title>
+  <meta name="theme-color" content="#050911" />
+  <title>CRYPTO DESK — live trading intelligence</title>
   <link rel="stylesheet" href="/deck/style.css" />
 </head>
 <body>
   <!-- top strip -->
   <header class="hud topbar">
-    <div class="cell brand"><i class="dot"></i><b>CRYPTO&nbsp;DESK</b><span class="sub">six agents · one book</span></div>
+    <div class="cell brand"><i class="dot" aria-hidden="true"></i><div><b>CRYPTO&nbsp;DESK</b><span class="sub">six agents · one book</span></div></div>
     <div class="cell"><label>NAV</label><b id="sNav">—</b></div>
     <div class="cell"><label>DAY PNL</label><b id="sPnl">—</b></div>
     <div class="cell"><label>WIN RATE</label><b id="sWin">—</b></div>
     <div class="cell clock"><b id="sClock">--:--:--</b><label>UTC</label></div>
     <div class="cell"><label>OPEN</label><b id="sOpen">—</b></div>
-    <button class="kill" id="kill">⚡ ENGINE</button>
+    <div class="desk-controls"><span class="paper-badge">PAPER</span><button id="motionToggle" class="tool-button" aria-pressed="false">Pause motion</button><button class="kill" id="kill" disabled>Awaiting engine</button></div>
   </header>
 
+  <aside class="demo-banner" id="demoBanner" hidden role="status">DEMO MODE · GENERATED DATA · NO ENGINE CONNECTED · TRADING CONTROLS DISABLED</aside>
+
   <!-- live wire -->
-  <div class="wire"><span id="wireMsg">LIVE WIRE — engine online</span></div>
+  <div class="wire"><span class="wire-label"><i class="dot" aria-hidden="true"></i><b id="connection" role="status">CONNECTING</b></span><div class="wire-track"><span id="wireMsg">LIVE WIRE — connecting to engine</span></div><span class="sync-label" id="syncLabel">SYNC —</span><i class="sync-progress" aria-hidden="true"></i></div>
+
+  <nav class="market-rail" id="marketRail" aria-label="Select market"></nav>
 
   <main>
     <section class="row r1">
@@ -40,29 +45,32 @@
         <div id="cortexList"></div>
       </div>
       <div class="panel brain-panel">
-        <div class="ptitle">THE BRAIN — LIVE 3D SYSTEM GRAPH · AGENTS × STRATEGIES × MARKETS · DRAG TO ROTATE · SCROLL TO ZOOM <span class="right" id="brainMeta"></span></div>
-        <canvas id="brain"></canvas>
+        <div class="ptitle brain-title"><span>THE BRAIN <em>LIVE SYSTEM GRAPH</em></span><span id="brainMeta"></span></div>
+        <div class="brain-stage"><div class="brain-coordinate" aria-hidden="true">AGENTS × STRATEGIES × MARKETS</div><canvas id="brain" tabindex="0" role="img" aria-label="Interactive agent network. Drag or use arrow keys to rotate; plus and minus to zoom; zero to reset."></canvas><div class="brain-caption"><span>DRAG TO ORBIT · + / − TO ZOOM</span><button class="tool-button" id="resetBrain">Reset view</button></div></div>
         <div class="pipeline" id="pipeline"></div>
+        <div class="agent-detail" id="agentDetail" role="status">SELECT AN AGENT TO ISOLATE ITS NEURAL PATHWAYS</div>
       </div>
       <div class="panel side-panel">
+        <div class="instrument">
         <div class="ptitle">MODEL — FAIR vs MARKET</div>
         <div id="modelRows"></div>
+        </div><div class="instrument">
         <div class="ptitle">KELLY — SIZING THE STAKE</div>
         <div id="kellyBox"></div>
+        </div><div class="instrument">
         <div class="ptitle">MEMBRANE — EXECUTION BAND</div>
         <canvas id="membrane" height="72"></canvas>
+        </div><div class="instrument">
         <div class="ptitle">SYNAPTIC WEIGHTS</div>
         <canvas id="weights" height="72"></canvas>
-        <div class="ptitle">SIGNAL ROTATION <span class="right dim">strength × activity</span></div>
-        <canvas id="rotation" height="180"></canvas>
-        <div id="rotLegend" class="rot-legend"></div>
+        </div>
       </div>
     </section>
 
     <section class="row r2">
       <div class="panel tape-panel">
-        <div class="ptitle">THE TAPE — <span id="tapeSym">BTCUSDT</span> · VWAP Σ-BANDS · LIVE ORDER BOOK <span class="right"><span id="tapeRsi"></span> <span id="tapeChg"></span></span></div>
-        <div class="bigprice"><b id="bigPrice">—</b><span id="bigPriceSub"></span><span class="dim" style="font-size:9px;margin-left:auto">LIQUIDITY HEAT · RESTING ORDERS</span></div>
+        <div class="ptitle">THE TAPE — <span id="tapeSym">BTCUSDT</span> · VWAP Σ-BANDS <span class="right"><span id="tapeRsi"></span> <span id="tapeChg"></span></span></div>
+        <div class="bigprice"><b id="bigPrice">—</b><span id="bigPriceSub"></span><span class="tape-note dim">ILLUSTRATIVE DEPTH & HEAT</span></div>
         <div class="tape-body">
           <canvas id="tapeChart"></canvas>
           <div class="book" id="orderBook"></div>
@@ -83,9 +91,15 @@
         <div class="trace" id="trace"></div>
         <div class="ptitle" style="margin-top:8px">THE PRICER — FAN OF FUTURES</div>
         <canvas id="pricer" height="150"></canvas>
+        <div class="instrument rotation-instrument">
+          <div class="ptitle">SIGNAL ROTATION <span class="right dim">strength × activity</span></div>
+          <canvas id="rotation" height="180"></canvas>
+          <div id="rotLegend" class="rot-legend"></div>
+        </div>
       </div>
     </section>
   </main>
+  <footer class="deck-footer"><span><i class="dot" aria-hidden="true"></i> CRYPTO DESK / PAPER TRADING</span><span>MARKET DATA · ILLUSTRATIVE NEURAL VISUALIZATION</span><span id="lastSync">Awaiting first sync</span></footer>
 
   <script src="/deck/app.js"></script>
 </body>

@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "generatedAt": "2026-11-24T21:25:27.648161+00:00",
+  "files": {
+    "src/api.ts": {
+      "overview": "Serves authenticated monitor/engine JSON endpoints, the stop-engine action and zero-build deck static assets.",
+      "sections": []
+    },
+    "src/config.ts": {
+      "overview": "Central env-driven configuration: chain definitions (RPCs, explorers, DEX factories), quote tokens, alert thresholds, API settings and Gold RWA parameters.",
+      "sections": []
+    },
+    "src/engine/ledger.ts": {
+      "overview": "Daily append-only JSONL paper ledger with a record hash chain and bounded API reads.",
+      "sections": []
+    },
+    "src/filter.ts": {
+      "overview": "Token safety and market-data layer: viem clients, DexScreener market lookup, honeypot/tax simulation, explorer verification, LP burn check and deployer profile, combined into a PASS/WARN/REJECT verdict.",
+      "sections": []
+    },
+    "src/gold_rwa.ts": {
+      "overview": "Gold RWA monitor comparing PAXG and XAUt DEX prices with a spot gold feed, classifying spreads into alert/major levels and alerting only on level changes persisted in data/gold_state.json.",
+      "sections": []
+    },
+    "src/index.ts": {
+      "overview": "Starts on-chain listeners, gold monitoring, the HTTP API and paper engine with process-level error/shutdown handling.",
+      "sections": []
+    },
+    "src/listener.ts": {
+      "overview": "Subscribes to DEX factory pool-creation events and watched-wallet Transfer logs on Base and Ethereum, enriches them with market and safety data, and dispatches new-pool and whale-buy signals.",
+      "sections": []
+    },
+    "src/logger.ts": {
+      "overview": "Creates the shared pino structured logger whose level comes from LOG_LEVEL.",
+      "sections": []
+    },
+    "src/notifier.ts": {
+      "overview": "Defines the WhaleSignal shape and dispatches rendered alerts to stdout, Telegram and a generic webhook, recording every signal in the in-memory store.",
+      "sections": []
+    },
+    "src/store.ts": {
+      "overview": "In-memory ring buffer of the last 200 signals plus the latest Gold RWA snapshot, read by the HTTP API; resets on restart.",
+      "sections": []
+    },
+    "src/wallets.ts": {
+      "overview": "Loads the smart-money/VC/insider watchlist from data/watchlist.json, skipping invalid addresses, and offers lookups by address and by chain.",
+      "sections": []
+    },
+    "src/engine/decisions.ts": {
+      "overview": "Optional Jev/TypeSafe adapter converts recent candle context into validated trade intents.",
+      "sections": []
+    },
+    "src/engine/indicators.ts": {
+      "overview": "Pure OHLCV projections and technical indicators shared by strategies and historical research.",
+      "sections": []
+    },
+    "src/engine/loop.ts": {
+      "overview": "Refreshes candles, processes exits, evaluates strategies, checks entry risk and publishes paper fills, decisions and snapshots.",
+      "sections": []
+    },
+    "src/engine/portfolio.ts": {
+      "overview": "Tracks paper cash, position keys, simulated fills, fees and realized/unrealized PnL; places no live orders.",
+      "sections": []
+    },
+    "src/engine/risk.ts": {
+      "overview": "Hard entry-risk vetoes for kill state, daily loss, confidence, position count, exposure and strategy cooldown.",
+      "sections": []
+    },
+    "src/engine/state.ts": {
+      "overview": "In-memory snapshot and recent decision state consumed by the engine HTTP API.",
+      "sections": []
+    },
+    "src/engine/types.ts": {
+      "overview": "Shared candle, trade-intent, strategy, position, fill, decision and snapshot contracts.",
+      "sections": []
+    },
+    "src/strategies/library.ts": {
+      "overview": "Nineteen pure strategy evaluators emit narrow buy/sell intents; risk and execution remain in the engine.",
+      "sections": []
+    },
+    "src/engine/backtest.ts": {
+      "overview": "Historical strategy replay with simulated fills, configurable execution costs and research statistics.",
+      "sections": []
+    },
+    "src/engine/market.ts": {
+      "overview": "Public candle cache with Binance, Bybit, Coinbase and Kraken fallback sources.",
+      "sections": []
+    },
+    "src/engine/stress.ts": {
+      "overview": "Fee/slippage sensitivity research over strategy replay results.",
+      "sections": []
+    },
+    "src/engine/sweep.ts": {
+      "overview": "Parameter-grid research using the offline strategy replay harness.",
+      "sections": []
+    },
+    "src/strategies/registry.ts": {
+      "overview": "Loads enabled strategy settings by merging JSON overrides with evaluator defaults.",
+      "sections": []
+    },
+    "deploy/install-service.sh": {
+      "overview": "Installer script that checks npm and .env, installs dependencies, renders the systemd unit with the current user and path, enables the service and prints an API health check command.",
+      "sections": []
+    },
+    "deploy/whale-tracker.service": {
+      "overview": "Hardened systemd unit running `npm start` for the tracker with always-restart, no start limit and an optional .env EnvironmentFile.",
+      "sections": []
+    },
+    "tests/deck.test.mjs": {
+      "overview": "Behavioral deck regressions for auth cancellation, stale replies, motion budgets, stable depth, startup, agent selection, simulated paths, stop acknowledgement and quote denominations.",
+      "sections": []
+    },
+    "api/[...path].js": {
+      "overview": "Allowlisted same-origin Vercel proxy to a configured HTTPS engine origin; forwards browser authorization, rejects redirects, bounds requests and preserves explicit upstream/auth failures.",
+      "sections": []
+    },
+    "deck/app.js": {
+      "overview": "Live HUD runtime: versioned polling, keyed feeds, market selection, expandable panels, selectable neural agents and canvas motion governed by visibility, pause and reduced-motion preferences.",
+      "sections": []
+    },
+    "deck/index.html": {
+      "overview": "Accessible zero-build deck structure with portfolio, interactive brain, model, tape, cortex and trace panels plus live status controls.",
+      "sections": []
+    },
+    "deck/style.css": {
+      "overview": "Neon HUD design system with telemetry/orbit animations, panel/agent interaction states, responsive grids and still-mode fallbacks.",
+      "sections": []
+    },
+    "scripts/build-deck.mjs": {
+      "overview": "Copies only public HUD assets into the Vercel output and enables the explicitly labeled read-only demo fallback for hosted pages.",
+      "sections": []
+    },
+    "tests/hosting.test.mjs": {
+      "overview": "Checks unset/unreachable engine origins, credential-preserving proxy behavior, explicit auth failures, request restrictions and malformed upstream responses.",
+      "sections": []
+    }
+  }
+}
