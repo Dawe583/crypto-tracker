@@ -237,7 +237,7 @@ canvas { display: block; }
   .r2 .tape-panel { grid-column: auto; } .bigprice b { font-size: 32px; } .bigprice .tape-note { width: 100%; margin: 0; }
   .book { width: 112px; font-size: 9px; } .tape-body { gap: 8px; height: 280px; min-height: 280px; }
   .ind-chips { grid-template-columns: repeat(3,minmax(0,1fr)); }
-  .sym-tabs button, .tool-button, .kill { min-height: 44px; }
+  .sym-tabs button, .tool-button, .brain-caption .tool-button, .kill { min-height: 44px; }
   .pipe-node { min-height: 64px; }
   .deck-footer { margin: 18px 10px; font-size: 8px; }
 }
