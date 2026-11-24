@@ -39,7 +39,7 @@ test('proxy restricts paths, methods, mutation auth and malformed upstream respo
   assert.equal((await request('/api/engine/snapshot')).code, 503);
   assert.equal((await request('/api/private')).code, 404);
   assert.equal((await request('/api/engine/snapshot', 'POST')).code, 405);
-  assert.equal((await request('/api/engine/kill', 'POST')).code, 401);
+  assert.equal((await request('/api/engine/kill', 'POST', 'Bearer test-token')).code, 404);
   process.env.ENGINE_API_ORIGIN = 'https://engine.example';
   globalThis.fetch = async () => new Response('<html>unavailable</html>', { headers: { 'content-type': 'text/html' } });
   assert.equal((await request('/api/engine/snapshot')).code, 502);

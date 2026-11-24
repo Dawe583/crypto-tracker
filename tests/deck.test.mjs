@@ -168,6 +168,14 @@ test('hosted mode never hides an authorization failure behind demo data', async 
   assert.equal(app.run('STATE.snap'), null);
 });
 
+test('hosted controls cannot send stop requests even when live state is available', async () => {
+  const app = runtime(async () => { throw new Error('Hosted stop must not send a request'); });
+  app.context.window.DECK_DEMO_FALLBACK = true;
+  app.context.confirm = () => { throw new Error('Hosted stop must not open confirmation'); };
+  app.run('STATE.snap = { killed: false };');
+  await app.elements.get('kill').onclick();
+});
+
 test('warmup after generated data clears every displayed demo balance and count', () => {
   const app = runtime();
   app.run('loadDemo(); STATE.snap = null;');

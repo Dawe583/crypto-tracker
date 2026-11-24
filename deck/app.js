@@ -243,8 +243,8 @@ function renderStatic() {
   $('stDD').textContent = fmt$(dd, 2);
   $('openTickets').textContent = `${s.positions.length} open`;
   $('kill').classList.toggle('killed', !!stopped);
-  $('kill').textContent = demoMode ? 'Demo · read only' : stopped ? 'Engine stopped' : 'Stop engine';
-  $('kill').disabled = demoMode || !!stopped;
+  $('kill').textContent = demoMode ? 'Demo · read only' : window.DECK_DEMO_FALLBACK ? 'Hosted · read only' : stopped ? 'Engine stopped' : 'Stop engine';
+  $('kill').disabled = demoMode || !!window.DECK_DEMO_FALLBACK || !!stopped;
   $('tapeSym').textContent = STATE.sym;
 
   const cd = STATE.candles[STATE.sym];
@@ -1134,7 +1134,7 @@ setInterval(() => {
 }, 1000);
 
 $('kill').onclick = async () => {
-  if (demoMode) return;
+  if (demoMode || window.DECK_DEMO_FALLBACK) return;
   if (!confirm('Stop the paper engine? New entries stay blocked until the server kill file is removed.')) return;
   $('kill').disabled = true;
   $('kill').textContent = 'Stopping…';

@@ -4,7 +4,7 @@
 
 Vercel builds the zero-build HUD with `npm run build:deck`, serves it at `/` and `/deck`, and proxies the deck's allowlisted API routes through a small serverless function. The persistent paper engine and on-chain watchers still run separately; they are not started inside Vercel functions.
 
-Set `ENGINE_API_ORIGIN` in the existing Vercel project's environment settings to your already-deployed HTTPS engine origin, then redeploy. The proxy forwards only the browser's API bearer token and never adds server credentials or follows upstream redirects. Keep the engine's `API_TOKEN` protection enabled; no Pi or private engine is exposed automatically.
+Set `ENGINE_API_ORIGIN` in the existing Vercel project's environment settings to your already-deployed HTTPS engine origin, then redeploy each Preview/Production environment that needs it. The proxy forwards only the browser's API bearer token and never adds server credentials or follows upstream redirects. Hosted access is read-only: `/api/engine/kill` is not proxied, even with a token. Keep the engine's `API_TOKEN` protection enabled; no Pi or private engine is exposed automatically.
 
 If the origin is unset or unreachable, **the hosted page uses clearly labeled, generated DEMO data**. Its banner and status identify simulation, its stop control is disabled, and it retries the real engine every 12 seconds. Authentication errors are not hidden by switching to demo. Returning to live data clears generated candles/portfolio state first. Local `npm start` retains the real-engine-only behavior.
 
