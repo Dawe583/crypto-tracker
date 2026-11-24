@@ -222,3 +222,5 @@ canvas { display: block; }
   button, .biasbar i, .kbar i { transition-duration: 100ms !important; }
   .book .lvl i { transition: none !important; }
 }
+.demo-banner { margin: 12px 18px; padding: 12px; border: 1px solid var(--amber); background: #ffc23d0a; color: var(--amber); font-size: 10px; letter-spacing: 1px; text-align: center; line-height: 1.8; }
+.demo-banner[hidden] { display: none; }

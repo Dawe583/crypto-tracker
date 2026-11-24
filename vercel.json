@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build:deck",
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/", "destination": "/deck/index.html" },
+    { "source": "/deck", "destination": "/deck/index.html" },
+    { "source": "/deck/", "destination": "/deck/index.html" }
+  ]
+}

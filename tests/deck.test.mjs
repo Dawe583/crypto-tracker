@@ -128,3 +128,32 @@ test('market denominations follow the configured symbol suffix', () => {
   assert.equal(app.run('marketQuote("BTCUSD")'), 'USD');
   assert.equal(app.run('marketQuote("ETHUSDT")'), 'USDT');
 });
+
+test('hosted fallback is labeled, cannot stop an engine, and fully clears before live state', async () => {
+  let offline = true;
+  const app = runtime(async (path) => offline ? { ok: false, status: 503 } : { ok: true, json: async () =>
+    path.includes('snapshot') ? { empty: true } : path.includes('strategies') || path.includes('decisions') ? [] : {} });
+  app.context.window.DECK_DEMO_FALLBACK = true;
+  app.run('renderStatic = () => {};');
+  await app.run('refresh()');
+  assert.equal(app.run('demoMode'), true);
+  assert.equal(app.elements.get('demoBanner').hidden, false);
+  assert.equal(app.elements.get('connection').textContent, 'DEMO');
+  assert.equal(app.run('STATE.candles.BTCUSDT.length'), 120);
+  app.context.confirm = () => { throw new Error('Demo must not open stop confirmation'); };
+  await app.elements.get('kill').onclick();
+  offline = false;
+  await app.run('refresh()');
+  assert.equal(app.run('demoMode'), false);
+  assert.equal(app.run('STATE.snap'), null);
+  assert.equal(app.run('Object.keys(STATE.candles).length'), 0);
+  assert.equal(app.elements.get('demoBanner').hidden, true);
+});
+
+test('hosted mode never hides an authorization failure behind demo data', async () => {
+  const app = runtime(async () => ({ ok: false, status: 401 }));
+  app.context.window.DECK_DEMO_FALLBACK = true;
+  await app.run('refresh()');
+  assert.equal(app.run('demoMode'), false);
+  assert.equal(app.run('STATE.snap'), null);
+});

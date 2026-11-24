@@ -1,4 +1,4 @@
-// GROK-DESK style animated trading deck. All data from the engine API;
+// Animated paper-trading deck with an explicitly labeled hosted demo fallback;
 // canvases animate continuously via requestAnimationFrame.
 'use strict';
 const $ = (id) => document.getElementById(id);
@@ -43,7 +43,11 @@ const api = async (path, opts = {}, retried = false) => {
     });
     if (await tokenRequest) return api(path, opts, true);
   }
-  if (!r.ok) throw new Error(r.status === 401 ? 'API token required · reload to reconnect' : `API unavailable (${r.status})`);
+  if (!r.ok) {
+    const error = new Error(r.status === 401 ? 'API token required · reload to reconnect' : `API unavailable (${r.status})`);
+    error.status = r.status;
+    throw error;
+  }
   return r.json();
 };
 
@@ -64,6 +68,34 @@ const ctx2d = (id) => {
 
 const STATE = { snap: null, strats: [], decisions: [], candles: {}, sym: 'BTCUSDT', whales: 0, pools: 0, gold: [], book: null, bookAt: 0 };
 let engineStopped = false;
+let demoMode = false;
+
+function loadDemo() {
+  const now = Date.now(), phase = now / 12000;
+  const symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'DOGEUSDT', 'ADAUSDT'];
+  const bases = [96700, 3420, 186, 1.94, .32, .87];
+  const names = ['ema_cross', 'rsi_reversion', 'bollinger_reversion', 'breakout', 'macd_momentum', 'atr_trend'];
+  STATE.candles = {};
+  const prices = {};
+  symbols.forEach((symbol, j) => {
+    STATE.candles[symbol] = Array.from({ length: 120 }, (_, i) => {
+      const c = bases[j] * (1 + .008 * Math.sin(i / 9 + j) + .00012 * i + .002 * Math.sin(phase + j));
+      return { t: now - (119 - i) * 60000, o: c * .9996, h: c * 1.0015, l: c * .9985, c, v: 30 + 20 * (1 + Math.sin(i + j)) };
+    });
+    prices[symbol] = STATE.candles[symbol].at(-1).c;
+  });
+  if (!symbols.includes(STATE.sym)) STATE.sym = symbols[0];
+  STATE.strats = names.map((name) => ({ name, enabled: true }));
+  STATE.decisions = Array.from({ length: 36 }, (_, i) => ({ ts: now - i * 1700, strategy: names[i % names.length],
+    symbol: symbols[i % symbols.length], action: i % 7 === 0 ? 'buy' : 'hold', confidence: .62 + (i % 7) * .04,
+    reason: 'Generated demonstration event · not an engine decision' }));
+  const equityCurve = Array.from({ length: 100 }, (_, i) => ({ ts: now - (99 - i) * 60000, equityUsd: 10000 + i * 3.2 + Math.sin(i / 7 + phase) * 24 }));
+  const equityUsd = equityCurve.at(-1).equityUsd;
+  STATE.snap = { ts: now, killed: false, equityUsd, cashUsd: equityUsd - 600, realizedUsd: equityUsd - 10012, unrealizedUsd: 12, prices, equityCurve,
+    positions: symbols.slice(0, 2).map((symbol, i) => ({ symbol, strategy: names[i], entryPrice: prices[symbol] * .98, markPrice: prices[symbol], sizeUsd: 300, unrealizedUsd: 6 })),
+    stats: Object.fromEntries(names.map((name, i) => [name, { pnl: 35 + i * 7, trades: 12 + i, wins: 8 + i }])) };
+  STATE.whales = 18; STATE.pools = 7; STATE.gold = [];
+}
 
 // ---------- data ----------
 async function refresh() {
@@ -80,6 +112,11 @@ async function refresh() {
     api('/api/gold'),
   ]);
   if (version !== refreshVersion) return;
+  if (demoMode) {
+    STATE.snap = null; STATE.candles = {}; bookLevels = null; mcPaths.length = 0;
+  }
+  demoMode = false;
+  $('demoBanner').hidden = true;
   if (snap && !snap.empty) STATE.snap = snap;
   STATE.strats = strats || STATE.strats;
   STATE.decisions = decisions || STATE.decisions;
@@ -97,6 +134,16 @@ async function refresh() {
   drawSlow();
   } catch (err) {
     if (version !== refreshVersion) return;
+    if (window.DECK_DEMO_FALLBACK && err.status !== 401 && err.status !== 403) {
+      demoMode = true;
+      loadDemo();
+      document.body.classList.remove('data-stale');
+      $('demoBanner').hidden = false;
+      $('connection').textContent = 'DEMO';
+      $('lastSync').textContent = 'SIMULATED DATA · RETRYING ENGINE EVERY 12 SECONDS';
+      renderStatic(); drawSlow();
+      return;
+    }
     document.body.classList.add('data-stale');
     $('connection').textContent = 'RECONNECTING';
     $('wireMsg').textContent = `${err.message} · retrying every 12 seconds · ${lastSync ? 'showing last received data' : 'waiting for engine'}`;
@@ -180,7 +227,7 @@ function renderStatic() {
   $('bigNav').classList.toggle('up', dayPnl >= 0);
   $('bigDelta').innerHTML = `<span class="${cls(dayPnl)}">${dayPnl >= 0 ? '▲' : '▼'} ${fmt$(Math.abs(dayPnl), 2)} session</span> · cash ${fmt$(s.cashUsd)}`;
   const stopped = engineStopped || s.killed;
-  $('running').textContent = stopped ? 'STOPPED' : 'RUNNING';
+  $('running').textContent = demoMode ? 'DEMO' : stopped ? 'STOPPED' : 'RUNNING';
   $('running').className = `right ${stopped ? 'neg' : 'pos'}`;
   $('stTickets').textContent = trades;
   $('stWin').textContent = trades ? `${((wins / trades) * 100).toFixed(0)}%` : '—';
@@ -191,8 +238,8 @@ function renderStatic() {
   $('stDD').textContent = fmt$(dd, 2);
   $('openTickets').textContent = `${s.positions.length} open`;
   $('kill').classList.toggle('killed', !!stopped);
-  $('kill').textContent = stopped ? 'Engine stopped' : 'Stop engine';
-  $('kill').disabled = !!stopped;
+  $('kill').textContent = demoMode ? 'Demo · read only' : stopped ? 'Engine stopped' : 'Stop engine';
+  $('kill').disabled = demoMode || !!stopped;
   $('tapeSym').textContent = STATE.sym;
 
   const cd = STATE.candles[STATE.sym];
@@ -241,6 +288,7 @@ function renderStatic() {
   $('wireMsg').textContent = last
     ? `LIVE WIRE — ${last.strategy} ${last.action} ${last.symbol} @${(last.confidence * 100) | 0}% · whale signals ${STATE.whales} · new pools ${STATE.pools}`
     : `LIVE WIRE — ${s.killed ? 'engine stopped' : 'scanning for signals'}`;
+  if (demoMode) $('wireMsg').textContent = 'SIMULATED DEMO · generated prices, portfolio and decisions · no live engine connected';
 }
 
 function renderFeed(id, limit, template) {
@@ -1081,6 +1129,7 @@ setInterval(() => {
 }, 1000);
 
 $('kill').onclick = async () => {
+  if (demoMode) return;
   if (!confirm('Stop the paper engine? New entries stay blocked until the server kill file is removed.')) return;
   $('kill').disabled = true;
   $('kill').textContent = 'Stopping…';
