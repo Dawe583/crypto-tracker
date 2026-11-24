@@ -1809,6 +1809,18 @@
       "complexity": "simple"
     },
     {
+      "id": "config:.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": ".env.example",
+      "summary": "Template of every runtime environment variable: RPC endpoints, explorer keys, Telegram/webhook alert targets, whale and pool thresholds, Gold RWA settings, API host/port/token/CORS and log level.",
+      "tags": [
+        "config",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
       "id": "document:AGENTS.md",
       "type": "document",
       "name": "AGENTS.md",
@@ -1821,11 +1833,47 @@
       "complexity": "simple"
     },
     {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project overview covering features, architecture diagram, Raspberry Pi 4 quick start, systemd auto-start, the HTTP JSON API, configuration, layout, alerts, troubleshooting and limitations.",
+      "tags": [
+        "docs",
+        "monitor"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "Node dependencies and commands for runtime, TypeScript checks, deck regressions and strategy research.",
+      "tags": [
+        "config",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
       "id": "config:tsconfig.json",
       "type": "config",
       "name": "tsconfig.json",
       "filePath": "tsconfig.json",
       "summary": "Strict TypeScript compiler settings targeting ES2022 ESM with bundler resolution, compiling src/ to dist/.",
+      "tags": [
+        "config",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:vercel.json",
+      "type": "config",
+      "name": "vercel.json",
+      "filePath": "vercel.json",
+      "summary": "Existing-project Vercel build command, isolated static output and root/deck routing configuration.",
       "tags": [
         "config",
         "monitor"
@@ -2157,118 +2205,6 @@
       "complexity": "moderate"
     },
     {
-      "id": "config:data/watchlist.json",
-      "type": "config",
-      "name": "watchlist.json",
-      "filePath": "data/watchlist.json",
-      "summary": "Seed watchlist template with placeholder smart-money, VC and insider-cluster wallets that must be replaced with verified addresses.",
-      "tags": [
-        "config",
-        "monitor"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "document:deploy/DEPLOY.md",
-      "type": "document",
-      "name": "DEPLOY.md",
-      "filePath": "deploy/DEPLOY.md",
-      "summary": "Step-by-step Raspberry Pi 4 deployment guide: prerequisites, clone, install, configure, smoke test, systemd install, operation and updates.",
-      "tags": [
-        "docs",
-        "monitor"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "file:deploy/install-service.sh",
-      "type": "file",
-      "name": "install-service.sh",
-      "filePath": "deploy/install-service.sh",
-      "summary": "Installer script that checks npm and .env, installs dependencies, renders the systemd unit with the current user and path, enables the service and prints an API health check command.",
-      "tags": [
-        "script",
-        "monitor"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "file:deploy/whale-tracker.service",
-      "type": "file",
-      "name": "whale-tracker.service",
-      "filePath": "deploy/whale-tracker.service",
-      "summary": "Hardened systemd unit running `npm start` for the tracker with always-restart, no start limit and an optional .env EnvironmentFile.",
-      "tags": [
-        "code",
-        "monitor"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "file:tests/deck.test.mjs",
-      "type": "file",
-      "name": "deck.test.mjs",
-      "filePath": "tests/deck.test.mjs",
-      "summary": "Behavioral deck regressions for auth cancellation, stale replies, motion budgets, stable depth, startup, agent selection, simulated paths, stop acknowledgement and quote denominations.",
-      "tags": [
-        "code",
-        "monitor"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:tests/deck.test.mjs:runtime",
-      "type": "function",
-      "name": "runtime",
-      "filePath": "tests/deck.test.mjs",
-      "lineRange": [
-        8,
-        24
-      ],
-      "summary": "Builds a browser-like VM sandbox for behavioral deck regression checks.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "config:.env.example",
-      "type": "config",
-      "name": ".env.example",
-      "filePath": ".env.example",
-      "summary": "Template of every runtime environment variable: RPC endpoints, explorer keys, Telegram/webhook alert targets, whale and pool thresholds, Gold RWA settings, API host/port/token/CORS and log level.",
-      "tags": [
-        "config",
-        "monitor"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "config:package.json",
-      "type": "config",
-      "name": "package.json",
-      "filePath": "package.json",
-      "summary": "Node dependencies and commands for runtime, TypeScript checks, deck regressions and strategy research.",
-      "tags": [
-        "config",
-        "monitor"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "config:vercel.json",
-      "type": "config",
-      "name": "vercel.json",
-      "filePath": "vercel.json",
-      "summary": "Existing-project Vercel build command, isolated static output and root/deck routing configuration.",
-      "tags": [
-        "config",
-        "monitor"
-      ],
-      "complexity": "simple"
-    },
-    {
       "id": "file:api/[...path].js",
       "type": "file",
       "name": "[...path].js",
@@ -2297,11 +2233,23 @@
       "complexity": "moderate"
     },
     {
+      "id": "config:data/watchlist.json",
+      "type": "config",
+      "name": "watchlist.json",
+      "filePath": "data/watchlist.json",
+      "summary": "Seed watchlist template with placeholder smart-money, VC and insider-cluster wallets that must be replaced with verified addresses.",
+      "tags": [
+        "config",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
       "id": "file:deck/app.js",
       "type": "file",
       "name": "app.js",
       "filePath": "deck/app.js",
-      "summary": "Live HUD runtime: versioned polling, keyed feeds, market selection, expandable panels, selectable neural agents and canvas motion governed by visibility, pause and reduced-motion preferences.",
+      "summary": "Interactive neon HUD with versioned polling, keyed feeds, expandable panels, selectable neural agents, visibility-aware motion and honest halted-ledger, reconnect and generated-demo states.",
       "tags": [
         "code",
         "deck",
@@ -2492,7 +2440,7 @@
       "filePath": "deck/app.js",
       "lineRange": [
         100,
-        151
+        152
       ],
       "summary": "Fetches current deck data and rejects obsolete request generations, with warming and reconnect states.",
       "tags": [
@@ -2507,8 +2455,8 @@
       "name": "selectMarket",
       "filePath": "deck/app.js",
       "lineRange": [
-        153,
-        159
+        154,
+        160
       ],
       "summary": "Synchronizes the selected market and resets its price-path simulation before fetching candles.",
       "tags": [
@@ -2523,8 +2471,8 @@
       "name": "marketQuote",
       "filePath": "deck/app.js",
       "lineRange": [
-        161,
-        161
+        162,
+        162
       ],
       "summary": "Provides marketQuote for app.",
       "tags": [
@@ -2539,8 +2487,8 @@
       "name": "renderMarkets",
       "filePath": "deck/app.js",
       "lineRange": [
-        162,
-        199
+        163,
+        200
       ],
       "summary": "Provides renderMarkets for app.",
       "tags": [
@@ -2555,8 +2503,8 @@
       "name": "renderStatic",
       "filePath": "deck/app.js",
       "lineRange": [
-        202,
-        297
+        203,
+        302
       ],
       "summary": "Provides renderStatic for app.",
       "tags": [
@@ -2571,8 +2519,8 @@
       "name": "renderFeed",
       "filePath": "deck/app.js",
       "lineRange": [
-        299,
-        324
+        304,
+        329
       ],
       "summary": "Reuses keyed feed rows and preserves scroll during live updates.",
       "tags": [
@@ -2587,8 +2535,8 @@
       "name": "stageColor",
       "filePath": "deck/app.js",
       "lineRange": [
-        327,
-        331
+        332,
+        336
       ],
       "summary": "Provides stageColor for app.",
       "tags": [
@@ -2603,8 +2551,8 @@
       "name": "drawNavChart",
       "filePath": "deck/app.js",
       "lineRange": [
-        334,
-        358
+        339,
+        363
       ],
       "summary": "Renders the nav chart visualization from deck state.",
       "tags": [
@@ -2619,8 +2567,8 @@
       "name": "drawTape",
       "filePath": "deck/app.js",
       "lineRange": [
-        360,
-        431
+        365,
+        436
       ],
       "summary": "Renders the tape visualization from deck state.",
       "tags": [
@@ -2635,8 +2583,8 @@
       "name": "drawBook",
       "filePath": "deck/app.js",
       "lineRange": [
-        434,
-        469
+        439,
+        474
       ],
       "summary": "Maintains illustrative depth rows while preserving synthetic sizes in still mode.",
       "tags": [
@@ -2651,8 +2599,8 @@
       "name": "selectAgent",
       "filePath": "deck/app.js",
       "lineRange": [
-        481,
-        492
+        486,
+        497
       ],
       "summary": "Toggles validated visual agent focus and updates accessible pressed states.",
       "tags": [
@@ -2667,8 +2615,8 @@
       "name": "_r",
       "filePath": "deck/app.js",
       "lineRange": [
-        499,
-        499
+        504,
+        504
       ],
       "summary": "Provides _r for app.",
       "tags": [
@@ -2683,8 +2631,8 @@
       "name": "_norm",
       "filePath": "deck/app.js",
       "lineRange": [
-        500,
-        500
+        505,
+        505
       ],
       "summary": "Provides _norm for app.",
       "tags": [
@@ -2699,8 +2647,8 @@
       "name": "growTree",
       "filePath": "deck/app.js",
       "lineRange": [
-        503,
-        519
+        508,
+        524
       ],
       "summary": "Provides growTree for app.",
       "tags": [
@@ -2715,8 +2663,8 @@
       "name": "endDrag",
       "filePath": "deck/app.js",
       "lineRange": [
-        569,
-        569
+        574,
+        574
       ],
       "summary": "Provides endDrag for app.",
       "tags": [
@@ -2731,8 +2679,8 @@
       "name": "resetBrain",
       "filePath": "deck/app.js",
       "lineRange": [
-        577,
-        577
+        582,
+        582
       ],
       "summary": "Provides resetBrain for app.",
       "tags": [
@@ -2747,8 +2695,8 @@
       "name": "drawBrain",
       "filePath": "deck/app.js",
       "lineRange": [
-        592,
-        729
+        597,
+        734
       ],
       "summary": "Renders the brain visualization from deck state.",
       "tags": [
@@ -2763,8 +2711,8 @@
       "name": "drawCortex",
       "filePath": "deck/app.js",
       "lineRange": [
-        734,
-        763
+        739,
+        768
       ],
       "summary": "Renders the cortex visualization from deck state.",
       "tags": [
@@ -2779,8 +2727,8 @@
       "name": "drawCalcium",
       "filePath": "deck/app.js",
       "lineRange": [
-        766,
-        804
+        771,
+        809
       ],
       "summary": "Renders the calcium visualization from deck state.",
       "tags": [
@@ -2795,8 +2743,8 @@
       "name": "drawWeights",
       "filePath": "deck/app.js",
       "lineRange": [
-        807,
-        825
+        812,
+        830
       ],
       "summary": "Renders the weights visualization from deck state.",
       "tags": [
@@ -2811,8 +2759,8 @@
       "name": "drawRotation",
       "filePath": "deck/app.js",
       "lineRange": [
-        828,
-        875
+        833,
+        880
       ],
       "summary": "Renders the rotation visualization from deck state.",
       "tags": [
@@ -2827,8 +2775,8 @@
       "name": "cls2",
       "filePath": "deck/app.js",
       "lineRange": [
-        878,
-        878
+        883,
+        883
       ],
       "summary": "Provides cls2 for app.",
       "tags": [
@@ -2843,8 +2791,8 @@
       "name": "emaN",
       "filePath": "deck/app.js",
       "lineRange": [
-        879,
-        885
+        884,
+        890
       ],
       "summary": "Provides emaN for app.",
       "tags": [
@@ -2859,8 +2807,8 @@
       "name": "rsiN",
       "filePath": "deck/app.js",
       "lineRange": [
-        886,
-        891
+        891,
+        896
       ],
       "summary": "Provides rsiN for app.",
       "tags": [
@@ -2875,8 +2823,8 @@
       "name": "bollPctB",
       "filePath": "deck/app.js",
       "lineRange": [
-        892,
-        898
+        897,
+        903
       ],
       "summary": "Provides bollPctB for app.",
       "tags": [
@@ -2891,8 +2839,8 @@
       "name": "zsc",
       "filePath": "deck/app.js",
       "lineRange": [
-        899,
-        904
+        904,
+        909
       ],
       "summary": "Provides zsc for app.",
       "tags": [
@@ -2907,8 +2855,8 @@
       "name": "atrP",
       "filePath": "deck/app.js",
       "lineRange": [
-        905,
-        911
+        910,
+        916
       ],
       "summary": "Provides atrP for app.",
       "tags": [
@@ -2923,8 +2871,8 @@
       "name": "vwapN",
       "filePath": "deck/app.js",
       "lineRange": [
-        912,
-        916
+        917,
+        921
       ],
       "summary": "Provides vwapN for app.",
       "tags": [
@@ -2939,8 +2887,8 @@
       "name": "stochK",
       "filePath": "deck/app.js",
       "lineRange": [
-        917,
-        921
+        922,
+        926
       ],
       "summary": "Provides stochK for app.",
       "tags": [
@@ -2955,8 +2903,8 @@
       "name": "chip",
       "filePath": "deck/app.js",
       "lineRange": [
-        923,
-        925
+        928,
+        930
       ],
       "summary": "Provides chip for app.",
       "tags": [
@@ -2971,8 +2919,8 @@
       "name": "renderIndicators",
       "filePath": "deck/app.js",
       "lineRange": [
-        927,
-        1000
+        932,
+        1005
       ],
       "summary": "Provides renderIndicators for app.",
       "tags": [
@@ -2987,8 +2935,8 @@
       "name": "drawMembrane",
       "filePath": "deck/app.js",
       "lineRange": [
-        1003,
-        1033
+        1008,
+        1038
       ],
       "summary": "Renders the membrane visualization from deck state.",
       "tags": [
@@ -3003,8 +2951,8 @@
       "name": "drawPricer",
       "filePath": "deck/app.js",
       "lineRange": [
-        1037,
-        1079
+        1042,
+        1084
       ],
       "summary": "Updates illustrative price simulations when real inputs change, holding identical inputs stable in still mode.",
       "tags": [
@@ -3019,8 +2967,8 @@
       "name": "drawVisible",
       "filePath": "deck/app.js",
       "lineRange": [
-        1095,
-        1095
+        1100,
+        1100
       ],
       "summary": "Renders the visible visualization from deck state.",
       "tags": [
@@ -3035,8 +2983,8 @@
       "name": "frame",
       "filePath": "deck/app.js",
       "lineRange": [
-        1097,
-        1115
+        1102,
+        1120
       ],
       "summary": "Advances permitted visual time and schedules bounded visible canvas work.",
       "tags": [
@@ -3051,8 +2999,8 @@
       "name": "drawSlow",
       "filePath": "deck/app.js",
       "lineRange": [
-        1117,
-        1120
+        1122,
+        1125
       ],
       "summary": "Redraws only observed visible canvases, skipping hidden documents.",
       "tags": [
@@ -3067,8 +3015,8 @@
       "name": "redrawCanvas",
       "filePath": "deck/app.js",
       "lineRange": [
-        1122,
-        1128
+        1127,
+        1133
       ],
       "summary": "Dispatches visible chart rendering and initializes tape depth.",
       "tags": [
@@ -3102,6 +3050,42 @@
       "complexity": "complex"
     },
     {
+      "id": "document:deploy/DEPLOY.md",
+      "type": "document",
+      "name": "DEPLOY.md",
+      "filePath": "deploy/DEPLOY.md",
+      "summary": "Step-by-step Raspberry Pi 4 deployment guide: prerequisites, clone, install, configure, smoke test, systemd install, operation and updates.",
+      "tags": [
+        "docs",
+        "monitor"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:deploy/install-service.sh",
+      "type": "file",
+      "name": "install-service.sh",
+      "filePath": "deploy/install-service.sh",
+      "summary": "Installer script that checks npm and .env, installs dependencies, renders the systemd unit with the current user and path, enables the service and prints an API health check command.",
+      "tags": [
+        "script",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:deploy/whale-tracker.service",
+      "type": "file",
+      "name": "whale-tracker.service",
+      "filePath": "deploy/whale-tracker.service",
+      "summary": "Hardened systemd unit running `npm start` for the tracker with always-restart, no start limit and an optional .env EnvironmentFile.",
+      "tags": [
+        "code",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
       "id": "file:scripts/build-deck.mjs",
       "type": "file",
       "name": "build-deck.mjs",
@@ -3110,6 +3094,34 @@
       "tags": [
         "code",
         "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:tests/deck.test.mjs",
+      "type": "file",
+      "name": "deck.test.mjs",
+      "filePath": "tests/deck.test.mjs",
+      "summary": "Deck regressions for authorization, stale replies, motion budgets, startup, agent focus, forecast invalidation, stop/restart, read-only demo and halted-ledger recovery.",
+      "tags": [
+        "code",
+        "monitor"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:tests/deck.test.mjs:runtime",
+      "type": "function",
+      "name": "runtime",
+      "filePath": "tests/deck.test.mjs",
+      "lineRange": [
+        8,
+        25
+      ],
+      "summary": "Builds a browser-like VM sandbox for behavioral deck regression checks.",
+      "tags": [
+        "runtime",
+        "code"
       ],
       "complexity": "simple"
     },
@@ -3140,18 +3152,6 @@
         "code"
       ],
       "complexity": "simple"
-    },
-    {
-      "id": "document:README.md",
-      "type": "document",
-      "name": "README.md",
-      "filePath": "README.md",
-      "summary": "Project overview covering features, architecture diagram, Raspberry Pi 4 quick start, systemd auto-start, the HTTP JSON API, configuration, layout, alerts, troubleshooting and limitations.",
-      "tags": [
-        "docs",
-        "monitor"
-      ],
-      "complexity": "complex"
     }
   ],
   "edges": [
@@ -3503,6 +3503,237 @@
       "target": "function:src/wallets.ts:watchedAddresses",
       "type": "contains",
       "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/engine/ledger.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/engine/risk.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/engine/state.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/store.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/wallets.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/filter.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/filter.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/gold_rwa.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/gold_rwa.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/gold_rwa.ts",
+      "target": "file:src/notifier.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/gold_rwa.ts",
+      "target": "file:src/store.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "file:src/api.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "file:src/engine/loop.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "file:src/gold_rwa.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "file:src/listener.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/listener.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/listener.ts",
+      "target": "file:src/filter.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/listener.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/listener.ts",
+      "target": "file:src/notifier.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/listener.ts",
+      "target": "file:src/wallets.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/notifier.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/notifier.ts",
+      "target": "file:src/filter.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/notifier.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/notifier.ts",
+      "target": "file:src/store.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/store.ts",
+      "target": "file:src/gold_rwa.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/store.ts",
+      "target": "file:src/notifier.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/wallets.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "weight": 0.7,
       "direction": "forward"
     },
     {
@@ -4080,6 +4311,13 @@
       "direction": "forward"
     },
     {
+      "source": "file:src/api.ts",
+      "target": "file:deck/index.html",
+      "type": "serves",
+      "weight": 0.5,
+      "direction": "forward"
+    },
+    {
       "source": "file:src/engine/decisions.ts",
       "target": "function:src/engine/decisions.ts:makeModel",
       "type": "contains",
@@ -4329,6 +4567,132 @@
       "target": "function:src/strategies/library.ts:sell",
       "type": "contains",
       "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/decisions.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/decisions.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/indicators.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/ledger.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/portfolio.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/risk.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/state.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/store.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/portfolio.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/risk.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/state.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/strategies/library.ts",
+      "target": "file:src/engine/indicators.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/strategies/library.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "weight": 0.7,
       "direction": "forward"
     },
     {
@@ -4640,6 +5004,132 @@
       "direction": "forward"
     },
     {
+      "source": "file:src/engine/backtest.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/backtest.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/backtest.ts",
+      "target": "file:src/engine/portfolio.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/backtest.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/backtest.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/stress.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/stress.ts",
+      "target": "file:src/engine/backtest.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/stress.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/stress.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/sweep.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/sweep.ts",
+      "target": "file:src/engine/backtest.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/sweep.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/sweep.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/strategies/registry.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/strategies/registry.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/strategies/registry.ts",
+      "target": "file:src/strategies/library.ts",
+      "type": "imports",
+      "weight": 0.7,
+      "direction": "forward"
+    },
+    {
       "source": "function:src/engine/backtest.ts:runBacktest",
       "target": "function:src/strategies/registry.ts:loadStrategies",
       "type": "calls",
@@ -4762,27 +5252,6 @@
       "source": "file:src/strategies/registry.ts",
       "target": "config:data/strategies.json",
       "type": "reads_from",
-      "weight": 0.5,
-      "direction": "forward"
-    },
-    {
-      "source": "file:tests/deck.test.mjs",
-      "target": "function:tests/deck.test.mjs:runtime",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:deploy/install-service.sh",
-      "target": "file:deploy/whale-tracker.service",
-      "type": "deploys",
-      "weight": 0.5,
-      "direction": "forward"
-    },
-    {
-      "source": "file:deploy/whale-tracker.service",
-      "target": "file:src/index.ts",
-      "type": "triggers",
       "weight": 0.5,
       "direction": "forward"
     },
@@ -5127,6 +5596,27 @@
       "target": "function:deck/app.js:redrawCanvas",
       "type": "contains",
       "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/deck.test.mjs",
+      "target": "function:tests/deck.test.mjs:runtime",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/hosting.test.mjs",
+      "target": "function:tests/hosting.test.mjs:request",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/hosting.test.mjs",
+      "target": "file:api/[...path].js",
+      "type": "imports",
+      "weight": 0.7,
       "direction": "forward"
     },
     {
@@ -5655,10 +6145,10 @@
       "direction": "forward"
     },
     {
-      "source": "file:src/api.ts",
-      "target": "file:deck/index.html",
-      "type": "serves",
-      "weight": 0.5,
+      "source": "function:tests/hosting.test.mjs:request",
+      "target": "function:api/[...path].js:handler",
+      "type": "calls",
+      "weight": 0.8,
       "direction": "forward"
     },
     {
@@ -5690,507 +6180,17 @@
       "direction": "forward"
     },
     {
-      "source": "file:tests/hosting.test.mjs",
-      "target": "function:tests/hosting.test.mjs:request",
-      "type": "contains",
-      "weight": 1,
+      "source": "file:deploy/install-service.sh",
+      "target": "file:deploy/whale-tracker.service",
+      "type": "deploys",
+      "weight": 0.5,
       "direction": "forward"
     },
     {
-      "source": "file:src/api.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/engine/ledger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/engine/risk.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/engine/state.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/store.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/wallets.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/ledger.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/filter.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/filter.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/gold_rwa.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/gold_rwa.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/gold_rwa.ts",
-      "target": "file:src/notifier.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/gold_rwa.ts",
-      "target": "file:src/store.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/api.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/engine/loop.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/gold_rwa.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/listener.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/filter.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/notifier.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/wallets.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/notifier.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/notifier.ts",
-      "target": "file:src/filter.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/notifier.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/notifier.ts",
-      "target": "file:src/store.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/store.ts",
-      "target": "file:src/gold_rwa.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/store.ts",
-      "target": "file:src/notifier.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/wallets.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/decisions.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/decisions.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/indicators.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/ledger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/portfolio.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/risk.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/state.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/store.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/portfolio.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/risk.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/state.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/library.ts",
-      "target": "file:src/engine/indicators.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/library.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/engine/portfolio.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/stress.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/stress.ts",
-      "target": "file:src/engine/backtest.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/stress.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/stress.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/sweep.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/sweep.ts",
-      "target": "file:src/engine/backtest.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/sweep.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/sweep.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/registry.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/registry.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/registry.ts",
-      "target": "file:src/strategies/library.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:tests/hosting.test.mjs",
-      "target": "file:api/[...path].js",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "function:tests/hosting.test.mjs:request",
-      "target": "function:api/[...path].js:handler",
-      "type": "calls",
-      "weight": 0.8,
+      "source": "file:deploy/whale-tracker.service",
+      "target": "file:src/index.ts",
+      "type": "triggers",
+      "weight": 0.5,
       "direction": "forward"
     }
   ],
@@ -6210,8 +6210,8 @@
     ],
     "frameworks": [],
     "description": "On-chain Base/Ethereum monitoring and a risk-gated paper-trading engine with an interactive animated live neural HUD deck.",
-    "analyzedAt": "2026-11-24T21:30:54.004102+00:00",
-    "gitCommitHash": "137676abc189b49252901a99dd25932c34a5e1af"
+    "analyzedAt": "2026-11-24T21:39:47.933863+00:00",
+    "gitCommitHash": "45cbdb6427988aaaa798b31ed33283fe4e95dd36"
   },
   "layers": [
     {
@@ -6390,8 +6390,6 @@
       "name": "Interactive deck",
       "description": "Responsive animated HUD, accessible controls and browser-runtime regressions.",
       "nodeIds": [
-        "file:tests/deck.test.mjs",
-        "function:tests/deck.test.mjs:runtime",
         "file:deck/app.js",
         "function:deck/app.js:$",
         "function:deck/app.js:fmt$",
@@ -6443,6 +6441,8 @@
         "function:deck/app.js:redrawCanvas",
         "file:deck/index.html",
         "file:deck/style.css",
+        "file:tests/deck.test.mjs",
+        "function:tests/deck.test.mjs:runtime",
         "file:tests/hosting.test.mjs",
         "function:tests/hosting.test.mjs:request"
       ]
@@ -6452,8 +6452,12 @@
       "name": "Operations and documentation",
       "description": "Deployment, manifests, environment configuration and engineering guides.",
       "nodeIds": [
+        "config:.env.example",
         "document:AGENTS.md",
+        "document:README.md",
+        "config:package.json",
         "config:tsconfig.json",
+        "config:vercel.json",
         "document:docs/AUDIT_AND_TRADING_LANDSCAPE.md",
         "document:docs/BACKTEST_RESULTS.md",
         "document:docs/BROKER_ADAPTER.md",
@@ -6461,16 +6465,12 @@
         "document:docs/RPI4_DEPLOYMENT.md",
         "document:docs/SYSTEM_DESIGN.md",
         "config:.agent/work-state.json",
+        "file:api/[...path].js",
+        "function:api/[...path].js:handler",
         "document:deploy/DEPLOY.md",
         "file:deploy/install-service.sh",
         "file:deploy/whale-tracker.service",
-        "config:.env.example",
-        "config:package.json",
-        "config:vercel.json",
-        "file:api/[...path].js",
-        "function:api/[...path].js:handler",
-        "file:scripts/build-deck.mjs",
-        "document:README.md"
+        "file:scripts/build-deck.mjs"
       ]
     }
   ],

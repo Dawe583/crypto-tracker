@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "137676abc189b49252901a99dd25932c34a5e1af",
-  "generatedAt": "2026-11-24T21:30:54.482Z",
+  "gitCommitHash": "45cbdb6427988aaaa798b31ed33283fe4e95dd36",
+  "generatedAt": "2026-11-24T21:39:48.617Z",
   "files": {
     ".agent/work-state.json": {
       "filePath": ".agent/work-state.json",
@@ -277,7 +277,7 @@
     },
     "deck/app.js": {
       "filePath": "deck/app.js",
-      "contentHash": "9bb902279ef2220a8ed6d192953d2ce34b395380852052e8a0d3f3b4866b90a5",
+      "contentHash": "90a41517b6ccda72710ef7aa38525541cc1fab2041608825b3fdd7dcd03dad93",
       "functions": [
         {
           "name": "$",
@@ -366,7 +366,7 @@
           "name": "refresh",
           "params": [],
           "exported": false,
-          "lineCount": 52
+          "lineCount": 53
         },
         {
           "name": "selectMarket",
@@ -394,7 +394,7 @@
           "name": "renderStatic",
           "params": [],
           "exported": false,
-          "lineCount": 96
+          "lineCount": 100
         },
         {
           "name": "renderFeed",
@@ -654,7 +654,7 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 1205,
+      "totalLines": 1210,
       "hasStructuralAnalysis": true
     },
     "deck/index.html": {
@@ -2639,13 +2639,13 @@
     },
     "tests/deck.test.mjs": {
       "filePath": "tests/deck.test.mjs",
-      "contentHash": "adf4638f7c84ff0df2749d29e1a3537d4200762e1dbcca5bb52c8c9d31f5b26f",
+      "contentHash": "78e23fbb843a2e1ea39c67d2afdc5654408fbac772af1d4dc805adc6347a1272",
       "functions": [
         {
           "name": "runtime",
           "params": [],
           "exported": false,
-          "lineCount": 17
+          "lineCount": 18
         }
       ],
       "classes": [],
@@ -2676,7 +2676,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 188,
+      "totalLines": 221,
       "hasStructuralAnalysis": true
     },
     "tests/hosting.test.mjs": {
