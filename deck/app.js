@@ -1119,7 +1119,10 @@ document.querySelectorAll('.panel').forEach((panel, i) => {
     button.textContent = expand ? 'Restore' : 'Expand';
     button.setAttribute('aria-expanded', String(expand));
     button.setAttribute('aria-label', `${expand ? 'Restore' : 'Expand'} ${name}`);
-    requestAnimationFrame(drawSlow);
+    requestAnimationFrame(() => {
+      panel.scrollIntoView({ block: 'start', behavior: isStill() ? 'instant' : 'smooth' });
+      drawSlow();
+    });
   };
   title.append(button);
 });
