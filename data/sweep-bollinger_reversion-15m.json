@@ -1,0 +1,292 @@
+{
+  "at": "2026-11-24T11:03:02.814Z",
+  "strategy": "bollinger_reversion",
+  "interval": "15m",
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT"
+  ],
+  "results": [
+    {
+      "params": {
+        "n": 20,
+        "mult": 2.5,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 5,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 9.92,
+      "maxDdUsd": 16.28,
+      "trades": 15,
+      "score": 1.78
+    },
+    {
+      "params": {
+        "n": 20,
+        "mult": 2.5,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 8,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 9.92,
+      "maxDdUsd": 16.28,
+      "trades": 15,
+      "score": 1.78
+    },
+    {
+      "params": {
+        "n": 20,
+        "mult": 2.5,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 5,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 9.92,
+      "maxDdUsd": 16.28,
+      "trades": 15,
+      "score": 1.78
+    },
+    {
+      "params": {
+        "n": 20,
+        "mult": 2.5,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 8,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 9.92,
+      "maxDdUsd": 16.28,
+      "trades": 15,
+      "score": 1.78
+    },
+    {
+      "params": {
+        "n": 20,
+        "mult": 1.8,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 5,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 10.13,
+      "maxDdUsd": 17.38,
+      "trades": 21,
+      "score": 1.44
+    },
+    {
+      "params": {
+        "n": 20,
+        "mult": 1.8,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 8,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 10.13,
+      "maxDdUsd": 17.38,
+      "trades": 21,
+      "score": 1.44
+    },
+    {
+      "params": {
+        "n": 20,
+        "mult": 1.8,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 5,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 10.13,
+      "maxDdUsd": 17.38,
+      "trades": 21,
+      "score": 1.44
+    },
+    {
+      "params": {
+        "n": 20,
+        "mult": 1.8,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 8,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 10.13,
+      "maxDdUsd": 17.38,
+      "trades": 21,
+      "score": 1.44
+    },
+    {
+      "params": {
+        "n": 20,
+        "mult": 2,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 5,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 9.31,
+      "maxDdUsd": 18.79,
+      "trades": 19,
+      "score": -0.09
+    },
+    {
+      "params": {
+        "n": 20,
+        "mult": 2,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 8,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 9.31,
+      "maxDdUsd": 18.79,
+      "trades": 19,
+      "score": -0.09
+    },
+    {
+      "params": {
+        "n": 20,
+        "mult": 2,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 5,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 9.31,
+      "maxDdUsd": 18.79,
+      "trades": 19,
+      "score": -0.09
+    },
+    {
+      "params": {
+        "n": 20,
+        "mult": 2,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 8,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 9.31,
+      "maxDdUsd": 18.79,
+      "trades": 19,
+      "score": -0.09
+    },
+    {
+      "params": {
+        "n": 15,
+        "mult": 1.8,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 5,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 8.15,
+      "maxDdUsd": 26.92,
+      "trades": 30,
+      "score": -5.31
+    },
+    {
+      "params": {
+        "n": 15,
+        "mult": 1.8,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 8,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 8.15,
+      "maxDdUsd": 26.92,
+      "trades": 30,
+      "score": -5.31
+    },
+    {
+      "params": {
+        "n": 15,
+        "mult": 1.8,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 5,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 8.15,
+      "maxDdUsd": 26.92,
+      "trades": 30,
+      "score": -5.31
+    },
+    {
+      "params": {
+        "n": 15,
+        "mult": 1.8,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 8,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 8.15,
+      "maxDdUsd": 26.92,
+      "trades": 30,
+      "score": -5.31
+    },
+    {
+      "params": {
+        "n": 15,
+        "mult": 2.5,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 5,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 2.81,
+      "maxDdUsd": 17.6,
+      "trades": 18,
+      "score": -5.99
+    },
+    {
+      "params": {
+        "n": 15,
+        "mult": 2.5,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 8,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 2.81,
+      "maxDdUsd": 17.6,
+      "trades": 18,
+      "score": -5.99
+    },
+    {
+      "params": {
+        "n": 15,
+        "mult": 2.5,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 5,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 2.81,
+      "maxDdUsd": 17.6,
+      "trades": 18,
+      "score": -5.99
+    },
+    {
+      "params": {
+        "n": 15,
+        "mult": 2.5,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 8,
+        "maxHoldMin": 360
+      },
+      "pnlUsd": 2.81,
+      "maxDdUsd": 17.6,
+      "trades": 18,
+      "score": -5.99
+    }
+  ]
+}

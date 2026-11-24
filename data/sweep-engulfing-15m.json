@@ -1,0 +1,116 @@
+{
+  "at": "2026-11-24T11:03:05.860Z",
+  "strategy": "engulfing",
+  "interval": "15m",
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT"
+  ],
+  "results": [
+    {
+      "params": {
+        "volMult": 1.3,
+        "sizeUsd": 200,
+        "stopLossPct": 3,
+        "takeProfitPct": 7,
+        "maxHoldMin": 240
+      },
+      "pnlUsd": -9.21,
+      "maxDdUsd": 28.6,
+      "trades": 6,
+      "score": -23.51
+    },
+    {
+      "params": {
+        "volMult": 1.3,
+        "sizeUsd": 200,
+        "stopLossPct": 3,
+        "takeProfitPct": 5,
+        "maxHoldMin": 240
+      },
+      "pnlUsd": -10.88,
+      "maxDdUsd": 26.71,
+      "trades": 7,
+      "score": -24.23
+    },
+    {
+      "params": {
+        "volMult": 1.3,
+        "sizeUsd": 200,
+        "stopLossPct": 4,
+        "takeProfitPct": 7,
+        "maxHoldMin": 240
+      },
+      "pnlUsd": -12.88,
+      "maxDdUsd": 32.27,
+      "trades": 6,
+      "score": -29.01
+    },
+    {
+      "params": {
+        "volMult": 1.3,
+        "sizeUsd": 200,
+        "stopLossPct": 4,
+        "takeProfitPct": 5,
+        "maxHoldMin": 240
+      },
+      "pnlUsd": -16.29,
+      "maxDdUsd": 32.13,
+      "trades": 7,
+      "score": -32.35
+    },
+    {
+      "params": {
+        "volMult": 2,
+        "sizeUsd": 200,
+        "stopLossPct": 3,
+        "takeProfitPct": 5,
+        "maxHoldMin": 240
+      },
+      "pnlUsd": -22.09,
+      "maxDdUsd": 24.69,
+      "trades": 4,
+      "score": -34.44
+    },
+    {
+      "params": {
+        "volMult": 2,
+        "sizeUsd": 200,
+        "stopLossPct": 3,
+        "takeProfitPct": 7,
+        "maxHoldMin": 240
+      },
+      "pnlUsd": -22.09,
+      "maxDdUsd": 24.69,
+      "trades": 4,
+      "score": -34.44
+    },
+    {
+      "params": {
+        "volMult": 2,
+        "sizeUsd": 200,
+        "stopLossPct": 4,
+        "takeProfitPct": 5,
+        "maxHoldMin": 240
+      },
+      "pnlUsd": -27.52,
+      "maxDdUsd": 30.51,
+      "trades": 4,
+      "score": -42.77
+    },
+    {
+      "params": {
+        "volMult": 2,
+        "sizeUsd": 200,
+        "stopLossPct": 4,
+        "takeProfitPct": 7,
+        "maxHoldMin": 240
+      },
+      "pnlUsd": -27.52,
+      "maxDdUsd": 30.51,
+      "trades": 4,
+      "score": -42.77
+    }
+  ]
+}

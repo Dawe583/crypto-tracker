@@ -1,0 +1,312 @@
+{
+  "at": "2026-11-24T11:02:58.795Z",
+  "strategy": "rsi_reversion",
+  "interval": "15m",
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT"
+  ],
+  "results": [
+    {
+      "params": {
+        "n": 14,
+        "oversold": 35,
+        "exitAt": 55,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 19.06,
+      "maxDdUsd": 22.36,
+      "trades": 19,
+      "score": 7.88
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 35,
+        "exitAt": 55,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 19.06,
+      "maxDdUsd": 22.36,
+      "trades": 19,
+      "score": 7.88
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 35,
+        "exitAt": 55,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 19.06,
+      "maxDdUsd": 22.36,
+      "trades": 19,
+      "score": 7.88
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 35,
+        "exitAt": 55,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 19.06,
+      "maxDdUsd": 22.36,
+      "trades": 19,
+      "score": 7.88
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 30,
+        "exitAt": 55,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 18.85,
+      "maxDdUsd": 23.11,
+      "trades": 14,
+      "score": 7.29
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 30,
+        "exitAt": 55,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 18.85,
+      "maxDdUsd": 23.11,
+      "trades": 14,
+      "score": 7.29
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 30,
+        "exitAt": 55,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 18.85,
+      "maxDdUsd": 23.11,
+      "trades": 14,
+      "score": 7.29
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 30,
+        "exitAt": 55,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 18.85,
+      "maxDdUsd": 23.11,
+      "trades": 14,
+      "score": 7.29
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 30,
+        "exitAt": 50,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 6.12,
+      "maxDdUsd": 20.98,
+      "trades": 14,
+      "score": -4.37
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 30,
+        "exitAt": 50,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 6.12,
+      "maxDdUsd": 20.98,
+      "trades": 14,
+      "score": -4.37
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 30,
+        "exitAt": 50,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 6.12,
+      "maxDdUsd": 20.98,
+      "trades": 14,
+      "score": -4.37
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 30,
+        "exitAt": 50,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 6.12,
+      "maxDdUsd": 20.98,
+      "trades": 14,
+      "score": -4.37
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 35,
+        "exitAt": 50,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 5.16,
+      "maxDdUsd": 22.54,
+      "trades": 19,
+      "score": -6.11
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 35,
+        "exitAt": 50,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 5.16,
+      "maxDdUsd": 22.54,
+      "trades": 19,
+      "score": -6.11
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 35,
+        "exitAt": 50,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 5.16,
+      "maxDdUsd": 22.54,
+      "trades": 19,
+      "score": -6.11
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 35,
+        "exitAt": 50,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 5.16,
+      "maxDdUsd": 22.54,
+      "trades": 19,
+      "score": -6.11
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 25,
+        "exitAt": 55,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": -11.13,
+      "maxDdUsd": 20.55,
+      "trades": 9,
+      "score": -21.41
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 25,
+        "exitAt": 55,
+        "sizeUsd": 250,
+        "stopLossPct": 4,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": -11.13,
+      "maxDdUsd": 20.55,
+      "trades": 9,
+      "score": -21.41
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 25,
+        "exitAt": 55,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": -11.13,
+      "maxDdUsd": 20.55,
+      "trades": 9,
+      "score": -21.41
+    },
+    {
+      "params": {
+        "n": 14,
+        "oversold": 25,
+        "exitAt": 55,
+        "sizeUsd": 250,
+        "stopLossPct": 6,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": -11.13,
+      "maxDdUsd": 20.55,
+      "trades": 9,
+      "score": -21.41
+    }
+  ]
+}
