@@ -218,3 +218,23 @@ test('ledger halt overrides running, stop and startup labels, and clears after a
   await app.run('refresh()');
   assert.equal(app.elements.get('connection').textContent, 'WARMING UP');
 });
+
+test('halted canvases never present a previous NAV, a false zero or portfolio-derived charts', async () => {
+  let snapshot;
+  const app = runtime(async (path) => ({ ok: true, json: async () => path.includes('snapshot') ? snapshot
+    : path.includes('strategies') || path.includes('decisions') ? [] : {} }));
+  app.run('loadDemo()');
+  snapshot = { ...app.run('STATE.snap'), halted: true };
+  await app.run('refresh()');
+  assert.equal(app.run('STATE.snap'), null);
+  const texts = [];
+  const drawing = new Proxy({}, { get: (_, key) => key === 'fillText' ? (s) => texts.push(s)
+    : key.startsWith('create') ? () => ({ addColorStop() {} }) : () => {} });
+  app.context.devicePixelRatio = 1;
+  for (const id of ['navChart', 'weights', 'rotation', 'brain']) {
+    app.elements.set(id, { clientWidth: 600, clientHeight: 320, getContext: () => drawing });
+  }
+  app.run('drawNavChart(); drawWeights(); drawRotation(); drawBrain(1000);');
+  assert.equal(texts.filter((s) => s.startsWith('ENGINE HALTED')).length, 3);
+  assert.deepEqual(texts.filter((s) => s.startsWith('NAV ')), ['NAV —']);
+});

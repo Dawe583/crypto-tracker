@@ -117,7 +117,7 @@ async function refresh() {
   demoMode = false;
   $('demoBanner').hidden = true;
   STATE.halted = snap?.halted === true;
-  if (snap?.empty) STATE.snap = null;
+  if (snap?.empty || STATE.halted) STATE.snap = null;
   else if (snap) STATE.snap = snap;
   STATE.strats = strats || STATE.strats;
   STATE.decisions = decisions || STATE.decisions;
@@ -340,6 +340,7 @@ function drawNavChart() {
   const { x, w, h } = ctx2d('navChart');
   const eq = STATE.snap?.equityCurve;
   x.clearRect(0, 0, w, h);
+  if (STATE.halted) { x.fillStyle = '#ff3860'; x.fillText('ENGINE HALTED · portfolio unavailable', 8, h / 2); return; }
   if (!eq || eq.length < 2) { x.fillStyle = '#4d5f80'; x.fillText('collecting equity ticks…', 8, h / 2); return; }
   const start = STATE.snap.equityUsd - STATE.snap.realizedUsd - STATE.snap.unrealizedUsd || 10000;
   const ys = eq.map((p) => p.equityUsd).concat([start]);
@@ -728,7 +729,7 @@ function drawBrain(now) {
   g2.addColorStop(0, 'rgba(242,246,255,.55)'); g2.addColorStop(.4, 'rgba(143,107,255,.22)'); g2.addColorStop(1, 'transparent');
   x.fillStyle = g2; x.beginPath(); x.arc(c.X, c.Y, 60 * pulse * c.s, 0, 7); x.fill();
   x.fillStyle = '#e8f4ff'; x.font = '10px monospace'; x.textAlign = 'center';
-  x.fillText(`NAV ${fmt$(STATE.snap?.equityUsd || 0, 0)}`, c.X, c.Y + 40 * c.s);
+  x.fillText(STATE.snap && !STATE.halted ? `NAV ${fmt$(STATE.snap.equityUsd, 0)}` : 'NAV —', c.X, c.Y + 40 * c.s);
   const meta = STATE.halted ? 'ENGINE HALTED / LAST RECEIVED NETWORK STATE' : `${AGENTS.length} AGENTS / ${STATE.strats.length} STRATEGIES / ${recent} DECISIONS/MIN`;
   if ($('brainMeta').textContent !== meta) $('brainMeta').textContent = meta;
 }
@@ -812,6 +813,7 @@ function drawCalcium(now) {
 function drawWeights() {
   const { x, w, h } = ctx2d('weights');
   x.clearRect(0, 0, w, h);
+  if (STATE.halted) { x.fillStyle = '#ff3860'; x.fillText('ENGINE HALTED · weights unavailable', 8, h / 2); return; }
   const n = STATE.strats.length || 12;
   const cols = 12;
   const cell = Math.min((w - 10) / cols, 14);
@@ -833,6 +835,7 @@ function drawWeights() {
 function drawRotation() {
   const { x, w, h } = ctx2d('rotation');
   x.clearRect(0, 0, w, h);
+  if (STATE.halted) { x.fillStyle = '#ff3860'; x.fillText('ENGINE HALTED · contributions unavailable', 8, h / 2); return; }
   const strats = STATE.strats;
   if (!strats.length) return;
   const ow = Math.min(w * .34, 190), ox = ow / 2 + 6, oy = h / 2;
