@@ -4,6 +4,9 @@ const paths = new Set(['/api/engine/snapshot', '/api/engine/strategies', '/api/e
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
   const requested = new URL(req.url, 'https://deck.invalid');
+  const routedPath = req.query?.__deck_path ?? requested.searchParams.get('__deck_path');
+  if (typeof routedPath === 'string') requested.pathname = `/api/${routedPath}`;
+  requested.searchParams.delete('__deck_path');
   if (!paths.has(requested.pathname)) return res.status(404).json({ error: 'Not found' });
   if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
   const authorization = typeof req.headers.authorization === 'string' ? req.headers.authorization : '';
