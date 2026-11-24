@@ -1,7 +1,8 @@
-// Strategy library: 19 pure evaluators, each (ctx) -> TradeIntent[].
+// Strategy library: pure evaluators, each (ctx) -> TradeIntent[].
 // Entries are typed narrow calls; sizing/risk/exits live in the engine.
 import type { Strategy } from '../engine/types.js';
 import { closes, highs, lows, vols, sma, ema, rsi, atr, macdHist, bollinger, zscore, pctChange } from '../engine/indicators.js';
+import { macdBb } from './macd-bb.js';
 
 const buy = (strategy: string, symbol: string, confidence: number, reason: string, extra = {}): any =>
   ({ strategy, symbol, side: 'buy', confidence, reason, ...extra });
@@ -9,6 +10,7 @@ const sell = (strategy: string, symbol: string, confidence: number, reason: stri
   ({ strategy, symbol, side: 'sell', confidence, reason });
 
 export const LIBRARY: Strategy[] = [
+  macdBb,
   {
     name: 'ema_cross',
     description: 'Fast/slow EMA crossover trend entries',

@@ -2,9 +2,10 @@
 // `npm run sweep [strategy|all] [interval]` — writes data/sweep-<strategy>-<interval>.json.
 import { writeFileSync } from 'node:fs';
 import { loadStrategies } from '../strategies/registry.js';
-import { refreshSymbol } from './market.js';
+import { completedCandles, intervalMs, refreshSymbol } from './market.js';
 import { replayOne } from './backtest.js';
 import { config } from '../config.js';
+import type { Candle } from './types.js';
 
 // Grid axes per strategy (keep small: <= ~48 combos each).
 const GRIDS: Record<string, Record<string, number[]>> = {
@@ -44,10 +45,10 @@ export async function runSweep(stratName: string, symbols: string[] = config.eng
   const st = loadStrategies().find((s) => s.strategy.name === stratName);
   if (!st) throw new Error(`unknown strategy ${stratName}`);
   const grid = GRIDS[stratName] ?? {};
-  const candleMap: Record<string, any[]> = {};
+  const candleMap: Record<string, Candle[]> = {};
   for (const symbol of symbols) {
     const feed = await refreshSymbol(symbol, interval);
-    candleMap[symbol] = feed?.candles ?? [];
+    candleMap[symbol] = feed ? completedCandles(feed, interval) : [];
   }
   const rows: any[] = [];
   for (const params of combos(grid)) {
@@ -55,7 +56,7 @@ export async function runSweep(stratName: string, symbols: string[] = config.eng
     const merged = { ...st.params, ...params };
     for (const symbol of symbols) {
       if (!candleMap[symbol].length) continue;
-      const r = replayOne(st.strategy, merged, symbol, candleMap[symbol]);
+      const r = replayOne(st.strategy, merged, symbol, candleMap[symbol], undefined, undefined, intervalMs(interval));
       pnl += r.pnlUsd; dd += r.maxDdUsd; trades += r.trades;
     }
     rows.push({ params: merged, pnlUsd: +pnl.toFixed(2), maxDdUsd: +dd.toFixed(2), trades, score: +(pnl - 0.5 * dd).toFixed(2) });

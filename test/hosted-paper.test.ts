@@ -68,6 +68,54 @@ test('duplicate and stale cron slots cannot post a second cycle', async () => {
   assert.equal(writes.length, 1);
 });
 
+test('restores the trailing high-water mark and does not reuse the signal candle after a stop', async () => {
+  const { store, writes } = memoryStore();
+  const minute = 60_000;
+  const lastFetch = Math.floor(Date.now() / minute) * minute + 1000;
+  const refresh = (price: number) => async (): Promise<Feed> => ({
+    source: 'coinbase', price, lastFetch,
+    candles: Array.from({ length: 35 }, (_, i) => ({
+      t: lastFetch - 1000 - (34 - i) * minute, o: 100, h: 100, l: 100, c: 100, v: 1,
+    })),
+  });
+  const [fixture] = strategies;
+  const managed: ActiveStrategy = { ...fixture,
+    strategy: { ...fixture.strategy, closedBars: 30, evaluate: (ctx) => fixture.strategy.evaluate(ctx).map((intent) => ({
+      ...intent, stopLossPct: 0.6, takeProfitPct: 1.2, maxHoldMin: 100, management: { riskPct: 0.25, trailAfterPct: 0.6 },
+    })) },
+  };
+  assert.equal(await runHostedCycle(store, 1, refresh(100), [managed]), true);
+  assert.equal(writes[0].p_checkpoint.portfolio.positions[0].entryPrice, 100.03);
+  assert.equal(await runHostedCycle(store, 2, refresh(101), [managed]), true);
+  assert.equal(writes[1].p_checkpoint.portfolio.positions[0].trailing?.peak, 101);
+  assert.equal(await runHostedCycle(store, 3, refresh(100.25), [managed]), true);
+  assert.equal(writes[2].p_checkpoint.portfolio.positions.length, 0);
+  const fill = writes[2].p_records.find((r) => r.type === 'fill');
+  assert.equal(JSON.parse(fill!.payload).reason, 'trailing stop');
+  assert.equal(await runHostedCycle(store, 4, refresh(100), [managed]), true);
+  assert.equal(writes[3].p_checkpoint.portfolio.positions.length, 0);
+  assert.equal(writes[3].p_deck.decisions.length, 1);
+});
+
+test('a disabled strategy can wind down an existing position in a removed market', async (t) => {
+  const { store, writes } = memoryStore();
+  const original = config.engine.symbols;
+  t.after(() => { config.engine.symbols = original; });
+  config.engine.symbols = ['BTCUSDT'];
+  assert.equal(await runHostedCycle(store, 1, refreshAt(100), strategies), true);
+  config.engine.symbols = ['ETHUSDT'];
+  const [fixture] = strategies;
+  const disabled: ActiveStrategy = { ...fixture, enabled: false,
+    strategy: { ...fixture.strategy, evaluate: ({ symbol }) => [
+      { strategy: 'fixture', symbol, side: 'sell', confidence: 1, reason: 'legacy exit' },
+      { strategy: 'fixture', symbol, side: 'buy', confidence: 1, reason: 'no new positions' },
+    ] },
+  };
+  assert.equal(await runHostedCycle(store, 2, refreshAt(101), [disabled]), true);
+  assert.deepEqual(writes[1].p_checkpoint.portfolio.positions, []);
+  assert.deepEqual(writes[1].p_records.filter((r) => r.type === 'fill').map((r) => JSON.parse(r.payload).reason), ['legacy exit']);
+});
+
 test('an unpriced open position keeps its mark without producing a fresh equity point', async () => {
   const { store, writes } = memoryStore();
   await runHostedCycle(store, 1, refreshAt(100), strategies);

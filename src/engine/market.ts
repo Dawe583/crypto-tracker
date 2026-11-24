@@ -72,9 +72,26 @@ const sources = [
   ['kraken', fromKraken, KRAKEN_INTERVALS],
 ] as const;
 
-export async function fetchSymbol(symbol: string, interval: string, { requireRecent = true } = {}): Promise<Feed | null> {
+export function intervalMs(interval: string) {
   const [, count, unit] = /^(\d+)([smhdwM])$/.exec(interval) ?? [];
-  const maxAgeMs = 2 * Number(count) * CANDLE_UNIT_MS[unit];
+  return Number(count) * CANDLE_UNIT_MS[unit];
+}
+
+export function completedCandles(feed: Feed, interval: string) {
+  const ms = intervalMs(interval);
+  return feed.candles.filter((c) => c.t + ms <= feed.lastFetch);
+}
+
+export function closedStrategyBars(feed: Feed, interval: string, count: number): Candle[] {
+  const ms = intervalMs(interval);
+  if (!Number.isSafeInteger(ms) || ms <= 0 || interval.endsWith('M')) return [];
+  const bars = completedCandles(feed, interval).slice(-count);
+  if (bars.length !== count || feed.lastFetch - bars[bars.length - 1].t >= 2 * ms) return [];
+  return bars.every((c, i) => i === 0 || c.t - bars[i - 1].t === ms) ? bars : [];
+}
+
+export async function fetchSymbol(symbol: string, interval: string, { requireRecent = true } = {}): Promise<Feed | null> {
+  const maxAgeMs = 2 * intervalMs(interval);
   if (requireRecent && (!Number.isSafeInteger(maxAgeMs) || maxAgeMs <= 0)) {
     logger.warn({ interval }, 'invalid paper market interval');
     return null;

@@ -1,5 +1,7 @@
 # Backtest digest
 
+> Historical artifact. These results predate next-open fills and round-trip cost accounting. They do not validate a trading edge; see the [current paper-strategy replay](PAPER_STRATEGY.md#historical-replay).
+
 Replay of all 19 strategies through PaperPortfolio on live candles (Coinbase feed, ~240 bars each).
 
 ## 1m — 54 runs, 2 positive
