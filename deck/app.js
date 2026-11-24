@@ -66,7 +66,7 @@ const ctx2d = (id) => {
   return { x, w, h };
 };
 
-const STATE = { snap: null, halted: false, strats: [], decisions: [], candles: {}, sym: 'BTCUSDT', whales: 0, pools: 0, gold: [], book: null, bookAt: 0 };
+const STATE = { snap: null, halted: false, strats: [], decisions: [], candles: {}, marketAt: {}, sym: 'BTCUSDT', whales: 0, pools: 0, gold: [], book: null, bookAt: 0 };
 let demoMode = false;
 
 function loadDemo() {
@@ -75,6 +75,7 @@ function loadDemo() {
   const bases = [96700, 3420, 186, 1.94, .32, .87];
   const names = ['ema_cross', 'rsi_reversion', 'bollinger_reversion', 'breakout', 'macd_momentum', 'atr_trend'];
   STATE.candles = {};
+  STATE.marketAt = {};
   const prices = {};
   symbols.forEach((symbol, j) => {
     STATE.candles[symbol] = Array.from({ length: 120 }, (_, i) => {
@@ -112,7 +113,7 @@ async function refresh() {
   ]);
   if (version !== refreshVersion) return;
   if (demoMode) {
-    STATE.snap = null; STATE.candles = {}; bookLevels = null; mcPaths.length = 0;
+    STATE.snap = null; STATE.candles = {}; STATE.marketAt = {}; bookLevels = null; mcPaths.length = 0;
   }
   demoMode = false;
   $('demoBanner').hidden = true;
@@ -121,7 +122,10 @@ async function refresh() {
   else if (snap) STATE.snap = snap;
   STATE.strats = strats || STATE.strats;
   STATE.decisions = decisions || STATE.decisions;
-  if (candles?.candles?.length) STATE.candles[symbol] = candles.candles;
+  if (candles?.candles?.length) {
+    STATE.candles[symbol] = candles.candles;
+    STATE.marketAt[symbol] = Number.isFinite(candles.lastFetch) && candles.lastFetch > 0 ? candles.lastFetch : 0;
+  }
   STATE.whales = whales?.count ?? 0;
   STATE.pools = pools?.count ?? 0;
   STATE.gold = gold?.assets || [];
@@ -253,6 +257,8 @@ function renderStatic() {
   $('tapeSym').textContent = STATE.sym;
 
   const cd = STATE.candles[STATE.sym];
+  const fetchedAt = STATE.marketAt[STATE.sym];
+  const cached = !demoMode && fetchedAt > 0 && Date.now() - fetchedAt > 90_000;
   if (cd?.length > 1) {
     const chg = ((cd[cd.length - 1].c - cd[0].c) / cd[0].c) * 100;
     $('tapeChg').innerHTML = `<span class="${cls(chg)}">${chg >= 0 ? '▲' : '▼'} ${chg.toFixed(2)}%</span>`;
@@ -260,7 +266,8 @@ function renderStatic() {
     const bp = $('bigPrice');
     setText('bigPrice', fmt$(lp, 2));
     bp.classList.toggle('up', chg >= 0); bp.classList.toggle('dn', chg < 0);
-    $('bigPriceSub').innerHTML = `<span class="${cls(chg)}">${chg >= 0 ? '▲' : '▼'} ${Math.abs(chg).toFixed(2)}%</span>`;
+    const freshness = demoMode ? 'GENERATED DATA' : fetchedAt ? `${cached ? 'CACHED · ' : ''}last market fetch ${utc(fetchedAt)} UTC` : 'FETCH TIME UNKNOWN';
+    $('bigPriceSub').innerHTML = `<span class="${cls(chg)}">${chg >= 0 ? '▲' : '▼'} ${Math.abs(chg).toFixed(2)}%</span> · <span class="${cached ? 'amb' : 'dim'}">${freshness}</span>`;
     const fair = vwapN(cd);
     const dpm = STATE.decisions.filter((d) => Date.now() - d.ts < 60_000).length;
     $('wireMsg').textContent = `SIX AGENTS LIVE · ${dpm} DECISIONS/MIN` +
@@ -299,6 +306,7 @@ function renderStatic() {
     ? `LIVE WIRE — ${last.strategy} ${last.action} ${last.symbol} @${(last.confidence * 100) | 0}% · whale signals ${STATE.whales} · new pools ${STATE.pools}`
     : `LIVE WIRE — ${s.killed ? 'engine stopped' : 'scanning for signals'}`;
   if (demoMode) $('wireMsg').textContent = 'SIMULATED DEMO · generated prices, portfolio and decisions · no live engine connected';
+  if (cached) $('wireMsg').textContent = `CACHED QUOTES · ${$('wireMsg').textContent}`;
 }
 
 function renderFeed(id, limit, template) {

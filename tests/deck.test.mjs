@@ -10,11 +10,11 @@ function runtime(fetch = async () => ({ ok: true, json: async () => ({}) })) {
   const element = () => ({ textContent: '', innerHTML: '', children: [], dataset: {},
     style: {},
     replaceChildren(...children) { this.children = children; },
-    classList: { toggle() {}, add() {}, remove() {} }, addEventListener() {}, setAttribute() {}, getAnimations: () => [],
+    classList: { toggle() {}, add() {}, remove() {} }, querySelector: () => element(), addEventListener() {}, setAttribute() {}, getAnimations: () => [],
   });
   const body = element();
   const context = vm.createContext({
-    console, fetch, document: { hidden: true, body, addEventListener() {}, querySelectorAll: () => [],
+    console, fetch, document: { hidden: true, body, createElement: element, addEventListener() {}, querySelectorAll: () => [],
       getElementById: (id) => { if (!elements.has(id)) elements.set(id, element()); return elements.get(id); }, querySelector: element,
     }, window: { addEventListener() {} }, sessionStorage: { getItem: () => null, setItem() {} },
     matchMedia: () => ({ matches: false, addEventListener() {} }), IntersectionObserver: class { observe() {} },
@@ -92,6 +92,34 @@ test('first empty snapshot explains startup and disables stop until the engine r
   assert.match(app.elements.get('wireMsg').textContent, /first snapshot/i);
   assert.match(app.elements.get('marketRail').innerHTML, /waiting/i);
   assert.match(app.elements.get('cortexList').innerHTML, /waiting/i);
+});
+
+test('successful polls label cached candles by market fetch time and clear the warning on recovery', async () => {
+  let fetchedAt = Date.now() - 120_000;
+  let snapshot, candles;
+  const app = runtime(async (path) => ({ ok: true, json: async () =>
+    path.includes('snapshot') ? snapshot : path.includes('candles') ? { candles, lastFetch: fetchedAt }
+      : path.includes('strategies') || path.includes('decisions') ? [] : {} }));
+  app.run('loadDemo(); demoMode = false');
+  snapshot = app.run('STATE.snap');
+  candles = app.run('STATE.candles.BTCUSDT');
+  await app.run('refresh()');
+  assert.match(app.elements.get('bigPriceSub').innerHTML, /CACHED.*last market fetch/);
+  assert.match(app.elements.get('wireMsg').textContent, /CACHED QUOTES/);
+  assert.equal(app.elements.get('connection').textContent, 'CONNECTED');
+  fetchedAt = Date.now();
+  await app.run('refresh()');
+  assert.doesNotMatch(app.elements.get('bigPriceSub').innerHTML, /CACHED/);
+  assert.match(app.elements.get('bigPriceSub').innerHTML, /last market fetch/);
+  assert.doesNotMatch(app.elements.get('wireMsg').textContent, /CACHED QUOTES/);
+  const btcFetch = app.run('STATE.marketAt.BTCUSDT');
+  fetchedAt = undefined;
+  await app.run('STATE.sym = "ETHUSDT"; refresh()');
+  assert.match(app.elements.get('bigPriceSub').innerHTML, /FETCH TIME UNKNOWN/);
+  assert.equal(app.run('STATE.marketAt.BTCUSDT'), btcFetch);
+  app.run('demoMode = true; loadDemo(); renderStatic()');
+  assert.match(app.elements.get('bigPriceSub').innerHTML, /GENERATED DATA/);
+  assert.doesNotMatch(app.elements.get('bigPriceSub').innerHTML, /CACHED|last market fetch/);
 });
 
 test('agent focus toggles off and ignores names not present in the graph', () => {
