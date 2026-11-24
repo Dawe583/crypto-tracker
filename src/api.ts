@@ -81,11 +81,10 @@ function health() {
 
 function goldPayload() {
   const gold = getGoldSnapshot();
-  const ageMs = gold.updatedAt ? Date.now() - Date.parse(gold.updatedAt) : null;
   return {
     attemptedAt: gold.attemptedAt,
     updatedAt: gold.updatedAt,
-    stale: ageMs === null || ageMs > config.gold.pollMs * 3,
+    stale: gold.quotes.every((q) => q.stale),
     thresholds: { alertPct: config.gold.alertPct, majorPct: config.gold.majorPct },
     assets: gold.quotes,
   };

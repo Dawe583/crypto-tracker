@@ -31,12 +31,16 @@ export interface GoldQuote {
 
 const here = dirname(fileURLToPath(import.meta.url));
 const STATE_PATH = join(here, '..', 'data', 'gold_state.json');
+const REQUEST_TIMEOUT_MS = 5_000;
 
 // Spot physical gold reference. Default: gold-api.com XAU price (free, no key), set GOLD_SPOT_URL to override.
 // Expected JSON shape: { price: number } (or any top-level numeric "price" field).
 export async function fetchSpotGold(): Promise<{ usd: number; source: string } | null> {
   try {
-    const r = await fetch(config.gold.spotUrl, { headers: { accept: 'application/json' } });
+    const r = await fetch(config.gold.spotUrl, {
+      headers: { accept: 'application/json' },
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+    });
     if (r.ok) {
       const j: any = await r.json();
       const p = Number(j.price ?? j.usd ?? j.rate);
@@ -48,21 +52,26 @@ export async function fetchSpotGold(): Promise<{ usd: number; source: string } |
   return null;
 }
 
-// DEX price from DexScreener, deepest-liquidity pair for the token on the given chain.
+// DexScreener's priceUsd is for the base token.
 async function dexQuote(chain: 'base' | 'ethereum', address: Address) {
-  const r = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${address}`);
+  const r = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${address}`, {
+    signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+  });
   if (!r.ok) return null;
-  const j: any = await r.json();
-  const pairs = (j.pairs ?? [])
-    .filter((p: any) => p.chainId === CHAINS[chain].dexscreenerSlug && p.priceUsd)
-    .sort((a: any, b: any) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0));
-  if (!pairs.length) return null;
-  const p = pairs[0];
-  return {
-    priceUsd: Number(p.priceUsd),
-    liquidityUsd: Number(p.liquidity?.usd ?? 0),
-    pairUrl: p.url ?? `https://dexscreener.com/${CHAINS[chain].dexscreenerSlug}/${p.pairAddress}`,
-  };
+  const j: { pairs?: unknown } | null = await r.json();
+  if (!Array.isArray(j?.pairs)) return null;
+  const slug = CHAINS[chain].dexscreenerSlug;
+  const token = address.toLowerCase();
+  const quotes = j.pairs
+    .filter((p) => p?.chainId === slug && typeof p.baseToken?.address === 'string' && p.baseToken.address.toLowerCase() === token)
+    .map((p) => ({
+      priceUsd: Number(p.priceUsd),
+      liquidityUsd: Number(p.liquidity?.usd ?? 0),
+      pairUrl: p.url ?? `https://dexscreener.com/${slug}/${p.pairAddress}`,
+    }))
+    .filter((q) => Number.isFinite(q.priceUsd) && q.priceUsd > 0 && Number.isFinite(q.liquidityUsd) && q.liquidityUsd >= 0)
+    .sort((a, b) => b.liquidityUsd - a.liquidityUsd);
+  return quotes[0] ?? null;
 }
 
 export function classify(deviationPct: number): GoldQuote['level'] {
@@ -78,12 +87,12 @@ export async function scanGold(): Promise<GoldQuote[]> {
     logger.warn('no spot gold reference available this cycle');
     return [];
   }
-  const out: GoldQuote[] = [];
-  for (const a of GOLD_ASSETS) {
+  const quotes = await Promise.all(GOLD_ASSETS.map(async (a): Promise<GoldQuote | null> => {
     const q = await dexQuote(a.chain, a.address).catch(() => null);
-    if (!q) continue;
+    if (!q) return null;
     const dev = ((q.priceUsd - spot.usd) / spot.usd) * 100;
-    out.push({
+    if (!Number.isFinite(dev)) return null;
+    return {
       symbol: a.symbol,
       chain: a.chain,
       dexPriceUsd: q.priceUsd,
@@ -94,9 +103,9 @@ export async function scanGold(): Promise<GoldQuote[]> {
       deviationPct: dev,
       level: classify(dev),
       direction: Math.abs(dev) < config.gold.alertPct ? 'in_line' : dev > 0 ? 'premium' : 'discount',
-    });
-  }
-  return out;
+    };
+  }));
+  return quotes.filter((q) => q !== null);
 }
 
 export function renderGoldAlert(q: GoldQuote): string {
@@ -128,6 +137,7 @@ function saveState(s: Record<string, string>) {
 export async function runGoldCycle(): Promise<GoldQuote[]> {
   const quotes = await scanGold();
   setGoldSnapshot(quotes);
+  if (!quotes.length) return quotes;
   const state = loadState();
   for (const q of quotes) {
     const key = `${q.chain}:${q.symbol}`;
@@ -155,7 +165,18 @@ export async function runGoldCycle(): Promise<GoldQuote[]> {
 }
 
 export function startGoldLoop() {
-  const tick = () => runGoldCycle().catch((e) => logger.error({ err: String(e) }, 'gold cycle failed'));
+  let running = false;
+  const tick = async () => {
+    if (running) return;
+    running = true;
+    try {
+      await runGoldCycle();
+    } catch (err) {
+      logger.error({ err: String(err) }, 'gold cycle failed');
+    } finally {
+      running = false;
+    }
+  };
   tick();
   return setInterval(tick, config.gold.pollMs);
 }

@@ -184,6 +184,8 @@ The tracker process serves a read-only JSON API from `src/api.ts`, backed by the
 | GET | `/api/whales` | Recent watched-wallet buy activity. |
 | GET | `/api/pools` | Recently detected new pools and their filter results. |
 
+Gold quotes are cached per asset and chain. Each quote has its own `updatedAt` (when the tracker refreshed it) and `stale` flag. A quote is stale if the latest poll missed it or it is older than three poll intervals. The response-level `updatedAt` is the last successful refresh of any asset; `stale` means that no asset has a fresh quote. Stale quotes are kept for display but never used by the paper engine's gold-spread strategy.
+
 Example:
 
 ```bash

@@ -9,13 +9,13 @@ import { fileURLToPath } from 'node:url';
 import type { EngineSnapshot } from '../src/engine/state.js';
 import { LIBRARY } from '../src/strategies/library.js';
 
-function fixture(t: TestContext) {
+function fixture(t: TestContext, enabledStrategy = 'ema_cross') {
   const root = mkdtempSync(join(tmpdir(), 'crypto-tracker-restart-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   cpSync(new URL('../src', import.meta.url), join(root, 'src'), { recursive: true });
   copyFileSync(new URL('../package.json', import.meta.url), join(root, 'package.json'));
   mkdirSync(join(root, 'data'));
-  const strategies = Object.fromEntries(LIBRARY.map(({ name }) => [name, { enabled: name === 'ema_cross' }]));
+  const strategies = Object.fromEntries(LIBRARY.map(({ name }) => [name, { enabled: name === enabledStrategy }]));
   writeFileSync(join(root, 'data', 'strategies.json'), JSON.stringify(strategies));
   symlinkSync(fileURLToPath(new URL('../node_modules', import.meta.url)), join(root, 'node_modules'), 'junction');
   return root;
@@ -186,6 +186,97 @@ function checkSnapshotApi(root: string, assertions: string) {
   `);
   assert.equal(result.status, 0, result.stderr);
 }
+
+test('gold API retains cached quotes without feeding stale spreads into paper trading', (t) => {
+  const result = runProcess(fixture(t, 'gold_spread'), today, { PAXGUSD: 100, XAUTUSD: 100 }, 'PAXGUSD,XAUTUSD', {
+    API_ENABLED: 'true', API_HOST: '127.0.0.1', API_PORT: '0', API_TOKEN: '', GOLD_POLL_MS: '60000',
+    GOLD_ALERT_PCT: '0.5', GOLD_MAJOR_PCT: '1.5', GOLD_SPOT_URL: 'https://spot.test/',
+    BASE_PAXG_ADDRESS: '', BASE_XAUT_ADDRESS: '', TELEGRAM_BOT_TOKEN: '', ALERT_WEBHOOK_URL: '',
+  }, `
+    import assert from 'node:assert/strict';
+    import { once } from 'node:events';
+    const { GOLD_ASSETS, runGoldCycle } = await import('./src/gold_rwa.ts');
+    const { startApi } = await import('./src/api.ts');
+    const marketFetch = globalThis.fetch;
+    const dexPrices = { PAXG: 98, XAUT: 100 };
+    let spotAvailable = true;
+    globalThis.fetch = async (url, init) => {
+      const { hostname, pathname } = new URL(url);
+      if (hostname === 'spot.test') {
+        return spotAvailable ? Response.json({ price: 100 }) : new Response(null, { status: 503 });
+      }
+      if (hostname !== 'api.dexscreener.com') return marketFetch(url, init);
+      const address = pathname.split('/').at(-1);
+      const asset = GOLD_ASSETS.find((item) => item.address === address);
+      const price = dexPrices[asset.symbol];
+      if (price === undefined) return new Response(null, { status: 503 });
+      return Response.json({ pairs: [{
+        chainId: asset.chain, baseToken: { address }, priceUsd: String(price), liquidity: { usd: 100_000 },
+      }] });
+    };
+    const server = startApi();
+    await once(server, 'listening');
+    const gold = async () => {
+      const response = await realFetch('http://127.0.0.1:' + server.address().port + '/api/gold');
+      assert.equal(response.status, 200);
+      return response.json();
+    };
+    try {
+      await runGoldCycle();
+      const initial = await gold();
+      assert.equal(initial.assets.length, 2);
+
+      now += 60_000;
+      delete dexPrices.PAXG;
+      dexPrices.XAUT = 98;
+      await runGoldCycle();
+      const partial = await gold();
+      assert.equal(partial.assets.length, 2);
+      assert.equal(partial.stale, false);
+      const paxg = partial.assets.find((quote) => quote.symbol === 'PAXG');
+      assert.deepEqual(paxg, { ...initial.assets.find((quote) => quote.symbol === 'PAXG'), stale: true });
+      assert.equal(paxg.updatedAt, initial.updatedAt);
+      assert.equal(partial.assets.find((quote) => quote.symbol === 'XAUT').stale, false);
+      await runEngineCycle();
+      assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['XAUTUSD']);
+
+      now += 60_000;
+      dexPrices.XAUT = 100;
+      await runGoldCycle();
+      const beforeOutage = await gold();
+      assert.equal(beforeOutage.stale, false);
+
+      now += 60_000;
+      spotAvailable = false;
+      await runGoldCycle();
+      const outage = await gold();
+      assert.equal(outage.attemptedAt, new Date(now).toISOString());
+      assert.equal(outage.updatedAt, beforeOutage.updatedAt);
+      assert.equal(outage.stale, true);
+      assert.deepEqual(outage.assets, beforeOutage.assets.map((quote) => ({ ...quote, stale: true })));
+      await runEngineCycle();
+      assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['XAUTUSD']);
+
+      now += 60_000;
+      spotAvailable = true;
+      await runGoldCycle();
+      assert.equal((await gold()).stale, false);
+      now += 180_001;
+      assert.equal((await gold()).stale, true);
+      await runEngineCycle();
+      assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['XAUTUSD']);
+
+      dexPrices.PAXG = 98;
+      await runGoldCycle();
+      assert.ok((await gold()).assets.every((quote) => !quote.stale));
+      await runEngineCycle();
+      assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['PAXGUSD']);
+    } finally {
+      server.close();
+    }
+  `);
+  assert.equal(result.status, 0, result.stderr);
+});
 
 test('snapshot API reports a ledger recovery halt before the first cycle', (t) => {
   const root = fixture(t);

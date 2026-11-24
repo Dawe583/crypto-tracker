@@ -56,11 +56,13 @@ After any .env change: sudo systemctl restart whale-tracker
 ## 5. Endpoints
 
 GET /api/health: status, uptime, watched wallet count, last gold scan time, signal counts. Never requires auth.
-GET /api/gold: stale flag, thresholds, and per asset: symbol, chain, dexPriceUsd, spotUsd, deviationPct, level, direction, liquidityUsd, pairUrl.
+GET /api/gold: last poll time (`attemptedAt`), last successful refresh of any asset (`updatedAt`), `stale` (no fresh assets), thresholds, and per asset: symbol, chain, dexPriceUsd, spotUsd, deviationPct, level, direction, liquidityUsd, pairUrl, updatedAt, stale.
 GET /api/whales?limit=50: latest whale buy signals, newest first (limit 1 to 200).
 GET /api/pools?limit=50: latest new-pool signals with safety verdict, reasons, contractVerified, liquidityUsd, marketCapUsd, links.
 
 Responses are JSON with Cache-Control: no-store. Only GET and OPTIONS are supported. Gold refreshes every GOLD_POLL_MS (default 60 seconds), so poll no faster than that. Whales and pools poll every 30 to 60 seconds. Signals only exist since the last restart.
+
+Check each gold asset's `stale` flag even when the response-level flag is false. A cached quote stays visible if the latest poll missed it or its last successful refresh was more than three poll intervals ago. Its `updatedAt` is the tracker's refresh time, not an exchange timestamp.
 
 ## 6. CORS and connecting OpenTerminal
 
@@ -101,7 +103,7 @@ GOLD_SPOT_URL (default https://api.gold-api.com/price/XAU; must return JSON with
 - EADDRINUSE on 8787: set API_PORT to another value and restart.
 - 401 on /api/gold: send Authorization: Bearer <API_TOKEN>. /api/health is always open.
 - Browser CORS error: origin must be openterminal-ashen.vercel.app or localhost, or be listed in API_CORS_ORIGINS.
-- stale: true on /api/gold: spot feed or DexScreener unreachable; check logs for no spot gold reference.
+- Response-level `stale: true` on `/api/gold`: no current quotes. Check the spot feed, DexScreener, and whether the gold polling loop is running. A single stale asset can indicate a partial outage.
 - Not starting after reboot: sudo systemctl enable whale-tracker.
 
 ## 10. Files

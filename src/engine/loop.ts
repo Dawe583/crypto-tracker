@@ -194,7 +194,11 @@ export function createPaperEngine(options: {
 function monitorSignals() {
   const whales = listSignals('whale_buy', 50).filter((s) => Date.now() - Date.parse(s.createdAt) < 4 * 3600_000);
   const gold = getGoldSnapshot();
-  const goldSpread = Object.fromEntries(gold.quotes.map((q) => [`${q.symbol}USD`, q.deviationPct]));
+  const goldSpread: Record<string, number> = {};
+  for (const q of gold.quotes) {
+    const symbol = `${q.symbol}USD`;
+    if (!q.stale && (q.chain === 'base' || goldSpread[symbol] === undefined)) goldSpread[symbol] = q.deviationPct;
+  }
   return { whaleBuys: whales.length, newPools: listSignals('new_pool', 50).length, goldSpread };
 }
 
