@@ -20,7 +20,7 @@ const KRAKEN_INTERVALS: Record<string, string | undefined> = {
   '1d': '1440', '1w': '10080', '15d': '21600',
 };
 
-export interface Feed { candles: Candle[]; price: number; source: 'binance' | 'bybit' | 'coinbase' | 'kraken'; lastFetch: number }
+export interface Feed { candles: Candle[]; price: number; source: 'binance' | 'bybit' | 'coinbase' | 'kraken'; lastFetch: number; requestedAt?: number }
 const feeds = new Map<string, Feed>();
 
 const fetchMarket = (url: string) => fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
@@ -79,7 +79,7 @@ export function intervalMs(interval: string) {
 
 export function completedCandles(feed: Feed, interval: string) {
   const ms = intervalMs(interval);
-  return feed.candles.filter((c) => c.t + ms <= feed.lastFetch);
+  return feed.candles.filter((c) => c.t + ms <= (feed.requestedAt ?? feed.lastFetch));
 }
 
 export function closedStrategyBars(feed: Feed, interval: string, count: number): Candle[] {
@@ -100,6 +100,7 @@ export async function fetchSymbol(symbol: string, interval: string, { requireRec
     const exchangeInterval = intervals ? intervals[interval] : interval;
     if (!exchangeInterval) continue;
     try {
+      const requestedAt = Date.now();
       const candles = await fn(symbol, exchangeInterval);
       if (!candles.length || candles.some(({ t, o, h, l, c, v }) =>
         !Number.isFinite(t) || ![o, h, l, c].every((p) => Number.isFinite(p) && p > 0)
@@ -108,7 +109,7 @@ export async function fetchSymbol(symbol: string, interval: string, { requireRec
       const lastFetch = Date.now();
       const age = lastFetch - latest.t;
       if (requireRecent && (age > maxAgeMs || age < -CLOCK_SKEW_MS)) throw new Error('market candle timestamp out of range');
-      return { candles, price: latest.c, source, lastFetch };
+      return { candles, price: latest.c, source, lastFetch, requestedAt };
     } catch (err) {
       logger.warn({ err: String(err), symbol, source }, 'market feed failed');
     }
