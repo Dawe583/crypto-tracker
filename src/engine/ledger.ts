@@ -25,17 +25,10 @@ let path = '';
 
 function rollDay(ts: number) {
   const d = new Date(ts).toISOString().slice(0, 10);
-  if (d !== day) {
+  // File order must match append order even when the clock moves backward.
+  if (d > day) {
     day = d;
     path = join(LEDGER_DIR, `${d}.jsonl`);
-    if (existsSync(path)) {
-      const lines = readFileSync(path, 'utf8').trim().split('\n').filter(Boolean);
-      if (lines.length) {
-        const last = JSON.parse(lines[lines.length - 1]) as LedgerRecord;
-        seq = last.seq + 1;
-        lastHash = last.hash;
-      }
-    }
   }
 }
 
@@ -45,7 +38,7 @@ function recordHash(prevHash: string, seq: number, type: LedgerRecord['type'], d
 
 export function ledgerResumeLatestFill<T>(): LedgerRecord<T> | undefined {
   const files = readdirSync(LEDGER_DIR).filter((file) => /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(file)).sort().reverse();
-  let newest: LedgerRecord | undefined;
+  let newer: LedgerRecord | undefined;
   for (const file of files) {
     const contents = readFileSync(join(LEDGER_DIR, file), 'utf8');
     if (contents && !contents.endsWith('\n')) throw new Error(`incomplete paper ledger row in ${file}`);
@@ -59,17 +52,25 @@ export function ledgerResumeLatestFill<T>(): LedgerRecord<T> | undefined {
         throw new Error(`invalid paper ledger row in ${file}:${i + 1}`);
       }
       if (!record || !Number.isSafeInteger(record.seq) || record.seq < 0
+        || typeof record.prevHash !== 'string' || (record.seq === 0) !== (record.prevHash === 'GENESIS')
         || record.hash !== recordHash(record.prevHash, record.seq, record.type, record.data)) {
         throw new Error(`invalid paper ledger hash in ${file}:${i + 1}`);
       }
-      if (!newest) {
-        newest = record;
+      if (newer && (newer.seq !== record.seq + 1 || newer.prevHash !== record.hash)) {
+        throw new Error(`broken paper ledger chain after ${file}:${i + 1}`);
+      }
+      if (!newer) {
+        day = file.slice(0, 10);
+        path = join(LEDGER_DIR, file);
         seq = record.seq + 1;
         lastHash = record.hash;
       }
       if (record.type === 'fill') return record;
+      if (record.seq === 0) return undefined;
+      newer = record;
     }
   }
+  if (newer) throw new Error('missing paper ledger chain prefix');
 }
 
 export function ledgerAppend<T>(type: LedgerRecord['type'], data: T, ts = Date.now()): LedgerRecord<T> {

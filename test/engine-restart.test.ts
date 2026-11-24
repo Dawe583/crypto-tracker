@@ -101,6 +101,30 @@ test('does not continue trading after an invalid ledger tail', (t) => {
   assert.equal(readFileSync(file, 'utf8'), broken);
 });
 
+test('does not restore an older fill when a newer fill is missing', (t) => {
+  const root = fixture(t);
+  runCycle(root, today, { BTCUSDT: 101.12, ETHUSDT: 100 });
+  runCycle(root, tomorrow, { BTCUSDT: 120, ETHUSDT: 100 }, 'ETHUSDT');
+  const file = join(root, 'data', 'ledger', '2026-11-25.jsonl');
+  const broken = readFileSync(file, 'utf8').split('\n').filter((line) => !line || JSON.parse(line).type !== 'fill').join('\n');
+  writeFileSync(file, broken);
+  const result = runProcess(root, tomorrow + 60_000, { BTCUSDT: 100, ETHUSDT: 100 });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /ledger chain/i);
+  assert.equal(readFileSync(file, 'utf8'), broken);
+});
+
+test('keeps an exit recorded after the clock moves to an earlier UTC date', (t) => {
+  const root = fixture(t);
+  runCycle(root, today, { BTCUSDT: 100, ETHUSDT: 100 });
+  assert.equal(runCycle(root, tomorrow, { BTCUSDT: 101.12, ETHUSDT: 100 }).positions.length, 1);
+  const closed = runCycle(root, today + 60_000, { BTCUSDT: 120, ETHUSDT: 100 }, 'ETHUSDT');
+  assert.deepEqual(closed.positions, []);
+  const restored = runCycle(root, today + 90_000, { BTCUSDT: 100, ETHUSDT: 100 });
+  assert.deepEqual(restored.positions, []);
+  assert.equal(restored.realizedUsd, closed.realizedUsd);
+});
+
 test('leaves legacy fills intact without guessing missing position state', (t) => {
   const root = fixture(t);
   const directory = join(root, 'data', 'ledger');
