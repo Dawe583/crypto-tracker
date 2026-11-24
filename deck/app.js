@@ -821,7 +821,7 @@ function drawCalcium(now) {
 function drawWeights() {
   const { x, w, h } = ctx2d('weights');
   x.clearRect(0, 0, w, h);
-  if (STATE.halted) { x.fillStyle = '#ff3860'; x.fillText('ENGINE HALTED · weights unavailable', 8, h / 2); return; }
+  if (STATE.halted) { x.fillStyle = '#ff3860'; x.fillText('ENGINE HALTED · weights unavailable', 8, h / 2, w - 16); return; }
   const n = STATE.strats.length || 12;
   const cols = 12;
   const cell = Math.min((w - 10) / cols, 14);
