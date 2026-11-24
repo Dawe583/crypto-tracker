@@ -25,6 +25,7 @@ export function createPaperEngine(options: {
   refresh: (symbol: string, interval: string) => Promise<Feed | null>;
   signals: () => StrategyContext['signals'];
   strategies?: ReturnType<typeof loadStrategies>;
+  checkpointObservations?: boolean;
 }) {
   const { state } = options;
   const portfolio = new PaperPortfolio(config.engine.startUsd);
@@ -82,10 +83,13 @@ export function createPaperEngine(options: {
 
   function checkExits(prices: Map<string, number>, now: number) {
     const stopped = new Set<string>();
+    let peakChanged = false;
     for (const p of [...portfolio.positions.values()]) {
       const px = prices.get(p.symbol);
       if (!px) continue;
+      const priorPeak = p.trailing?.peak;
       const reason = positionExit(p, px, now);
+      peakChanged ||= priorPeak !== p.trailing?.peak;
       if (!reason) continue;
       const price = slippedPrice(px, 'sell', p.trailing ? MANAGED_SLIPPAGE_BPS : 0);
       const fill = portfolio.close(p.strategy, p.symbol, price, config.engine.feePct, reason, now);
@@ -95,7 +99,7 @@ export function createPaperEngine(options: {
         logger.info({ symbol: p.symbol, strategy: p.strategy, pnl: fill.pnlUsd }, 'position closed');
       }
     }
-    return stopped;
+    return { stopped, peakChanged };
   }
 
   async function cycle() {
@@ -111,7 +115,8 @@ export function createPaperEngine(options: {
     const prices = new Map([...feeds].map(([symbol, feed]) => [symbol, feed.price] as const));
 
     const now = Date.now();
-    const stopped = checkExits(prices, now);
+    const { stopped, peakChanged } = checkExits(prices, now);
+    let signalBarChanged = false;
     const signals = options.signals();
 
     for (const { strategy, params, enabled } of strategies) {
@@ -126,6 +131,7 @@ export function createPaperEngine(options: {
           const bar = candles[candles.length - 1].t;
           if (bar <= (lastSignalBars.get(key) ?? -Infinity)) continue;
           lastSignalBars.set(key, bar);
+          signalBarChanged = true;
         }
         let intents: TradeIntent[] = [];
         try {
@@ -173,6 +179,8 @@ export function createPaperEngine(options: {
       }
     }
 
+    if (options.checkpointObservations && (peakChanged || signalBarChanged))
+      append('checkpoint', { checkpoint: checkpointState() });
     const positions = [...portfolio.positions.values()];
     const marks = new Map<string, number>();
     for (const symbol of new Set([...symbols, ...positions.map((p) => p.symbol)])) {
@@ -227,6 +235,7 @@ function monitorSignals() {
 const strategies = loadStrategies();
 const local = createPaperEngine({
   state: engineState, append: ledgerAppend, signals: monitorSignals, strategies,
+  checkpointObservations: true,
   refresh: (symbol, interval) => refreshSymbol(symbol, interval, { requireRecent: true }),
 });
 export const { portfolio, risk } = local;
