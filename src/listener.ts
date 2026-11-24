@@ -1,5 +1,5 @@
 // Event listener: factory PoolCreated/PairCreated events, watched-wallet Transfer logs (whale buys).
-import { parseAbiItem, getAddress, formatUnits, type Address, type Log, type PublicClient } from 'viem';
+import { parseAbiItem, getAddress, formatUnits, BaseError, HttpRequestError, RpcRequestError, type Address, type Log, type PublicClient } from 'viem';
 import { CHAINS, QUOTE_TOKENS, config } from './config.js';
 import { logger } from './logger.js';
 import { WATCHLIST, lookupWallet, watchedAddresses } from './wallets.js';
@@ -98,7 +98,11 @@ async function onWatchedTransfer(chain: ChainKey, logs: Log[]) {
 const MAX_BLOCKS_PER_POLL = 100n;
 
 export function watchLogs(client: PublicClient, ctx: Record<string, unknown>, { onLogs, ...filter }: Parameters<PublicClient['watchEvent']>[0]) {
-  const onError = (err: unknown) => logger.error({ err: String(err), ...ctx }, 'watcher error');
+  const onError = (err: unknown) => {
+    const rpcError = err instanceof BaseError ? err.walk((cause) => cause instanceof HttpRequestError || cause instanceof RpcRequestError) : undefined;
+    const status = rpcError instanceof HttpRequestError || rpcError instanceof RpcRequestError ? rpcError.status : undefined;
+    logger.error({ ...ctx, err: err instanceof BaseError ? err.shortMessage : String(err), status }, 'watcher error');
+  };
   if (client.transport.type !== 'http') return client.watchEvent({ ...filter, onLogs, onError });
 
   let active = true;

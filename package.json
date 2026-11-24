@@ -9,9 +9,9 @@
   },
   "scripts": {
     "start": "tsx src/index.ts",
+    "test": "tsx --test test/*.test.ts",
     "listen": "tsx src/listener.ts",
     "gold": "tsx src/gold_rwa.ts",
-    "test": "tsx --test test/*.test.ts",
     "typecheck": "tsc --noEmit",
     "build": "tsc -p tsconfig.json"
   },
