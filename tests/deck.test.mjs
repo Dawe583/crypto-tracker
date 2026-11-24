@@ -91,3 +91,13 @@ test('first empty snapshot explains startup and disables stop until the engine r
   assert.match(app.elements.get('marketRail').innerHTML, /waiting/i);
   assert.match(app.elements.get('cortexList').innerHTML, /waiting/i);
 });
+
+test('agent focus toggles off and ignores names not present in the graph', () => {
+  const app = runtime();
+  app.run('drawBrain = () => {}; selectAgent("SPOTTER")');
+  assert.equal(app.run('selectedAgent'), 'SPOTTER');
+  app.run('selectAgent("not-an-agent")');
+  assert.equal(app.run('selectedAgent'), 'SPOTTER');
+  app.run('selectAgent("SPOTTER")');
+  assert.equal(app.run('selectedAgent'), null);
+});

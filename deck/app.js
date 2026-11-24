@@ -420,6 +420,19 @@ const AGENTS = [
   { name: 'EDGE', color: '#ff4ff0', desc: 'strategies' },
   { name: 'CLOSER', color: '#ff3860', desc: 'exits' },
 ];
+let selectedAgent = null;
+function selectAgent(name) {
+  const agent = AGENTS.find((a) => a.name === name);
+  if (!agent) return;
+  selectedAgent = selectedAgent === name ? null : name;
+  document.querySelectorAll('[data-agent]').forEach((button) => {
+    const on = button.dataset.agent === selectedAgent;
+    button.classList.toggle('on', on);
+    button.setAttribute('aria-pressed', String(on));
+  });
+  $('agentDetail').textContent = selectedAgent ? `VISUAL FOCUS · ${agent.name} / ${agent.desc}` : 'SELECT AN AGENT TO ISOLATE ITS NEURAL PATHWAYS';
+  drawBrain(visualTime);
+}
 const NODES = [];
 const SEGS = [];    // 3D dendrite segments: {a,b,w,c}
 const EDGES = [];   // long axon links for sparks
@@ -557,12 +570,13 @@ function drawBrain(now) {
   const recent = STATE.decisions.filter((d) => Date.now() - d.ts < 60_000).length;
   // dendrite segments, depth-shaded, round caps
   x.lineCap = 'round';
+  const focusedColor = AGENTS.find((a) => a.name === selectedAgent)?.color;
   for (const sg of SEGS) {
     const A = proj(sg.a), B = proj(sg.b);
     const depth = Math.max(0, 1 - ((A.z + B.z) / 2) / 1.7);
     const flicker = .85 + .15 * Math.sin(t * 3 + A.X * .05);
     x.strokeStyle = sg.c;
-    x.globalAlpha = (.12 + depth * .5) * flicker;
+    x.globalAlpha = (.12 + depth * .5) * flicker * (focusedColor && sg.c !== focusedColor ? .12 : 1);
     x.lineWidth = Math.max(.4, sg.w * A.s);
     x.beginPath(); x.moveTo(A.X, A.Y); x.lineTo(B.X, B.Y); x.stroke();
   }
@@ -616,7 +630,7 @@ function drawBrain(now) {
     const hot = n.t === 'agent'
       ? (n.label === 'EDGE' || n.label === 'TAKER' ? Math.min(1, .35 + recent / 5) : .45 + .3 * Math.sin(t * 2 + nd.X))
       : n.t === 'strat' ? .5 : .6;
-    const sz = n.r * nd.s;
+    const sz = n.r * nd.s * (n.label === selectedAgent ? 1.4 : 1);
     // glow halo
     const g = x.createRadialGradient(nd.X, nd.Y, 0, nd.X, nd.Y, sz * 3);
     g.addColorStop(0, n.color); g.addColorStop(1, 'transparent');
@@ -1084,7 +1098,34 @@ reducedMotion.addEventListener('change', updateMotion);
 document.addEventListener('visibilitychange', () => document.body.classList.toggle('page-hidden', document.hidden));
 window.addEventListener('resize', drawSlow);
 $('pipeline').innerHTML = AGENTS.map((a, i) =>
-  `<div class="pipe-node" style="color:${a.color};--i:${i}"><b>${a.name}</b><span>${a.desc}</span></div>`).join('');
+  `<button class="pipe-node" data-agent="${a.name}" aria-pressed="false" aria-label="Focus ${a.name}: ${a.desc}" style="color:${a.color};--i:${i}"><b>${a.name}</b><span>${a.desc}</span></button>`).join('');
+document.querySelectorAll('[data-agent]').forEach((button) => { button.onclick = () => selectAgent(button.dataset.agent); });
+document.querySelectorAll('.panel').forEach((panel, i) => {
+  const title = panel.querySelector('.ptitle');
+  const name = title.textContent.trim();
+  const button = document.createElement('button');
+  panel.id = `panel-${i}`;
+  button.className = 'tool-button panel-toggle';
+  button.textContent = 'Expand';
+  button.setAttribute('aria-controls', panel.id);
+  button.setAttribute('aria-expanded', 'false');
+  button.setAttribute('aria-label', `Expand ${name}`);
+  button.onclick = () => {
+    const expand = !panel.classList.contains('expanded');
+    document.querySelectorAll('.panel.expanded').forEach((other) => {
+      if (other !== panel) other.querySelector('.panel-toggle').click();
+    });
+    panel.classList.toggle('expanded', expand);
+    button.textContent = expand ? 'Restore' : 'Expand';
+    button.setAttribute('aria-expanded', String(expand));
+    button.setAttribute('aria-label', `${expand ? 'Restore' : 'Expand'} ${name}`);
+    requestAnimationFrame(drawSlow);
+  };
+  title.append(button);
+});
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') document.querySelector('.panel.expanded .panel-toggle')?.click();
+});
 document.querySelectorAll('canvas:not(#brain)').forEach((canvas) => {
   canvas.setAttribute('role', 'img');
   canvas.setAttribute('aria-label', ({ navChart: 'Portfolio equity history', tapeChart: 'Selected market candlesticks and VWAP bands', membrane: 'Price execution band', weights: 'Strategy profit weights', rotation: 'Strategy activity and profit', cortex: 'Illustrative sensory network', calcium: 'Illustrative momentum scatter', pricer: 'Illustrative simulated price paths, not a forecast' })[canvas.id]);
