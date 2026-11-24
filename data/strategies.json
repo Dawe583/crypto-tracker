@@ -14,7 +14,7 @@
     "enabled": true,
     "params": {
       "n": 14,
-      "oversold": 35,
+      "oversold": 30,
       "exitAt": 55,
       "sizeUsd": 250,
       "stopLossPct": 4,
@@ -26,7 +26,7 @@
     "enabled": true,
     "params": {
       "n": 20,
-      "mult": 2.5,
+      "mult": 2,
       "sizeUsd": 250,
       "stopLossPct": 4,
       "takeProfitPct": 5,
@@ -39,7 +39,7 @@
       "n": 20,
       "volMult": 1.5,
       "sizeUsd": 300,
-      "stopLossPct": 3.5,
+      "stopLossPct": 5,
       "takeProfitPct": 12,
       "maxHoldMin": 720
     }
@@ -70,7 +70,7 @@
       "trendN": 50,
       "atrMult": 2.5,
       "sizeUsd": 300,
-      "takeProfitPct": 10,
+      "takeProfitPct": 6,
       "maxHoldMin": 1440,
       "n": 10,
       "mult": 2,
@@ -144,7 +144,7 @@
   "obv_drift": {
     "enabled": true,
     "params": {
-      "n": 20,
+      "n": 30,
       "sizeUsd": 200,
       "stopLossPct": 4,
       "takeProfitPct": 6,

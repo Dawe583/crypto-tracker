@@ -83,7 +83,7 @@ export const config = {
   engine: {
     enabled: str(process.env.ENGINE_ENABLED, 'true').toLowerCase() !== 'false',
     startUsd: num(process.env.ENGINE_START_USD, 10_000),
-    symbols: str(process.env.ENGINE_SYMBOLS, 'BTCUSDT,ETHUSDT,SOLUSDT').split(',').map((s) => s.trim().toUpperCase()).filter(Boolean),
+    symbols: str(process.env.ENGINE_SYMBOLS, 'BTCUSDT,ETHUSDT,SOLUSDT,DOGEUSDT,AVAXUSDT,LINKUSDT').split(',').map((s) => s.trim().toUpperCase()).filter(Boolean),
     interval: str(process.env.ENGINE_INTERVAL, '1m'),
     pollMs: num(process.env.ENGINE_POLL_MS, 30_000),
     feePct: num(process.env.ENGINE_FEE_PCT, 0.1),

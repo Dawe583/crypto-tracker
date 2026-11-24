@@ -1,7 +1,7 @@
 {
   "project": "crypto-tracker",
   "goal": "Ultimate crazy trading deck (1:1 GROK DESK reference) + complete autonomous paper-trading system merged from best parts of studied repos, running on live data, RPi4-ready.",
-  "updated_at": "2026-11-24T11:03:36.799307+00:00",
+  "updated_at": "2026-11-24T11:07:32.158381+00:00",
   "loop": {
     "definition": "docs/LOOP_ENGINEERING.md",
     "cycle": [
@@ -112,7 +112,8 @@
         "7 new strategies (donchian, vwap_reversion, stoch_cross, keltner_squeeze, obv_drift, roc_momentum, engulfing) -> 19 total; typecheck clean",
         "backtest 19 strats x 3 symbols: best zscore_reversion ETH +1.26, worst atr_trend -9.92; most raw indicator entries lose -> tuning via strategies.json is the edge",
         "multi-timeframe backtest (1m/15m/1h) -> docs/BACKTEST_RESULTS.md; 15m wins: stoch_cross BTC +13.83, ema_cross SOL +26.87, obv_drift SOL +13.70",
-        "npm run sweep (grid search, 15m): tuned params applied to strategies.json; best ema_cross +40.41pnl, breakout +30.91, rsi +19.06; sweep-*.json committed"
+        "npm run sweep (grid search, 15m): tuned params applied to strategies.json; best ema_cross +40.41pnl, breakout +30.91, rsi +19.06; sweep-*.json committed",
+        "symbol universe -> 6 (DOGE/AVAX/LINK added); sweep over all 6: ema_cross +94.39pnl best; LINK strong (breakout +18.98, donchian +15.81)"
       ]
     }
   ]

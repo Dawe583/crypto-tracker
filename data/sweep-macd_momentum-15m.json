@@ -1,11 +1,14 @@
 {
-  "at": "2026-11-24T11:03:06.380Z",
+  "at": "2026-11-24T11:07:26.181Z",
   "strategy": "macd_momentum",
   "interval": "15m",
   "symbols": [
     "BTCUSDT",
     "ETHUSDT",
-    "SOLUSDT"
+    "SOLUSDT",
+    "DOGEUSDT",
+    "AVAXUSDT",
+    "LINKUSDT"
   ],
   "results": [
     {
