@@ -114,13 +114,22 @@ test('paused simulation tracks new candle inputs but keeps identical inputs stab
   assert.equal(app.run('mcPaths[0][0]'), 103);
 });
 
-test('successful stop acknowledgement stays disabled while snapshots still say running', async () => {
+test('successful stop acknowledgement stays disabled while waiting for a snapshot', async () => {
   const app = runtime(async () => ({ ok: true, json: async () => ({ killed: true }) }));
   app.context.confirm = () => true;
   app.run('STATE.snap = { killed: false }; refresh = async () => {};');
   await app.elements.get('kill').onclick();
   assert.equal(app.elements.get('kill').disabled, true);
   assert.equal(app.elements.get('kill').textContent, 'Engine stopped');
+});
+
+test('a fresh running snapshot after restart clears the optimistic stop acknowledgement', async () => {
+  const app = runtime(async () => ({ ok: true, json: async () => ({ killed: true }) }));
+  app.context.confirm = () => true;
+  app.run('STATE.snap = { killed: false }; refresh = async () => { STATE.snap = { killed: false }; };');
+  await app.elements.get('kill').onclick();
+  assert.equal(app.elements.get('kill').disabled, false);
+  assert.equal(app.elements.get('kill').textContent, 'Stop engine');
 });
 
 test('market denominations follow the configured symbol suffix', () => {

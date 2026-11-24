@@ -67,7 +67,6 @@ const ctx2d = (id) => {
 };
 
 const STATE = { snap: null, strats: [], decisions: [], candles: {}, sym: 'BTCUSDT', whales: 0, pools: 0, gold: [], book: null, bookAt: 0 };
-let engineStopped = false;
 let demoMode = false;
 
 function loadDemo() {
@@ -126,7 +125,7 @@ async function refresh() {
   STATE.gold = gold?.assets || [];
   lastSync = Date.now();
   document.body.classList.remove('data-stale');
-  $('connection').textContent = engineStopped || snap?.killed ? 'STOPPED' : snap?.empty ? 'WARMING UP' : 'CONNECTED';
+  $('connection').textContent = snap?.killed ? 'STOPPED' : snap?.empty ? 'WARMING UP' : 'CONNECTED';
   $('lastSync').textContent = `LAST SYNC ${utc(lastSync)} UTC`;
   const progress = document.querySelector('.sync-progress');
   progress.getAnimations().forEach((a) => { a.currentTime = 0; });
@@ -226,7 +225,7 @@ function renderStatic() {
   setText('bigNav', fmt$(s.equityUsd));
   $('bigNav').classList.toggle('up', dayPnl >= 0);
   $('bigDelta').innerHTML = `<span class="${cls(dayPnl)}">${dayPnl >= 0 ? '▲' : '▼'} ${fmt$(Math.abs(dayPnl), 2)} session</span> · cash ${fmt$(s.cashUsd)}`;
-  const stopped = engineStopped || s.killed;
+  const stopped = s.killed;
   $('running').textContent = demoMode ? 'DEMO' : stopped ? 'STOPPED' : 'RUNNING';
   $('running').className = `right ${stopped ? 'neg' : 'pos'}`;
   $('stTickets').textContent = trades;
@@ -1135,12 +1134,15 @@ $('kill').onclick = async () => {
   $('kill').textContent = 'Stopping…';
   try {
     const r = await api('/api/engine/kill', { method: 'POST' });
-    if (r?.killed) { engineStopped = true; await refresh(); }
+    if (r?.killed) {
+      if (STATE.snap) STATE.snap.killed = true;
+      await refresh();
+    }
   } catch (err) {
     alert(`Engine stop failed: ${err.message}`);
   } finally {
-    $('kill').disabled = !STATE.snap || engineStopped || !!STATE.snap.killed;
-    $('kill').textContent = engineStopped || STATE.snap?.killed ? 'Engine stopped' : 'Stop engine';
+    $('kill').disabled = !STATE.snap || !!STATE.snap.killed;
+    $('kill').textContent = STATE.snap?.killed ? 'Engine stopped' : 'Stop engine';
   }
 };
 
