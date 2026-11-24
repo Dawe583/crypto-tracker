@@ -90,12 +90,13 @@ export function closedStrategyBars(feed: Feed, interval: string, count: number):
   return bars.every((c, i) => i === 0 || c.t - bars[i - 1].t === ms) ? bars : [];
 }
 
-export async function fetchSymbol(symbol: string, interval: string, { requireRecent = true } = {}): Promise<Feed | null> {
+export async function fetchSymbol(symbol: string, interval: string, { requireRecent = true, closedBars = 0 } = {}): Promise<Feed | null> {
   const maxAgeMs = 2 * intervalMs(interval);
   if (requireRecent && (!Number.isSafeInteger(maxAgeMs) || maxAgeMs <= 0)) {
     logger.warn({ interval }, 'invalid paper market interval');
     return null;
   }
+  let markOnly: Feed | null = null;
   for (const [source, fn, intervals] of sources) {
     const exchangeInterval = intervals ? intervals[interval] : interval;
     if (!exchangeInterval) continue;
@@ -109,16 +110,18 @@ export async function fetchSymbol(symbol: string, interval: string, { requireRec
       const lastFetch = Date.now();
       const age = lastFetch - latest.t;
       if (requireRecent && (age > maxAgeMs || age < -CLOCK_SKEW_MS)) throw new Error('market candle timestamp out of range');
-      return { candles, price: latest.c, source, lastFetch, requestedAt };
+      const feed = { candles, price: latest.c, source, lastFetch, requestedAt };
+      if (!closedBars || interval.endsWith('M') || closedStrategyBars(feed, interval, closedBars).length) return feed;
+      markOnly ??= feed;
     } catch (err) {
       logger.warn({ err: String(err), symbol, source }, 'market feed failed');
     }
   }
-  return null;
+  return markOnly;
 }
 
-export async function refreshSymbol(symbol: string, interval: string, { requireRecent = false } = {}): Promise<Feed | null> {
-  const feed = await fetchSymbol(symbol, interval, { requireRecent });
+export async function refreshSymbol(symbol: string, interval: string, { requireRecent = false, closedBars = 0 } = {}): Promise<Feed | null> {
+  const feed = await fetchSymbol(symbol, interval, { requireRecent, closedBars });
   if (feed) feeds.set(symbol, feed);
   return feed;
 }

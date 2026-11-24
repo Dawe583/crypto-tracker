@@ -2,7 +2,7 @@
 // paper fill -> ledger -> snapshot. One decision unit per cycle, hold when late.
 import { logger } from '../logger.js';
 import { config } from '../config.js';
-import { closedStrategyBars, refreshSymbol, type Feed } from './market.js';
+import { closedStrategyBars, refreshSymbol, type Feed, type fetchSymbol } from './market.js';
 import { managedSize, MANAGED_SLIPPAGE_BPS, positionExit, slippedPrice } from './execution.js';
 import { PaperPortfolio } from './portfolio.js';
 import { RiskEngine } from './risk.js';
@@ -22,7 +22,7 @@ export type EngineCheckpoint = {
 export function createPaperEngine(options: {
   state: typeof engineState;
   append: (type: LedgerRecord['type'], data: unknown) => void;
-  refresh: (symbol: string, interval: string) => Promise<Feed | null>;
+  refresh: typeof fetchSymbol;
   signals: () => StrategyContext['signals'];
   strategies?: ReturnType<typeof loadStrategies>;
   checkpointObservations?: boolean;
@@ -107,8 +107,12 @@ export function createPaperEngine(options: {
     const symbols = config.engine.symbols;
     const marketSymbols = [...new Set([...symbols, ...Array.from(portfolio.positions.values(), (p) => p.symbol)])];
     const feeds = new Map<string, Feed>();
-    for (const [symbol, feed] of await Promise.all(marketSymbols.map(async (symbol) =>
-      [symbol, await options.refresh(symbol, config.engine.interval)] as const))) {
+    for (const [symbol, feed] of await Promise.all(marketSymbols.map(async (symbol) => {
+      const closedBars = Math.max(0, ...strategies.filter(({ strategy, enabled }) =>
+        (enabled && symbols.includes(symbol)) || portfolio.positions.has(`${strategy.name}|${symbol}`))
+        .map(({ strategy }) => strategy.closedBars ?? 0));
+      return [symbol, await options.refresh(symbol, config.engine.interval, { closedBars })] as const;
+    }))) {
       if (feed && Number.isFinite(feed.price) && feed.price > 0) feeds.set(symbol, feed);
     }
     if (state.halted || !feeds.size) return feeds;
@@ -236,7 +240,7 @@ const strategies = loadStrategies();
 const local = createPaperEngine({
   state: engineState, append: ledgerAppend, signals: monitorSignals, strategies,
   checkpointObservations: true,
-  refresh: (symbol, interval) => refreshSymbol(symbol, interval, { requireRecent: true }),
+  refresh: (symbol, interval, options) => refreshSymbol(symbol, interval, { ...options, requireRecent: true }),
 });
 export const { portfolio, risk } = local;
 let recovered = false;
