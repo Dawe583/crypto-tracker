@@ -34,8 +34,10 @@ function runProcess(root: string, ts: number, prices: Record<string, number>, sy
     globalThis.fetch = async (url) => {
       const price = prices[new URL(url).searchParams.get('symbol')];
       if (price === undefined) return new Response(null, { status: 503 });
-      const candles = Array.from({ length: 40 }, (_, i) =>
-        i === 39 ? [i * 60_000, 100, price + 1, 99, price, 1000] : [i * 60_000, 100, 101, 99, 100, 100]);
+      const candles = Array.from({ length: 40 }, (_, i) => {
+        const time = now - (39 - i) * 60_000;
+        return i === 39 ? [time, 100, price + 1, 99, price, 1000] : [time, 100, 101, 99, 100, 100];
+      });
       return Response.json(candles);
     };
     const { runEngineCycle } = await import('./src/engine/loop.ts');
@@ -46,7 +48,7 @@ function runProcess(root: string, ts: number, prices: Record<string, number>, sy
     encoding: 'utf8',
     env: {
       ...process.env, LOG_LEVEL: 'silent', TZ: 'UTC',
-      ENGINE_SYMBOLS: symbols, ENGINE_START_USD: '10000', ENGINE_FEE_PCT: '0.1',
+      ENGINE_SYMBOLS: symbols, ENGINE_INTERVAL: '1m', ENGINE_START_USD: '10000', ENGINE_FEE_PCT: '0.1',
       ENGINE_MAX_POSITION_USD: '500', ENGINE_MAX_TOTAL_USD: '1000', ENGINE_MAX_OPEN_POSITIONS: '8',
       ENGINE_MIN_CONFIDENCE: '0.5', ENGINE_DAILY_LOSS_PCT: '5', ENGINE_COOLDOWN_MIN: '60',
       ...env,

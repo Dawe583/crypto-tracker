@@ -41,3 +41,23 @@ test('falls back after a request timeout or invalid quote, without returning cac
     assert.equal(getFeed('BTCUSDT'), fresh);
   }
 });
+
+test('live market refresh skips old candles and leaves historical callers unchanged', async (t) => {
+  const now = Date.UTC(2026, 10, 24, 23, 58);
+  t.mock.method(Date, 'now', () => now);
+  let bybitTime = now - 60_000;
+  t.mock.method(globalThis, 'fetch', async (url: string) => {
+    const host = new URL(url).hostname;
+    if (host === 'api.binance.com') return Response.json([[now - 180_000, 100, 102, 99, 101, 10]]);
+    if (host === 'api.bybit.com') return Response.json({ retCode: 0, result: { list: [[bybitTime, 100, 103, 99, 102, 10]] } });
+    return new Response(null, { status: 503 });
+  });
+
+  const live = { requireRecent: true };
+  assert.equal((await refreshSymbol('ETHUSDT', '1m', live))?.source, 'bybit');
+  bybitTime = now + 60_000;
+  assert.equal(await refreshSymbol('ETHUSDT', '1m', live), null);
+  assert.equal(getFeed('ETHUSDT')?.source, 'bybit');
+  assert.equal((await refreshSymbol('ETHUSDT', '5m', live))?.source, 'binance');
+  assert.equal((await refreshSymbol('ETHUSDT', '1m'))?.source, 'binance');
+});

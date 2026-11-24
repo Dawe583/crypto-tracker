@@ -4,6 +4,10 @@ import type { Candle } from './types.js';
 
 const CANDLE_LIMIT = 300;
 const REQUEST_TIMEOUT_MS = 5_000;
+const CLOCK_SKEW_MS = 5_000;
+const CANDLE_UNIT_MS: Record<string, number> = {
+  s: 1_000, m: 60_000, h: 3_600_000, d: 86_400_000, w: 604_800_000, M: 31 * 86_400_000,
+};
 
 interface Feed { candles: Candle[]; price: number; source: 'binance' | 'bybit' | 'coinbase' | 'kraken'; lastFetch: number }
 const feeds = new Map<string, Feed>();
@@ -53,14 +57,24 @@ async function fromKraken(symbol: string, interval: string): Promise<Candle[]> {
   return rows.map((k) => ({ t: +k[0] * 1000, o: +k[1], h: +k[2], l: +k[3], c: +k[4], v: +k[6] }));
 }
 
-export async function refreshSymbol(symbol: string, interval: string): Promise<Feed | null> {
+export async function refreshSymbol(symbol: string, interval: string, { requireRecent = false } = {}): Promise<Feed | null> {
+  const [, count, unit] = /^(\d+)([smhdwM])$/.exec(interval) ?? [];
+  const maxAgeMs = 2 * Number(count) * CANDLE_UNIT_MS[unit];
+  if (requireRecent && (!Number.isSafeInteger(maxAgeMs) || maxAgeMs <= 0)) {
+    logger.warn({ interval }, 'invalid paper market interval');
+    return null;
+  }
   for (const [source, fn] of [['binance', fromBinance], ['bybit', fromBybit], ['coinbase', fromCoinbase], ['kraken', fromKraken]] as const) {
     try {
       const candles = await fn(symbol, interval);
       if (!candles.length || candles.some(({ t, o, h, l, c, v }) =>
         !Number.isFinite(t) || ![o, h, l, c].every((p) => Number.isFinite(p) && p > 0)
         || !Number.isFinite(v) || v < 0)) throw new Error('invalid market candles');
-      const feed: Feed = { candles, price: candles[candles.length - 1].c, source, lastFetch: Date.now() };
+      const latest = candles[candles.length - 1];
+      const lastFetch = Date.now();
+      const age = lastFetch - latest.t;
+      if (requireRecent && (age > maxAgeMs || age < -CLOCK_SKEW_MS)) throw new Error('market candle timestamp out of range');
+      const feed: Feed = { candles, price: latest.c, source, lastFetch };
       feeds.set(symbol, feed);
       return feed;
     } catch (err) {

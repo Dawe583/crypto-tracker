@@ -114,7 +114,7 @@ export async function runEngineCycle() {
   const symbols = config.engine.symbols;
   const marketSymbols = [...new Set([...symbols, ...Array.from(portfolio.positions.values(), (p) => p.symbol)])];
   const feeds = new Map(await Promise.all(marketSymbols.map(async (symbol) =>
-    [symbol, await refreshSymbol(symbol, config.engine.interval)] as const)));
+    [symbol, await refreshSymbol(symbol, config.engine.interval, { requireRecent: true })] as const)));
   if (engineState.halted) return;
   const prices = new Map<string, number>();
   for (const [symbol, feed] of feeds) {
