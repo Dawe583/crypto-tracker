@@ -587,7 +587,7 @@ function drawBrain(now) {
     const A = P[a], B = P[b];
     const depth = Math.max(0, 1 - ((A.z + B.z) / 2) / 1.7);
     x.strokeStyle = NODES[a].color || '#2fd8ff';
-    x.globalAlpha = .06 + depth * .22;
+    x.globalAlpha = (.06 + depth * .22) * (selectedAgent && NODES[a].label !== selectedAgent && NODES[b].label !== selectedAgent ? .08 : 1);
     x.beginPath(); x.moveTo(A.X, A.Y);
     x.quadraticCurveTo(CX, CY - 30, B.X, B.Y); x.stroke();
   }
@@ -605,6 +605,7 @@ function drawBrain(now) {
   for (let i = sparks.length - 1; i >= 0; i--) {
     const s = sparks[i]; if (!isStill()) s.p += .03;
     if (s.p >= 1) { sparks.splice(i, 1); continue; }
+    if (focusedColor && s.c !== focusedColor) continue;
     let q;
     if (s.seg) {
       const { a, b } = s.seg;
