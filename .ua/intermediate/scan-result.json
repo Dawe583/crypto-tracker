@@ -1,5 +1,5 @@
 {
-  "contentDigest": "aa008924c35516b3bc4bb6d9390c51bcb26613c7bf95f8c06b1c3ddd65563d6e",
+  "contentDigest": "4639325675921be8c7a8feae63a6e85ed470c6d627926c5b9279c06bd3998cad",
   "files": [
     {
       "path": ".agent/work-state.json",
@@ -388,7 +388,7 @@
     {
       "path": "tests/deck.test.mjs",
       "language": "javascript",
-      "sizeLines": 240,
+      "sizeLines": 241,
       "fileCategory": "code"
     },
     {
