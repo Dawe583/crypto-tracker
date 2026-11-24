@@ -1,5 +1,5 @@
 {
-  "contentDigest": "8ec9c50af1e948a8285802313f2e501511855faf8bce250db556b4b05b13baea",
+  "contentDigest": "244e69f8882b722e7a5425a278dfd1a5e7d1f065cddedc6e091bc0384efe9e8f",
   "files": [
     {
       "path": ".agent/work-state.json",
@@ -22,7 +22,7 @@
     {
       "path": "README.md",
       "language": "markdown",
-      "sizeLines": 325,
+      "sizeLines": 327,
       "fileCategory": "docs"
     },
     {
@@ -166,7 +166,7 @@
     {
       "path": "deck/app.js",
       "language": "javascript",
-      "sizeLines": 1221,
+      "sizeLines": 1225,
       "fileCategory": "code"
     },
     {
@@ -226,7 +226,7 @@
     {
       "path": "docs/RPI4_DEPLOYMENT.md",
       "language": "markdown",
-      "sizeLines": 109,
+      "sizeLines": 111,
       "fileCategory": "docs"
     },
     {
@@ -250,7 +250,7 @@
     {
       "path": "src/api.ts",
       "language": "typescript",
-      "sizeLines": 185,
+      "sizeLines": 184,
       "fileCategory": "code"
     },
     {
@@ -298,7 +298,7 @@
     {
       "path": "src/engine/loop.ts",
       "language": "typescript",
-      "sizeLines": 243,
+      "sizeLines": 247,
       "fileCategory": "code"
     },
     {
@@ -352,7 +352,7 @@
     {
       "path": "src/gold_rwa.ts",
       "language": "typescript",
-      "sizeLines": 165,
+      "sizeLines": 186,
       "fileCategory": "code"
     },
     {
@@ -376,13 +376,13 @@
     {
       "path": "src/notifier.ts",
       "language": "typescript",
-      "sizeLines": 75,
+      "sizeLines": 79,
       "fileCategory": "code"
     },
     {
       "path": "src/store.ts",
       "language": "typescript",
-      "sizeLines": 45,
+      "sizeLines": 57,
       "fileCategory": "code"
     },
     {
@@ -424,13 +424,19 @@
     {
       "path": "test/engine-restart.test.ts",
       "language": "typescript",
-      "sizeLines": 410,
+      "sizeLines": 501,
       "fileCategory": "code"
     },
     {
       "path": "test/engine-risk.test.ts",
       "language": "typescript",
       "sizeLines": 99,
+      "fileCategory": "code"
+    },
+    {
+      "path": "test/gold-rwa.test.ts",
+      "language": "typescript",
+      "sizeLines": 61,
       "fileCategory": "code"
     },
     {
@@ -448,7 +454,7 @@
     {
       "path": "tests/deck.test.mjs",
       "language": "javascript",
-      "sizeLines": 285,
+      "sizeLines": 289,
       "fileCategory": "code"
     },
     {
@@ -470,7 +476,7 @@
       "fileCategory": "config"
     }
   ],
-  "totalFiles": 78,
+  "totalFiles": 79,
   "filteredByIgnore": 0,
   "estimatedComplexity": "moderate",
   "failures": [],
@@ -633,6 +639,7 @@
       "src/store.ts"
     ],
     "src/store.ts": [
+      "src/config.ts",
       "src/gold_rwa.ts",
       "src/notifier.ts"
     ],
@@ -659,6 +666,10 @@
     ],
     "test/engine-risk.test.ts": [
       "src/strategies/library.ts"
+    ],
+    "test/gold-rwa.test.ts": [
+      "src/config.ts",
+      "src/gold_rwa.ts"
     ],
     "test/hosted-paper.test.ts": [
       "src/config.ts",
