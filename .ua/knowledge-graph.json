@@ -99,7 +99,7 @@
       "filePath": "src/api.ts",
       "lineRange": [
         82,
-        92
+        91
       ],
       "summary": "Builds the /api/gold payload with the latest quotes, thresholds and a stale flag when the snapshot is older than three poll intervals.",
       "tags": [
@@ -114,8 +114,8 @@
       "name": "handle",
       "filePath": "src/api.ts",
       "lineRange": [
-        94,
-        164
+        93,
+        166
       ],
       "summary": "Request router: answers CORS preflight, rejects non-GET methods, serves health without auth, enforces the bearer token, then routes gold/whales/pools.",
       "tags": [
@@ -130,8 +130,8 @@
       "name": "startApi",
       "filePath": "src/api.ts",
       "lineRange": [
-        166,
-        182
+        168,
+        184
       ],
       "summary": "Starts the HTTP server on the configured host and port unless API_ENABLED=false, logging request and server errors.",
       "tags": [
@@ -358,8 +358,8 @@
       "name": "fetchSpotGold",
       "filePath": "src/gold_rwa.ts",
       "lineRange": [
-        37,
-        49
+        38,
+        53
       ],
       "summary": "Fetches the spot gold price per troy ounce from GOLD_SPOT_URL.",
       "tags": [
@@ -374,8 +374,8 @@
       "name": "dexQuote",
       "filePath": "src/gold_rwa.ts",
       "lineRange": [
-        52,
-        66
+        56,
+        75
       ],
       "summary": "Gets the deepest-liquidity DexScreener price for a gold token on a chain.",
       "tags": [
@@ -390,8 +390,8 @@
       "name": "classify",
       "filePath": "src/gold_rwa.ts",
       "lineRange": [
-        68,
-        73
+        77,
+        82
       ],
       "summary": "Maps an absolute spread percentage to none, alert or major.",
       "tags": [
@@ -406,10 +406,10 @@
       "name": "scanGold",
       "filePath": "src/gold_rwa.ts",
       "lineRange": [
-        75,
-        100
+        84,
+        109
       ],
-      "summary": "Builds one GoldQuote per configured asset with deviation, level and premium/discount direction.",
+      "summary": "Fetches spot gold, then gathers available per-asset DEX quotes without letting one failed asset block others.",
       "tags": [
         "runtime",
         "code"
@@ -422,8 +422,8 @@
       "name": "renderGoldAlert",
       "filePath": "src/gold_rwa.ts",
       "lineRange": [
-        102,
-        116
+        111,
+        125
       ],
       "summary": "Formats the gold spread alert text with DEX vs spot prices, liquidity, status and thresholds.",
       "tags": [
@@ -438,8 +438,8 @@
       "name": "loadState",
       "filePath": "src/gold_rwa.ts",
       "lineRange": [
-        119,
-        122
+        128,
+        131
       ],
       "summary": "Provides loadState for gold_rwa.",
       "tags": [
@@ -454,8 +454,8 @@
       "name": "saveState",
       "filePath": "src/gold_rwa.ts",
       "lineRange": [
-        123,
-        126
+        132,
+        135
       ],
       "summary": "Provides saveState for gold_rwa.",
       "tags": [
@@ -470,8 +470,8 @@
       "name": "runGoldCycle",
       "filePath": "src/gold_rwa.ts",
       "lineRange": [
-        128,
-        155
+        137,
+        165
       ],
       "summary": "One scan cycle: updates the snapshot, alerts on level changes per asset and persists levels to gold_state.json.",
       "tags": [
@@ -486,10 +486,10 @@
       "name": "startGoldLoop",
       "filePath": "src/gold_rwa.ts",
       "lineRange": [
-        157,
-        161
+        167,
+        182
       ],
-      "summary": "Runs a gold cycle now and then every GOLD_POLL_MS.",
+      "summary": "Runs a gold scan immediately and on schedule, skipping overlapping polls.",
       "tags": [
         "runtime",
         "code"
@@ -646,8 +646,8 @@
       "name": "fmtUsd",
       "filePath": "src/notifier.ts",
       "lineRange": [
-        22,
-        23
+        24,
+        25
       ],
       "summary": "Provides fmtUsd for notifier.",
       "tags": [
@@ -662,8 +662,8 @@
       "name": "renderText",
       "filePath": "src/notifier.ts",
       "lineRange": [
-        25,
-        43
+        27,
+        45
       ],
       "summary": "Renders a signal into the multi-line alert text, or returns pre-rendered text for gold alerts.",
       "tags": [
@@ -678,8 +678,8 @@
       "name": "dispatch",
       "filePath": "src/notifier.ts",
       "lineRange": [
-        45,
-        75
+        47,
+        79
       ],
       "summary": "Records the signal, logs and prints it, then posts to Telegram and the webhook when configured.",
       "tags": [
@@ -706,8 +706,8 @@
       "name": "recordSignal",
       "filePath": "src/store.ts",
       "lineRange": [
-        19,
-        22
+        20,
+        23
       ],
       "summary": "Prepends a signal to the bounded buffer, trimming it to 200 entries.",
       "tags": [
@@ -722,8 +722,8 @@
       "name": "listSignals",
       "filePath": "src/store.ts",
       "lineRange": [
-        24,
-        26
+        25,
+        27
       ],
       "summary": "Returns the newest signals of one kind up to a limit.",
       "tags": [
@@ -738,8 +738,8 @@
       "name": "countSignals",
       "filePath": "src/store.ts",
       "lineRange": [
-        28,
-        32
+        29,
+        33
       ],
       "summary": "Counts buffered signals per kind.",
       "tags": [
@@ -754,10 +754,10 @@
       "name": "setGoldSnapshot",
       "filePath": "src/store.ts",
       "lineRange": [
-        34,
-        41
+        35,
+        46
       ],
-      "summary": "Stores the latest gold quotes, keeping the previous quotes when a scan returned none.",
+      "summary": "Merges quotes by chain and symbol and immediately marks missed assets stale.",
       "tags": [
         "runtime",
         "code"
@@ -770,10 +770,10 @@
       "name": "getGoldSnapshot",
       "filePath": "src/store.ts",
       "lineRange": [
-        43,
-        45
+        48,
+        57
       ],
-      "summary": "Returns the current gold snapshot.",
+      "summary": "Returns gold quotes with staleness recalculated from each asset’s last update.",
       "tags": [
         "runtime",
         "code"
@@ -1824,7 +1824,7 @@
       "filePath": "deck/app.js",
       "lineRange": [
         72,
-        97
+        98
       ],
       "summary": "Builds clearly identified generated candles, portfolio and decisions for hosted read-only fallback without starting or stopping an engine.",
       "tags": [
@@ -1839,8 +1839,8 @@
       "name": "refresh",
       "filePath": "deck/app.js",
       "lineRange": [
-        100,
-        152
+        101,
+        156
       ],
       "summary": "Fetches current deck data and rejects obsolete request generations, with warming and reconnect states.",
       "tags": [
@@ -1855,8 +1855,8 @@
       "name": "selectMarket",
       "filePath": "deck/app.js",
       "lineRange": [
-        154,
-        160
+        158,
+        164
       ],
       "summary": "Synchronizes the selected market and resets its price-path simulation before fetching candles.",
       "tags": [
@@ -1871,8 +1871,8 @@
       "name": "marketQuote",
       "filePath": "deck/app.js",
       "lineRange": [
-        162,
-        162
+        166,
+        166
       ],
       "summary": "Provides marketQuote for app.",
       "tags": [
@@ -1887,8 +1887,8 @@
       "name": "renderMarkets",
       "filePath": "deck/app.js",
       "lineRange": [
-        163,
-        200
+        167,
+        204
       ],
       "summary": "Provides renderMarkets for app.",
       "tags": [
@@ -1903,8 +1903,8 @@
       "name": "renderStatic",
       "filePath": "deck/app.js",
       "lineRange": [
-        203,
-        302
+        207,
+        311
       ],
       "summary": "Provides renderStatic for app.",
       "tags": [
@@ -1919,8 +1919,8 @@
       "name": "renderFeed",
       "filePath": "deck/app.js",
       "lineRange": [
-        304,
-        329
+        313,
+        338
       ],
       "summary": "Reuses keyed feed rows and preserves scroll during live updates.",
       "tags": [
@@ -1935,8 +1935,8 @@
       "name": "stageColor",
       "filePath": "deck/app.js",
       "lineRange": [
-        332,
-        336
+        341,
+        345
       ],
       "summary": "Provides stageColor for app.",
       "tags": [
@@ -1951,8 +1951,8 @@
       "name": "drawNavChart",
       "filePath": "deck/app.js",
       "lineRange": [
-        339,
-        364
+        348,
+        373
       ],
       "summary": "Renders the nav chart visualization from deck state.",
       "tags": [
@@ -1967,8 +1967,8 @@
       "name": "drawTape",
       "filePath": "deck/app.js",
       "lineRange": [
-        366,
-        437
+        375,
+        446
       ],
       "summary": "Renders the tape visualization from deck state.",
       "tags": [
@@ -1983,8 +1983,8 @@
       "name": "drawBook",
       "filePath": "deck/app.js",
       "lineRange": [
-        440,
-        475
+        449,
+        484
       ],
       "summary": "Maintains illustrative depth rows while preserving synthetic sizes in still mode.",
       "tags": [
@@ -1999,8 +1999,8 @@
       "name": "selectAgent",
       "filePath": "deck/app.js",
       "lineRange": [
-        487,
-        498
+        496,
+        507
       ],
       "summary": "Toggles validated visual agent focus and updates accessible pressed states.",
       "tags": [
@@ -2015,8 +2015,8 @@
       "name": "_r",
       "filePath": "deck/app.js",
       "lineRange": [
-        505,
-        505
+        514,
+        514
       ],
       "summary": "Provides _r for app.",
       "tags": [
@@ -2031,8 +2031,8 @@
       "name": "_norm",
       "filePath": "deck/app.js",
       "lineRange": [
-        506,
-        506
+        515,
+        515
       ],
       "summary": "Provides _norm for app.",
       "tags": [
@@ -2047,8 +2047,8 @@
       "name": "growTree",
       "filePath": "deck/app.js",
       "lineRange": [
-        509,
-        525
+        518,
+        534
       ],
       "summary": "Provides growTree for app.",
       "tags": [
@@ -2063,8 +2063,8 @@
       "name": "endDrag",
       "filePath": "deck/app.js",
       "lineRange": [
-        575,
-        575
+        584,
+        584
       ],
       "summary": "Provides endDrag for app.",
       "tags": [
@@ -2079,8 +2079,8 @@
       "name": "resetBrain",
       "filePath": "deck/app.js",
       "lineRange": [
-        583,
-        583
+        592,
+        592
       ],
       "summary": "Provides resetBrain for app.",
       "tags": [
@@ -2095,8 +2095,8 @@
       "name": "drawBrain",
       "filePath": "deck/app.js",
       "lineRange": [
-        598,
-        735
+        607,
+        744
       ],
       "summary": "Renders the brain visualization from deck state.",
       "tags": [
@@ -2111,8 +2111,8 @@
       "name": "drawCortex",
       "filePath": "deck/app.js",
       "lineRange": [
-        740,
-        769
+        749,
+        778
       ],
       "summary": "Renders the cortex visualization from deck state.",
       "tags": [
@@ -2127,8 +2127,8 @@
       "name": "drawCalcium",
       "filePath": "deck/app.js",
       "lineRange": [
-        772,
-        810
+        781,
+        819
       ],
       "summary": "Renders the calcium visualization from deck state.",
       "tags": [
@@ -2143,8 +2143,8 @@
       "name": "drawWeights",
       "filePath": "deck/app.js",
       "lineRange": [
-        813,
-        832
+        822,
+        841
       ],
       "summary": "Renders the weights visualization from deck state.",
       "tags": [
@@ -2159,8 +2159,8 @@
       "name": "drawRotation",
       "filePath": "deck/app.js",
       "lineRange": [
-        835,
-        883
+        844,
+        892
       ],
       "summary": "Renders the rotation visualization from deck state.",
       "tags": [
@@ -2175,8 +2175,8 @@
       "name": "cls2",
       "filePath": "deck/app.js",
       "lineRange": [
-        886,
-        886
+        895,
+        895
       ],
       "summary": "Provides cls2 for app.",
       "tags": [
@@ -2191,8 +2191,8 @@
       "name": "emaN",
       "filePath": "deck/app.js",
       "lineRange": [
-        887,
-        893
+        896,
+        902
       ],
       "summary": "Provides emaN for app.",
       "tags": [
@@ -2207,8 +2207,8 @@
       "name": "rsiN",
       "filePath": "deck/app.js",
       "lineRange": [
-        894,
-        899
+        903,
+        908
       ],
       "summary": "Provides rsiN for app.",
       "tags": [
@@ -2223,8 +2223,8 @@
       "name": "bollPctB",
       "filePath": "deck/app.js",
       "lineRange": [
-        900,
-        906
+        909,
+        915
       ],
       "summary": "Provides bollPctB for app.",
       "tags": [
@@ -2239,8 +2239,8 @@
       "name": "zsc",
       "filePath": "deck/app.js",
       "lineRange": [
-        907,
-        912
+        916,
+        921
       ],
       "summary": "Provides zsc for app.",
       "tags": [
@@ -2255,8 +2255,8 @@
       "name": "atrP",
       "filePath": "deck/app.js",
       "lineRange": [
-        913,
-        919
+        922,
+        928
       ],
       "summary": "Provides atrP for app.",
       "tags": [
@@ -2271,8 +2271,8 @@
       "name": "vwapN",
       "filePath": "deck/app.js",
       "lineRange": [
-        920,
-        924
+        929,
+        933
       ],
       "summary": "Provides vwapN for app.",
       "tags": [
@@ -2287,8 +2287,8 @@
       "name": "stochK",
       "filePath": "deck/app.js",
       "lineRange": [
-        925,
-        929
+        934,
+        938
       ],
       "summary": "Provides stochK for app.",
       "tags": [
@@ -2303,8 +2303,8 @@
       "name": "chip",
       "filePath": "deck/app.js",
       "lineRange": [
-        931,
-        933
+        940,
+        942
       ],
       "summary": "Provides chip for app.",
       "tags": [
@@ -2319,8 +2319,8 @@
       "name": "renderIndicators",
       "filePath": "deck/app.js",
       "lineRange": [
-        935,
-        1008
+        944,
+        1017
       ],
       "summary": "Provides renderIndicators for app.",
       "tags": [
@@ -2335,8 +2335,8 @@
       "name": "drawMembrane",
       "filePath": "deck/app.js",
       "lineRange": [
-        1011,
-        1041
+        1020,
+        1050
       ],
       "summary": "Renders the membrane visualization from deck state.",
       "tags": [
@@ -2351,8 +2351,8 @@
       "name": "drawPricer",
       "filePath": "deck/app.js",
       "lineRange": [
-        1045,
-        1087
+        1054,
+        1096
       ],
       "summary": "Updates illustrative price simulations when real inputs change, holding identical inputs stable in still mode.",
       "tags": [
@@ -2367,8 +2367,8 @@
       "name": "drawVisible",
       "filePath": "deck/app.js",
       "lineRange": [
-        1103,
-        1103
+        1112,
+        1112
       ],
       "summary": "Renders the visible visualization from deck state.",
       "tags": [
@@ -2383,8 +2383,8 @@
       "name": "frame",
       "filePath": "deck/app.js",
       "lineRange": [
-        1105,
-        1123
+        1114,
+        1132
       ],
       "summary": "Advances permitted visual time and schedules bounded visible canvas work.",
       "tags": [
@@ -2399,8 +2399,8 @@
       "name": "drawSlow",
       "filePath": "deck/app.js",
       "lineRange": [
-        1125,
-        1128
+        1134,
+        1137
       ],
       "summary": "Redraws only observed visible canvases, skipping hidden documents.",
       "tags": [
@@ -2415,8 +2415,8 @@
       "name": "redrawCanvas",
       "filePath": "deck/app.js",
       "lineRange": [
-        1130,
-        1136
+        1139,
+        1145
       ],
       "summary": "Dispatches visible chart rendering and initializes tape depth.",
       "tags": [
@@ -2783,8 +2783,8 @@
       "name": "legacyFork",
       "filePath": "test/engine-restart.test.ts",
       "lineRange": [
-        315,
-        336
+        406,
+        427
       ],
       "summary": "Defines legacyFork in engine-restart.test.ts.",
       "tags": [
@@ -3508,9 +3508,9 @@
       "filePath": "src/engine/loop.ts",
       "lineRange": [
         194,
-        199
+        203
       ],
-      "summary": "Projects recent whale, pool and gold monitor state into strategy context.",
+      "summary": "Collects local whale/pool signals and fresh gold spreads, preferring Base when both chains supply a quote.",
       "tags": [
         "runtime",
         "code"
@@ -3523,8 +3523,8 @@
       "name": "runEngineCycle",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        209,
-        224
+        213,
+        228
       ],
       "summary": "Runs one local file-ledger cycle while preventing a concurrent local cycle.",
       "tags": [
@@ -3539,8 +3539,8 @@
       "name": "startEngineLoop",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        226,
-        243
+        230,
+        247
       ],
       "summary": "Starts periodic paper-engine cycles when enabled by configuration.",
       "tags": [
@@ -3902,6 +3902,18 @@
       "tags": [
         "paper-engine",
         "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:test/gold-rwa.test.ts",
+      "type": "file",
+      "name": "gold-rwa.test.ts",
+      "filePath": "test/gold-rwa.test.ts",
+      "summary": "Verifies failed DEX requests do not block fresh quotes and scheduled gold scans cannot overlap.",
+      "tags": [
+        "code",
+        "test"
       ],
       "complexity": "simple"
     }
@@ -6694,13 +6706,6 @@
       "direction": "forward"
     },
     {
-      "source": "file:src/engine/loop.ts",
-      "target": "function:src/engine/loop.ts:createPaperEngine.statFor",
-      "type": "exports",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
       "source": "function:src/engine/loop.ts:createPaperEngine",
       "target": "function:src/engine/loop.ts:createPaperEngine.checkExits",
       "type": "contains",
@@ -6708,23 +6713,9 @@
       "direction": "forward"
     },
     {
-      "source": "file:src/engine/loop.ts",
-      "target": "function:src/engine/loop.ts:createPaperEngine.checkExits",
-      "type": "exports",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
       "source": "function:src/engine/loop.ts:createPaperEngine",
       "target": "function:src/engine/loop.ts:createPaperEngine.cycle",
       "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "function:src/engine/loop.ts:createPaperEngine.cycle",
-      "type": "exports",
       "weight": 1,
       "direction": "forward"
     },
@@ -7702,6 +7693,30 @@
       "direction": "forward",
       "weight": 0.7,
       "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/store.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/gold-rwa.test.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/gold-rwa.test.ts",
+      "target": "file:src/gold_rwa.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
     }
   ],
   "version": "1.0.0",
@@ -7761,7 +7776,8 @@
         "config:data/watchlist.json",
         "file:api/read.js",
         "file:api/cron/paper-engine.ts",
-        "file:src/engine/hosted-api.ts"
+        "file:src/engine/hosted-api.ts",
+        "file:test/gold-rwa.test.ts"
       ]
     },
     {
