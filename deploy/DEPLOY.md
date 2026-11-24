@@ -18,7 +18,7 @@ cd ~/crypto-tracker
 
 Option B, rsync from a workstation (excludes local secrets and state):
 ```bash
-rsync -avz --exclude node_modules --exclude .env --exclude 'data/*_state.json' \
+rsync -avz --exclude node_modules --exclude .env --exclude 'data/*_state.json' --exclude 'data/signal_state.json.tmp' \
   ./crypto-tracker/ <USER>@<PI_HOST>:/home/<USER>/crypto-tracker/
 ```
 
@@ -74,5 +74,5 @@ cd ~/crypto-tracker && git pull && npm i && sudo systemctl restart whale-tracker
 ## Notes
 - Public RPCs rate-limit event filters. For reliable operation, set `BASE_RPC_WS` and `ETH_RPC_WS` to a WebSocket provider.
 - `npm run build` writes `dist/`, but the service does not need it.
-- `data/state.json` and `data/gold_state.json` are runtime files. Back them up if you want to keep dedupe and gold-level state.
+- Back up `data/gold_state.json` and `data/signal_state.json` to retain gold alert levels and recent daemon alerts.
 - Keep `.env` at `chmod 600`. It holds bot tokens and API keys.

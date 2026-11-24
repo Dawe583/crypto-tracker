@@ -67,7 +67,7 @@ A always-on monitor for Base (chain 8453) and Ethereum mainnet. It watches smart
   index.ts starts the listener, the gold loop, and the API in one process.
   wallets.ts loads data/watchlist.json. config.ts reads .env.
   store.ts holds the recent data that the API serves.
-  State: data/gold_state.json (gold alert levels). Dedupe is in memory.
+  State: data/gold_state.json (gold alert levels), data/signal_state.json (recent alerts). Dedupe is in memory.
 ```
 
 Key design points:
@@ -236,7 +236,7 @@ crypto-tracker/
 │   ├── filter.ts        # market data, honeypot, LP lock, verification, verdicts
 │   ├── wallets.ts       # watchlist loader and lookup
 │   ├── gold_rwa.ts      # PAXG/XAUt vs spot monitor
-│   ├── store.ts         # in-memory store of recent gold, whale, and pool data
+│   ├── store.ts         # recent signal history and in-memory gold quotes
 │   ├── api.ts           # HTTP JSON API (/api/health, /api/gold, /api/whales, /api/pools)
 │   ├── notifier.ts      # alert rendering and dispatch (Telegram/webhook)
 │   └── logger.ts        # pino logger
@@ -253,7 +253,7 @@ crypto-tracker/
 └── tsconfig.json
 ```
 
-Runtime files such as `data/state.json` and `data/gold_state.json` are created on first run and are git-ignored.
+Runtime files such as `data/gold_state.json` and `data/signal_state.json` are git-ignored.
 
 ## Scripts
 
@@ -308,7 +308,7 @@ journalctl -u whale-tracker -n 200 --no-pager
 - Honeypot and DexScreener data are third-party heuristics.
 - The LP lock check covers Uniswap V2-style LPs only. V3 positions are NFTs.
 - The gold spread compares DEX prices with a spot reference. Redemption fees, mint fees, and slippage are not netted out.
-- Dedupe state for pools and transfers is in memory, so it resets on restart. The API data in `src/store.ts` is also in memory and resets on restart.
+- The daemon keeps its latest 200 alerts across restarts. If it cannot save the history, new alerts still work in memory. Gold quotes and pool/transfer dedupe reset on restart.
 - No watchlist addresses ship as verified. You must curate them.
 
 ## License
