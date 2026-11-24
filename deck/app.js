@@ -116,7 +116,8 @@ async function refresh() {
   }
   demoMode = false;
   $('demoBanner').hidden = true;
-  if (snap && !snap.empty) STATE.snap = snap;
+  if (snap?.empty) STATE.snap = null;
+  else if (snap) STATE.snap = snap;
   STATE.strats = strats || STATE.strats;
   STATE.decisions = decisions || STATE.decisions;
   if (candles?.candles?.length) STATE.candles[symbol] = candles.candles;
@@ -201,6 +202,11 @@ function renderMarkets() {
 function renderStatic() {
   const s = STATE.snap;
   if (!s) {
+    for (const id of ['sNav', 'sPnl', 'sWin', 'sOpen', 'bigNav', 'bigPrice', 'stTickets', 'stWin', 'stEdge', 'stDD', 'openTickets', 'tapeRsi', 'tapeChg', 'biasTxt', 'invTxt']) {
+      $(id).textContent = '—';
+      $(id).classList.remove('pos', 'neg', 'up', 'dn');
+    }
+    for (const id of ['biasUp', 'biasDn', 'invB', 'invS']) $(id).style.width = '0%';
     $('running').textContent = 'WARMING UP';
     $('bigDelta').textContent = 'Waiting for the first portfolio snapshot';
     $('bigPriceSub').textContent = 'Waiting for market data';

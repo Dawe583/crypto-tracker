@@ -8,6 +8,7 @@ const source = readFileSync(new URL('../deck/app.js', import.meta.url), 'utf8').
 function runtime(fetch = async () => ({ ok: true, json: async () => ({}) })) {
   const elements = new Map();
   const element = () => ({ textContent: '', innerHTML: '', children: [], dataset: {},
+    style: {},
     classList: { toggle() {}, add() {}, remove() {} }, addEventListener() {}, setAttribute() {}, getAnimations: () => [],
   });
   const body = element();
@@ -165,4 +166,14 @@ test('hosted mode never hides an authorization failure behind demo data', async 
   await app.run('refresh()');
   assert.equal(app.run('demoMode'), false);
   assert.equal(app.run('STATE.snap'), null);
+});
+
+test('warmup after generated data clears every displayed demo balance and count', () => {
+  const app = runtime();
+  app.run('loadDemo(); STATE.snap = null;');
+  const metrics = ['sNav', 'sPnl', 'sWin', 'sOpen', 'bigNav', 'bigPrice', 'stTickets', 'stWin', 'stEdge', 'stDD', 'openTickets'];
+  for (const id of metrics) app.elements.set(id, { textContent: '$demo', classList: { remove() {} } });
+  app.run('renderStatic()');
+  for (const id of metrics) assert.equal(app.elements.get(id).textContent, '—');
+  assert.equal(app.elements.get('kill').disabled, true);
 });
