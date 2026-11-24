@@ -167,13 +167,13 @@ export async function runEngineCycle() {
   }
 
   const positions = [...portfolio.positions.values()];
-  const marks = new Map(prices);
-  for (const p of positions) {
-    const cachedPrice = getFeed(p.symbol)?.price;
-    if (!marks.has(p.symbol) && cachedPrice !== undefined) marks.set(p.symbol, cachedPrice);
+  const displayPrices = new Map<string, number>();
+  for (const [symbol, feed] of feeds) {
+    const displayFeed = feed ?? getFeed(symbol);
+    if (displayFeed) displayPrices.set(symbol, displayFeed.price);
   }
-  const eq = portfolio.equity(marks);
-  const unrealizedUsd = portfolio.unrealized(marks);
+  const eq = portfolio.equity(displayPrices);
+  const unrealizedUsd = portfolio.unrealized(displayPrices);
   if (positions.every((p) => prices.has(p.symbol))) {
     equityCurve.push({ ts: Date.now(), equityUsd: eq });
     if (equityCurve.length > 2000) equityCurve.shift();
@@ -186,13 +186,13 @@ export async function runEngineCycle() {
     unrealizedUsd,
     feesUsd: portfolio.feesUsd,
     positions: positions.map((p) => {
-      const markPrice = marks.get(p.symbol) ?? p.entryPrice;
+      const markPrice = displayPrices.get(p.symbol) ?? p.entryPrice;
       return { ...p, markPrice, unrealizedUsd: p.qty * markPrice - p.sizeUsd };
     }),
     stats: Object.fromEntries([...perStrategy.entries()]),
     equityCurve: equityCurve.slice(-500),
     killed: risk.killed,
-    prices: Object.fromEntries(prices),
+    prices: Object.fromEntries(displayPrices),
     cycleAt: new Date().toISOString(),
   };
   if (engineState.decisions.length > 300) engineState.decisions.length = 300;

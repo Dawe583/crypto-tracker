@@ -94,7 +94,7 @@ test('does not open a new trade while a held symbol has no current quote', (t) =
     prices.ETHUSDT = 110;
     await runEngineCycle();
     assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['BTCUSDT']);
-    assert.deepEqual(engineState.snapshot.prices, { ETHUSDT: 110 });
+    assert.deepEqual(engineState.snapshot.prices, { BTCUSDT: 101.12, ETHUSDT: 110 });
     assert.equal(engineState.snapshot.positions[0].markPrice, 101.12);
     assert.equal(engineState.snapshot.equityCurve.length, 1);
     assert.equal(engineState.decisions[0].vetoed, 'market price unavailable for an open position');
@@ -128,6 +128,7 @@ test('does not open a trade from a cached entry signal when another symbol still
     await runEngineCycle();
     assert.equal(engineState.snapshot.positions.length, 0);
     assert.equal(engineState.decisions.length, 1);
+    assert.deepEqual(engineState.snapshot.prices, { BTCUSDT: 100, ETHUSDT: 110 });
   `);
   assert.equal(result.status, 0, result.stderr);
 });
