@@ -52,14 +52,19 @@ export function atr(cs: Candle[], n = 14): number | null {
   return s / n;
 }
 
-export function macdHist(xs: number[], fast = 12, slow = 26, sig = 9): number | null {
+export function macd(xs: number[], fast = 12, slow = 26, sig = 9): { line: number; histogram: number } | null {
   const ef = emaSeries(xs, fast);
   const es = emaSeries(xs, slow);
-  if (!ef.length || !es.length) return null;
-  const macdLine = ef.map((v, i) => v - es[es.length - ef.length + i]);
+  if (fast >= slow || !es.length) return null;
+  const macdLine = es.map((v, i) => ef[i + slow - fast] - v);
   const signal = emaSeries(macdLine, sig);
   if (!signal.length) return null;
-  return macdLine[macdLine.length - 1] - signal[signal.length - 1];
+  const line = macdLine[macdLine.length - 1];
+  return { line, histogram: line - signal[signal.length - 1] };
+}
+
+export function macdHist(xs: number[], fast = 12, slow = 26, sig = 9): number | null {
+  return macd(xs, fast, slow, sig)?.histogram ?? null;
 }
 
 export function bollinger(xs: number[], n = 20, mult = 2): { mid: number; up: number; lo: number } | null {

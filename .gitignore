@@ -30,6 +30,7 @@ Thumbs.db
 # Trading engine runtime artifacts
 data/ledger/
 data/KILL
+data/replay/
 supabase/.temp/
 supabase/.branches/
 

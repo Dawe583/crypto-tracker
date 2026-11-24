@@ -1,19 +1,23 @@
 // Cost sensitivity: replay top strategies across fee x slippage grid.
-// `npm run stress [interval]` — writes data/stress-<interval>.json + prints matrix.
-import { writeFileSync } from 'node:fs';
+// `npm run stress [interval]` — writes a report under data/replay and prints a matrix.
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { loadStrategies } from '../strategies/registry.js';
-import { refreshSymbol } from './market.js';
+import { completedCandles, intervalMs, refreshSymbol } from './market.js';
 import { replayOne } from './backtest.js';
 import { config } from '../config.js';
+import type { Candle } from './types.js';
 
-const TOP = ['ema_cross', 'stoch_cross', 'obv_drift', 'rsi_reversion', 'breakout', 'zscore_reversion'];
+const TOP = ['macd_bb_v1', 'ema_cross', 'breakout'];
 const FEES = [0.05, 0.1, 0.2];          // % per side
 const SLIPS = [0, 5, 20];               // bps per fill
 
 export async function runStress(symbols: string[] = config.engine.symbols, interval = '15m') {
   const strats = loadStrategies().filter((s) => TOP.includes(s.strategy.name));
-  const candleMap: Record<string, any[]> = {};
-  for (const sym of symbols) candleMap[sym] = (await refreshSymbol(sym, interval))?.candles ?? [];
+  const candleMap: Record<string, Candle[]> = {};
+  for (const sym of symbols) {
+    const feed = await refreshSymbol(sym, interval);
+    candleMap[sym] = feed ? completedCandles(feed, interval) : [];
+  }
   const rows: any[] = [];
   for (const st of strats)
     for (const fee of FEES)
@@ -21,12 +25,13 @@ export async function runStress(symbols: string[] = config.engine.symbols, inter
         let pnl = 0, trades = 0;
         for (const sym of symbols) {
           if (!candleMap[sym].length) continue;
-          const r = replayOne(st.strategy, st.params, sym, candleMap[sym], fee, slip);
+          const r = replayOne(st.strategy, st.params, sym, candleMap[sym], fee, slip, intervalMs(interval));
           pnl += r.pnlUsd; trades += r.trades;
         }
         rows.push({ strategy: st.strategy.name, feePct: fee, slipBps: slip, pnlUsd: +pnl.toFixed(2), trades });
       }
-  const file = `data/stress-${interval}.json`;
+  mkdirSync('data/replay', { recursive: true });
+  const file = `data/replay/stress-${interval}.json`;
   writeFileSync(file, JSON.stringify({ at: new Date().toISOString(), interval, symbols, results: rows }, null, 2));
   return rows;
 }

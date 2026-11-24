@@ -1,5 +1,23 @@
 {
-  "contentDigest": "244e69f8882b722e7a5425a278dfd1a5e7d1f065cddedc6e091bc0384efe9e8f",
+  "name": "base-evm-whale-tracker",
+  "description": "On-chain Base/Ethereum monitoring and a risk-gated paper-trading engine with an interactive animated live neural HUD deck.",
+  "estimatedComplexity": "moderate",
+  "languages": [
+    "config",
+    "css",
+    "html",
+    "javascript",
+    "json",
+    "markdown",
+    "service",
+    "shell",
+    "sql",
+    "typescript"
+  ],
+  "frameworks": [],
+  "totalFiles": 85,
+  "filteredByIgnore": 0,
+  "contentDigest": "0b0f1647c50b6904a69e207239fda722ffa4994c2559e353cd54d17915cb08f2",
   "files": [
     {
       "path": ".agent/work-state.json",
@@ -22,7 +40,7 @@
     {
       "path": "README.md",
       "language": "markdown",
-      "sizeLines": 327,
+      "sizeLines": 329,
       "fileCategory": "docs"
     },
     {
@@ -64,7 +82,7 @@
     {
       "path": "data/strategies.json",
       "language": "json",
-      "sizeLines": 174,
+      "sizeLines": 178,
       "fileCategory": "config"
     },
     {
@@ -208,7 +226,7 @@
     {
       "path": "docs/BACKTEST_RESULTS.md",
       "language": "markdown",
-      "sizeLines": 52,
+      "sizeLines": 54,
       "fileCategory": "docs"
     },
     {
@@ -218,9 +236,27 @@
       "fileCategory": "docs"
     },
     {
+      "path": "docs/HUMMINGBOT-LICENSE.txt",
+      "language": "txt",
+      "sizeLines": 201,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/JESSE-LICENSE.txt",
+      "language": "txt",
+      "sizeLines": 21,
+      "fileCategory": "docs"
+    },
+    {
       "path": "docs/LOOP_ENGINEERING.md",
       "language": "markdown",
       "sizeLines": 21,
+      "fileCategory": "docs"
+    },
+    {
+      "path": "docs/PAPER_STRATEGY.md",
+      "language": "markdown",
+      "sizeLines": 49,
       "fileCategory": "docs"
     },
     {
@@ -262,13 +298,19 @@
     {
       "path": "src/engine/backtest.ts",
       "language": "typescript",
-      "sizeLines": 93,
+      "sizeLines": 131,
       "fileCategory": "code"
     },
     {
       "path": "src/engine/decisions.ts",
       "language": "typescript",
       "sizeLines": 50,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/engine/execution.ts",
+      "language": "typescript",
+      "sizeLines": 33,
       "fileCategory": "code"
     },
     {
@@ -286,7 +328,7 @@
     {
       "path": "src/engine/indicators.ts",
       "language": "typescript",
-      "sizeLines": 88,
+      "sizeLines": 93,
       "fileCategory": "code"
     },
     {
@@ -298,25 +340,25 @@
     {
       "path": "src/engine/loop.ts",
       "language": "typescript",
-      "sizeLines": 247,
+      "sizeLines": 282,
       "fileCategory": "code"
     },
     {
       "path": "src/engine/market.ts",
       "language": "typescript",
-      "sizeLines": 108,
+      "sizeLines": 129,
       "fileCategory": "code"
     },
     {
       "path": "src/engine/portfolio.ts",
       "language": "typescript",
-      "sizeLines": 108,
+      "sizeLines": 114,
       "fileCategory": "code"
     },
     {
       "path": "src/engine/risk.ts",
       "language": "typescript",
-      "sizeLines": 67,
+      "sizeLines": 69,
       "fileCategory": "code"
     },
     {
@@ -328,19 +370,19 @@
     {
       "path": "src/engine/stress.ts",
       "language": "typescript",
-      "sizeLines": 47,
+      "sizeLines": 52,
       "fileCategory": "code"
     },
     {
       "path": "src/engine/sweep.ts",
       "language": "typescript",
-      "sizeLines": 78,
+      "sizeLines": 80,
       "fileCategory": "code"
     },
     {
       "path": "src/engine/types.ts",
       "language": "typescript",
-      "sizeLines": 86,
+      "sizeLines": 90,
       "fileCategory": "code"
     },
     {
@@ -388,7 +430,13 @@
     {
       "path": "src/strategies/library.ts",
       "language": "typescript",
-      "sizeLines": 319,
+      "sizeLines": 321,
+      "fileCategory": "code"
+    },
+    {
+      "path": "src/strategies/macd-bb.ts",
+      "language": "typescript",
+      "sizeLines": 37,
       "fileCategory": "code"
     },
     {
@@ -424,7 +472,7 @@
     {
       "path": "test/engine-restart.test.ts",
       "language": "typescript",
-      "sizeLines": 501,
+      "sizeLines": 519,
       "fileCategory": "code"
     },
     {
@@ -442,13 +490,19 @@
     {
       "path": "test/hosted-paper.test.ts",
       "language": "typescript",
-      "sizeLines": 133,
+      "sizeLines": 181,
       "fileCategory": "code"
     },
     {
       "path": "test/market.test.ts",
       "language": "typescript",
-      "sizeLines": 23,
+      "sizeLines": 65,
+      "fileCategory": "code"
+    },
+    {
+      "path": "test/paper-strategy.test.ts",
+      "language": "typescript",
+      "sizeLines": 96,
       "fileCategory": "code"
     },
     {
@@ -476,10 +530,6 @@
       "fileCategory": "config"
     }
   ],
-  "totalFiles": 79,
-  "filteredByIgnore": 0,
-  "estimatedComplexity": "moderate",
-  "failures": [],
   "importMap": {
     ".agent/work-state.json": [],
     ".env.example": [],
@@ -521,7 +571,10 @@
     "docs/AUDIT_AND_TRADING_LANDSCAPE.md": [],
     "docs/BACKTEST_RESULTS.md": [],
     "docs/BROKER_ADAPTER.md": [],
+    "docs/HUMMINGBOT-LICENSE.txt": [],
+    "docs/JESSE-LICENSE.txt": [],
     "docs/LOOP_ENGINEERING.md": [],
+    "docs/PAPER_STRATEGY.md": [],
     "docs/RPI4_DEPLOYMENT.md": [],
     "docs/SYSTEM_DESIGN.md": [],
     "package.json": [],
@@ -539,14 +592,19 @@
     "src/config.ts": [],
     "src/engine/backtest.ts": [
       "src/config.ts",
+      "src/engine/execution.ts",
       "src/engine/market.ts",
       "src/engine/portfolio.ts",
+      "src/engine/risk.ts",
       "src/engine/types.ts",
       "src/strategies/registry.ts"
     ],
     "src/engine/decisions.ts": [
       "src/engine/types.ts",
       "src/logger.ts"
+    ],
+    "src/engine/execution.ts": [
+      "src/engine/types.ts"
     ],
     "src/engine/hosted-api.ts": [
       "src/engine/hosted.ts",
@@ -570,6 +628,7 @@
     "src/engine/ledger.ts": [],
     "src/engine/loop.ts": [
       "src/config.ts",
+      "src/engine/execution.ts",
       "src/engine/ledger.ts",
       "src/engine/market.ts",
       "src/engine/portfolio.ts",
@@ -597,12 +656,14 @@
       "src/config.ts",
       "src/engine/backtest.ts",
       "src/engine/market.ts",
+      "src/engine/types.ts",
       "src/strategies/registry.ts"
     ],
     "src/engine/sweep.ts": [
       "src/config.ts",
       "src/engine/backtest.ts",
       "src/engine/market.ts",
+      "src/engine/types.ts",
       "src/strategies/registry.ts"
     ],
     "src/engine/types.ts": [],
@@ -645,6 +706,11 @@
     ],
     "src/strategies/library.ts": [
       "src/engine/indicators.ts",
+      "src/engine/types.ts",
+      "src/strategies/macd-bb.ts"
+    ],
+    "src/strategies/macd-bb.ts": [
+      "src/engine/indicators.ts",
       "src/engine/types.ts"
     ],
     "src/strategies/registry.ts": [
@@ -681,6 +747,16 @@
     "test/market.test.ts": [
       "src/engine/market.ts"
     ],
+    "test/paper-strategy.test.ts": [
+      "src/config.ts",
+      "src/engine/backtest.ts",
+      "src/engine/execution.ts",
+      "src/engine/market.ts",
+      "src/engine/portfolio.ts",
+      "src/engine/types.ts",
+      "src/strategies/macd-bb.ts",
+      "src/strategies/registry.ts"
+    ],
     "tests/deck.test.mjs": [],
     "tests/hosting.test.mjs": [
       "api/read.js"
@@ -688,8 +764,5 @@
     "tsconfig.json": [],
     "vercel.json": []
   },
-  "name": "crypto-tracker",
-  "description": "No description available",
-  "languages": [],
-  "frameworks": []
+  "failures": []
 }

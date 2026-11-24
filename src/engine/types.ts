@@ -22,6 +22,7 @@ export interface TradeIntent {
   stopLossPct?: number;
   takeProfitPct?: number;
   maxHoldMin?: number;
+  management?: { riskPct: number; trailAfterPct: number };
 }
 
 export interface Position {
@@ -35,6 +36,8 @@ export interface Position {
   stopLossPct: number | null;
   takeProfitPct: number | null;
   maxHoldMin: number | null;
+  entryFeeUsd?: number;
+  trailing?: { afterPct: number; peak: number };
 }
 
 export interface Fill {
@@ -82,5 +85,6 @@ export interface Strategy {
   name: string;
   description: string;
   defaults: Record<string, number>;
+  closedBars?: number;
   evaluate(ctx: StrategyContext): TradeIntent[];
 }

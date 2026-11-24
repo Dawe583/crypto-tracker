@@ -20,7 +20,7 @@ const KRAKEN_INTERVALS: Record<string, string | undefined> = {
   '1d': '1440', '1w': '10080', '15d': '21600',
 };
 
-export interface Feed { candles: Candle[]; price: number; source: 'binance' | 'bybit' | 'coinbase' | 'kraken'; lastFetch: number }
+export interface Feed { candles: Candle[]; price: number; source: 'binance' | 'bybit' | 'coinbase' | 'kraken'; lastFetch: number; requestedAt?: number }
 const feeds = new Map<string, Feed>();
 
 const fetchMarket = (url: string) => fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
@@ -72,17 +72,36 @@ const sources = [
   ['kraken', fromKraken, KRAKEN_INTERVALS],
 ] as const;
 
-export async function fetchSymbol(symbol: string, interval: string, { requireRecent = true } = {}): Promise<Feed | null> {
+export function intervalMs(interval: string) {
   const [, count, unit] = /^(\d+)([smhdwM])$/.exec(interval) ?? [];
-  const maxAgeMs = 2 * Number(count) * CANDLE_UNIT_MS[unit];
+  return Number(count) * CANDLE_UNIT_MS[unit];
+}
+
+export function completedCandles(feed: Feed, interval: string) {
+  const ms = intervalMs(interval);
+  return feed.candles.filter((c) => c.t + ms <= (feed.requestedAt ?? feed.lastFetch));
+}
+
+export function closedStrategyBars(feed: Feed, interval: string, count: number): Candle[] {
+  const ms = intervalMs(interval);
+  if (!Number.isSafeInteger(ms) || ms <= 0 || interval.endsWith('M')) return [];
+  const bars = completedCandles(feed, interval).slice(-count);
+  if (bars.length !== count || (feed.requestedAt ?? feed.lastFetch) - bars[bars.length - 1].t >= 2 * ms) return [];
+  return bars.every((c, i) => i === 0 || c.t - bars[i - 1].t === ms) ? bars : [];
+}
+
+export async function fetchSymbol(symbol: string, interval: string, { requireRecent = true, closedBars = 0 } = {}): Promise<Feed | null> {
+  const maxAgeMs = 2 * intervalMs(interval);
   if (requireRecent && (!Number.isSafeInteger(maxAgeMs) || maxAgeMs <= 0)) {
     logger.warn({ interval }, 'invalid paper market interval');
     return null;
   }
+  let markOnly: Feed | null = null;
   for (const [source, fn, intervals] of sources) {
     const exchangeInterval = intervals ? intervals[interval] : interval;
     if (!exchangeInterval) continue;
     try {
+      const requestedAt = Date.now();
       const candles = await fn(symbol, exchangeInterval);
       if (!candles.length || candles.some(({ t, o, h, l, c, v }) =>
         !Number.isFinite(t) || ![o, h, l, c].every((p) => Number.isFinite(p) && p > 0)
@@ -91,16 +110,18 @@ export async function fetchSymbol(symbol: string, interval: string, { requireRec
       const lastFetch = Date.now();
       const age = lastFetch - latest.t;
       if (requireRecent && (age > maxAgeMs || age < -CLOCK_SKEW_MS)) throw new Error('market candle timestamp out of range');
-      return { candles, price: latest.c, source, lastFetch };
+      const feed = { candles, price: latest.c, source, lastFetch, requestedAt };
+      if (!closedBars || interval.endsWith('M') || closedStrategyBars(feed, interval, closedBars).length) return feed;
+      markOnly ??= feed;
     } catch (err) {
       logger.warn({ err: String(err), symbol, source }, 'market feed failed');
     }
   }
-  return null;
+  return markOnly;
 }
 
-export async function refreshSymbol(symbol: string, interval: string, { requireRecent = false } = {}): Promise<Feed | null> {
-  const feed = await fetchSymbol(symbol, interval, { requireRecent });
+export async function refreshSymbol(symbol: string, interval: string, { requireRecent = false, closedBars = 0 } = {}): Promise<Feed | null> {
+  const feed = await fetchSymbol(symbol, interval, { requireRecent, closedBars });
   if (feed) feeds.set(symbol, feed);
   return feed;
 }

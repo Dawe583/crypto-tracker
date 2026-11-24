@@ -726,7 +726,8 @@ function drawBrain(now) {
       x.fillStyle = n.color;
       x.beginPath(); x.arc(nd.X, nd.Y, Math.max(1, sz), 0, 7); x.fill();
     }
-    if (n.label && nd.s > .75) {
+    // Agent names remain in the focus controls; only the selected label enters the dense graph.
+    if (n.label && nd.s > .75 && (n.t === 'sym' || n.label === selectedAgent)) {
       x.fillStyle = n.color; x.font = `${n.t === 'agent' ? 11 : 10}px monospace`; x.textAlign = 'center';
       x.fillText(n.label, nd.X, nd.Y + sz + 13);
       if (n.desc) { x.fillStyle = '#4d5f80'; x.font = '8px monospace'; x.fillText(n.desc, nd.X, nd.Y + sz + 23); }

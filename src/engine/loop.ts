@@ -2,7 +2,8 @@
 // paper fill -> ledger -> snapshot. One decision unit per cycle, hold when late.
 import { logger } from '../logger.js';
 import { config } from '../config.js';
-import { refreshSymbol, type Feed } from './market.js';
+import { closedStrategyBars, refreshSymbol, type Feed, type fetchSymbol } from './market.js';
+import { managedSize, MANAGED_SLIPPAGE_BPS, positionExit, slippedPrice } from './execution.js';
 import { PaperPortfolio } from './portfolio.js';
 import { RiskEngine } from './risk.js';
 import { ledgerAppend, ledgerResumeLatestCheckpoint, type LedgerRecord } from './ledger.js';
@@ -16,14 +17,16 @@ export type EngineCheckpoint = {
   portfolio: ReturnType<PaperPortfolio['checkpoint']>;
   risk: ReturnType<RiskEngine['checkpoint']>;
   stats: [string, { pnl: number; trades: number; wins: number }][];
+  lastSignalBars?: [string, number][];
 };
 
 export function createPaperEngine(options: {
   state: typeof engineState;
   append: (type: LedgerRecord['type'], data: unknown) => void;
-  refresh: (symbol: string, interval: string) => Promise<Feed | null>;
+  refresh: typeof fetchSymbol;
   signals: () => StrategyContext['signals'];
   strategies?: ReturnType<typeof loadStrategies>;
+  checkpointObservations?: boolean;
 }) {
   const { state } = options;
   const portfolio = new PaperPortfolio(config.engine.startUsd);
@@ -39,15 +42,17 @@ export function createPaperEngine(options: {
   const strategies = options.strategies ?? loadStrategies();
   const equityCurve = [...(state.snapshot?.equityCurve ?? [])];
   const perStrategy = new Map<string, { pnl: number; trades: number; wins: number }>();
+  const lastSignalBars = new Map<string, number>();
 
   function checkpointState(): EngineCheckpoint {
-    return { portfolio: portfolio.checkpoint(), risk: risk.checkpoint(), stats: [...perStrategy] };
+    return { portfolio: portfolio.checkpoint(), risk: risk.checkpoint(), stats: [...perStrategy], lastSignalBars: [...lastSignalBars] };
   }
 
   function restore(checkpoint: EngineCheckpoint) {
     portfolio.restoreCheckpoint(checkpoint.portfolio);
     risk.restoreCheckpoint(checkpoint.risk);
     for (const [name, stats] of checkpoint.stats) perStrategy.set(name, stats);
+    for (const [key, bar] of checkpoint.lastSignalBars ?? []) lastSignalBars.set(key, bar);
   }
 
   function append(type: LedgerRecord['type'], data: unknown) {
@@ -68,7 +73,7 @@ export function createPaperEngine(options: {
   function recordFill(fill: Fill) {
     if (fill.side === 'sell') {
       const pnl = fill.pnlUsd ?? 0;
-      risk.recordClose(fill.strategy, pnl);
+      risk.recordClose(fill.strategy, pnl, fill.ts);
       const stats = statFor(fill.strategy);
       stats.pnl += pnl;
       stats.trades += 1;
@@ -77,23 +82,25 @@ export function createPaperEngine(options: {
     append('fill', { ...fill, checkpoint: checkpointState() });
   }
 
-  function checkExits(prices: Map<string, number>) {
+  function checkExits(prices: Map<string, number>, now: number) {
+    const stopped = new Set<string>();
+    let peakChanged = false;
     for (const p of [...portfolio.positions.values()]) {
       const px = prices.get(p.symbol);
       if (!px) continue;
-      const chg = ((px - p.entryPrice) / p.entryPrice) * 100;
-      const ageMin = (Date.now() - p.entryTs) / 60000;
-      let reason: string | null = null;
-      if (p.stopLossPct !== null && chg <= -p.stopLossPct) reason = `stop loss ${chg.toFixed(1)}%`;
-      else if (p.takeProfitPct !== null && chg >= p.takeProfitPct) reason = `take profit +${chg.toFixed(1)}%`;
-      else if (p.maxHoldMin !== null && ageMin >= p.maxHoldMin) reason = 'max hold reached';
+      const priorPeak = p.trailing?.peak;
+      const reason = positionExit(p, px, now);
+      peakChanged ||= priorPeak !== p.trailing?.peak;
       if (!reason) continue;
-      const fill = portfolio.close(p.strategy, p.symbol, px, config.engine.feePct, reason);
+      const price = slippedPrice(px, 'sell', p.trailing ? MANAGED_SLIPPAGE_BPS : 0);
+      const fill = portfolio.close(p.strategy, p.symbol, price, config.engine.feePct, reason, now);
       if (fill) {
+        if (p.trailing) stopped.add(`${p.strategy}|${p.symbol}`);
         recordFill(fill);
         logger.info({ symbol: p.symbol, strategy: p.strategy, pnl: fill.pnlUsd }, 'position closed');
       }
     }
+    return { stopped, peakChanged };
   }
 
   async function cycle() {
@@ -101,29 +108,48 @@ export function createPaperEngine(options: {
     const symbols = config.engine.symbols;
     const marketSymbols = [...new Set([...symbols, ...Array.from(portfolio.positions.values(), (p) => p.symbol)])];
     const feeds = new Map<string, Feed>();
-    for (const [symbol, feed] of await Promise.all(marketSymbols.map(async (symbol) =>
-      [symbol, await options.refresh(symbol, config.engine.interval)] as const))) {
+    for (const [symbol, feed] of await Promise.all(marketSymbols.map(async (symbol) => {
+      const closedBars = Math.max(0, ...strategies.filter(({ strategy, enabled }) =>
+        (enabled && symbols.includes(symbol)) || portfolio.positions.has(`${strategy.name}|${symbol}`))
+        .map(({ strategy }) => strategy.closedBars ?? 0));
+      return [symbol, await options.refresh(symbol, config.engine.interval, { closedBars })] as const;
+    }))) {
       if (feed && Number.isFinite(feed.price) && feed.price > 0) feeds.set(symbol, feed);
     }
     if (state.halted || !feeds.size) return feeds;
     const prices = new Map([...feeds].map(([symbol, feed]) => [symbol, feed.price] as const));
 
-    checkExits(prices);
+    const now = Date.now();
+    const { stopped, peakChanged } = checkExits(prices, now);
+    let signalBarChanged = false;
     const signals = options.signals();
 
     for (const { strategy, params, enabled } of strategies) {
-      if (!enabled) continue;
-      for (const symbol of symbols) {
+      const held = [...portfolio.positions.values()].filter((p) => p.strategy === strategy.name).map((p) => p.symbol);
+      for (const symbol of new Set(enabled ? [...symbols, ...held] : held)) {
         const feed = feeds.get(symbol);
         if (!feed || feed.candles.length < 30) continue;
+        const key = `${strategy.name}|${symbol}`;
+        const candles = strategy.closedBars ? closedStrategyBars(feed, config.engine.interval, strategy.closedBars) : feed.candles;
+        if (!candles.length) continue;
+        if (strategy.closedBars) {
+          const bar = candles[candles.length - 1].t;
+          if (bar <= (lastSignalBars.get(key) ?? -Infinity)) continue;
+          lastSignalBars.set(key, bar);
+          signalBarChanged = true;
+        }
         let intents: TradeIntent[] = [];
         try {
-          intents = strategy.evaluate({ symbol, candles: feed.candles, price: feed.price, positions: [...portfolio.positions.values()], signals, params });
+          intents = strategy.evaluate({ symbol, candles, price: strategy.closedBars ? candles[candles.length - 1].c : feed.price,
+            positions: [...portfolio.positions.values()], signals, params });
         } catch (e) { logger.warn({ err: String(e), strategy: strategy.name, symbol }, 'strategy eval failed'); }
         for (const i of intents) {
-          const rec: DecisionRecord = { strategy: i.strategy, symbol, action: i.side, confidence: i.confidence, reason: i.reason, ts: Date.now() };
+          if (i.side === 'buy' && (!enabled || !symbols.includes(symbol) || stopped.has(key))) continue;
+          const rec: DecisionRecord = { strategy: i.strategy, symbol, action: i.side, confidence: i.confidence, reason: i.reason, ts: now };
           if (i.side === 'sell') {
-            const fill = portfolio.close(i.strategy, symbol, feed.price, config.engine.feePct, i.reason);
+            const p = portfolio.positions.get(key);
+            const price = slippedPrice(feed.price, 'sell', p?.trailing ? MANAGED_SLIPPAGE_BPS : 0);
+            const fill = portfolio.close(i.strategy, symbol, price, config.engine.feePct, i.reason, now);
             if (fill) recordFill(fill);
             rec.vetoed = fill ? undefined : 'no position to close';
             append('decision', rec);
@@ -135,13 +161,19 @@ export function createPaperEngine(options: {
             const mark = prices.get(p.symbol) ?? p.entryPrice;
             return total + (mark === p.entryPrice ? p.sizeUsd : p.qty * mark);
           }, 0);
+          const equity = portfolio.equity(prices);
+          const sizeUsd = i.management ? managedSize(i, equity, config.engine.feePct, MANAGED_SLIPPAGE_BPS,
+            Math.min(config.engine.maxPositionUsd, config.engine.maxTotalUsd - exposure)) : i.sizeUsd;
           const baselineDay = risk.baselineDay;
           const veto = positions.some((p) => !prices.has(p.symbol))
             ? 'market price unavailable for an open position'
-            : risk.check(i, positions, portfolio.equity(prices), exposure);
+            : i.management && !((sizeUsd ?? 0) >= 5)
+              ? 'managed size below minimum or invalid risk parameters'
+              : risk.check({ ...i, sizeUsd }, positions, equity, exposure, now);
           if (risk.baselineDay !== baselineDay) append('checkpoint', { checkpoint: checkpointState() });
           if (veto) { rec.vetoed = veto; append('decision', rec); append('risk', rec); state.decisions.unshift(rec); continue; }
-          const fill = portfolio.open(i, feed.price, config.engine.feePct);
+          const price = slippedPrice(feed.price, 'buy', i.management ? MANAGED_SLIPPAGE_BPS : 0);
+          const fill = portfolio.open({ ...i, sizeUsd }, price, config.engine.feePct, now);
           if (fill) {
             recordFill(fill);
             append('decision', rec);
@@ -152,6 +184,8 @@ export function createPaperEngine(options: {
       }
     }
 
+    if (options.checkpointObservations && (peakChanged || signalBarChanged))
+      append('checkpoint', { checkpoint: checkpointState() });
     const positions = [...portfolio.positions.values()];
     const marks = new Map<string, number>();
     for (const symbol of new Set([...symbols, ...positions.map((p) => p.symbol)])) {
@@ -177,7 +211,7 @@ export function createPaperEngine(options: {
       feesUsd: portfolio.feesUsd,
       positions: positions.map((p) => {
         const markPrice = marks.get(p.symbol) ?? p.entryPrice;
-        return { ...p, markPrice, unrealizedUsd: p.qty * markPrice - p.sizeUsd };
+        return { ...p, markPrice, unrealizedUsd: p.qty * markPrice - p.sizeUsd - (p.entryFeeUsd ?? 0) };
       }),
       stats: Object.fromEntries([...perStrategy.entries()]),
       equityCurve: equityCurve.slice(-500),
@@ -216,7 +250,8 @@ function monitorSignals() {
 const strategies = loadStrategies();
 const local = createPaperEngine({
   state: engineState, append: ledgerAppend, signals: monitorSignals, strategies,
-  refresh: (symbol, interval) => refreshSymbol(symbol, interval, { requireRecent: true }),
+  checkpointObservations: true,
+  refresh: (symbol, interval, options) => refreshSymbol(symbol, interval, { ...options, requireRecent: true }),
 });
 export const { portfolio, risk } = local;
 let recovered = false;
