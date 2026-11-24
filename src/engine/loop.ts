@@ -62,14 +62,12 @@ function checkExits(prices: Map<string, number>) {
   }
 }
 
-async function cycle() {
+export async function runEngineCycle() {
   const symbols = config.engine.symbols;
   await Promise.all(symbols.map((s) => refreshSymbol(s, config.engine.interval)));
   const prices = new Map(symbols.map((s) => [s, getPrice(s) ?? 0]).filter(([, p]) => (p as number) > 0) as [string, number][]);
 
   checkExits(prices);
-  const equity = portfolio.equity(prices);
-  const exposure = [...portfolio.positions.values()].reduce((a, p) => a + p.qty * (prices.get(p.symbol) ?? p.entryPrice), 0);
   const signals = monitorSignals();
 
   for (const { strategy, params, enabled } of strategies) {
@@ -91,7 +89,12 @@ async function cycle() {
           engineState.decisions.unshift(rec);
           continue;
         }
-        const veto = risk.check(i, [...portfolio.positions.values()], equity, exposure);
+        const positions = [...portfolio.positions.values()];
+        const exposure = positions.reduce((total, p) => {
+          const mark = prices.get(p.symbol) ?? p.entryPrice;
+          return total + (mark === p.entryPrice ? p.sizeUsd : p.qty * mark);
+        }, 0);
+        const veto = risk.check(i, positions, portfolio.equity(prices), exposure);
         if (veto) { rec.vetoed = veto; ledgerAppend('decision', rec); ledgerAppend('risk', rec); engineState.decisions.unshift(rec); continue; }
         const fill = portfolio.open(i, prices.get(symbol) ?? feed.price, config.engine.feePct);
         if (fill) {
@@ -127,7 +130,7 @@ async function cycle() {
 export function startEngineLoop() {
   const enabled = strategies.filter((s) => s.enabled).map((s) => s.strategy.name);
   logger.info({ strategies: enabled, symbols: config.engine.symbols, interval: config.engine.interval }, 'trading engine starting');
-  const tick = () => cycle().catch((e) => logger.error({ err: String(e) }, 'engine cycle failed'));
+  const tick = () => runEngineCycle().catch((e) => logger.error({ err: String(e) }, 'engine cycle failed'));
   tick();
   return setInterval(tick, config.engine.pollMs);
 }
