@@ -17,7 +17,7 @@
   "frameworks": [],
   "totalFiles": 85,
   "filteredByIgnore": 0,
-  "contentDigest": "b704ef62c7ab9a8a45814624a396d263b3a0f0787c5197e49a63bd88b17af890",
+  "contentDigest": "0b0f1647c50b6904a69e207239fda722ffa4994c2559e353cd54d17915cb08f2",
   "files": [
     {
       "path": ".agent/work-state.json",
@@ -496,7 +496,7 @@
     {
       "path": "test/market.test.ts",
       "language": "typescript",
-      "sizeLines": 64,
+      "sizeLines": 65,
       "fileCategory": "code"
     },
     {

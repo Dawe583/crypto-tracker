@@ -8207,14 +8207,6 @@
       "recoveredFromImportMap": true
     },
     {
-      "source": "file:test/market.test.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
-    },
-    {
       "source": "function:src/engine/loop.ts:createPaperEngine",
       "target": "function:src/engine/loop.ts:createPaperEngine.checkExits",
       "type": "contains",
@@ -8269,6 +8261,14 @@
       "type": "calls",
       "weight": 0.9,
       "direction": "forward"
+    },
+    {
+      "source": "file:test/market.test.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
     }
   ],
   "version": "1.0.0",
@@ -8289,8 +8289,8 @@
     ],
     "frameworks": [],
     "description": "On-chain Base/Ethereum monitoring and a risk-gated paper-trading engine with an interactive animated live neural HUD deck.",
-    "analyzedAt": "2026-11-24T23:29:34.421Z",
-    "gitCommitHash": "0546db92902b3099a9a33020e37c73487ed48755"
+    "analyzedAt": "2026-11-24T23:33:32.560Z",
+    "gitCommitHash": "08d8f9ecc466ca631d2c4cf5a568745983580a48"
   },
   "layers": [
     {
