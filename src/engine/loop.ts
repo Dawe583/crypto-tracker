@@ -145,9 +145,9 @@ export async function runEngineCycle() {
           const mark = prices.get(p.symbol) ?? p.entryPrice;
           return total + (mark === p.entryPrice ? p.sizeUsd : p.qty * mark);
         }, 0);
-        const equity = portfolio.equity(prices);
-        if (risk.startDay(equity)) append('checkpoint', { checkpoint: checkpointState() });
-        const veto = risk.check(i, positions, equity, exposure);
+        const baselineDay = risk.baselineDay;
+        const veto = risk.check(i, positions, portfolio.equity(prices), exposure);
+        if (risk.baselineDay !== baselineDay) append('checkpoint', { checkpoint: checkpointState() });
         if (veto) { rec.vetoed = veto; append('decision', rec); append('risk', rec); engineState.decisions.unshift(rec); continue; }
         const fill = portfolio.open(i, prices.get(symbol) ?? feed.price, config.engine.feePct);
         if (fill) {

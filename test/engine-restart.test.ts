@@ -199,3 +199,18 @@ test('keeps the new daily loss baseline after a cycle with no fill', (t) => {
   assert.match(ledger, /max open positions/);
   assert.match(ledger, /daily loss breaker/);
 });
+
+test('does not set a new daily loss baseline while the kill switch is on', (t) => {
+  const root = fixture(t);
+  const lossLimit = { ENGINE_DAILY_LOSS_PCT: '0.05' };
+  runCycle(root, today, { BTCUSDT: 110, ETHUSDT: 100 });
+  const kill = join(root, 'data', 'KILL');
+  writeFileSync(kill, 'on');
+  const halted = runCycle(root, tomorrow, { BTCUSDT: 115, ETHUSDT: 110 }, undefined, lossLimit);
+  assert.equal(halted.killed, true);
+  assert.deepEqual(halted.positions.map(({ symbol }) => symbol), ['BTCUSDT']);
+  rmSync(kill);
+
+  const resumed = runCycle(root, tomorrow + 60_000, { BTCUSDT: 111, ETHUSDT: 110 }, undefined, lossLimit);
+  assert.deepEqual(resumed.positions.map(({ symbol }) => symbol), ['BTCUSDT', 'ETHUSDT']);
+});
