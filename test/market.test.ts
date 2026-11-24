@@ -2,20 +2,21 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { closedStrategyBars, completedCandles, fetchSymbol } from '../src/engine/market.js';
 
-test('a request crossing the candle boundary does not finalize its pre-close snapshot', async (t) => {
+test('a request crossing the candle boundary uses its pre-close window without falling back', async (t) => {
   const minute = 60_000;
   const open = Date.UTC(2026, 10, 24, 12);
   let now = open + minute - 1;
   t.mock.method(Date, 'now', () => now);
-  t.mock.method(globalThis, 'fetch', async () => {
+  const marketRequest = t.mock.method(globalThis, 'fetch', async () => {
     now = open + minute + 1;
     return Response.json([[open - minute, 99, 99, 99, 99, 1], [open, 100, 101, 99, 101, 1]]);
   });
-  const crossing = await fetchSymbol('BTCUSDT', '1m');
+  const crossing = await fetchSymbol('BTCUSDT', '1m', { closedBars: 1 });
   assert.ok(crossing);
+  assert.equal(marketRequest.mock.callCount(), 1);
   assert.deepEqual(completedCandles(crossing, '1m').map((c) => c.t), [open - minute]);
   assert.deepEqual(closedStrategyBars(crossing, '1m', 1).map((c) => c.t), [open - minute]);
-  const after = await fetchSymbol('BTCUSDT', '1m');
+  const after = await fetchSymbol('BTCUSDT', '1m', { closedBars: 1 });
   assert.ok(after);
   assert.deepEqual(completedCandles(after, '1m').map((c) => c.t), [open - minute, open]);
   assert.deepEqual(closedStrategyBars(after, '1m', 1).map((c) => c.t), [open]);
