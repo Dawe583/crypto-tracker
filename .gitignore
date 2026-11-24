@@ -22,3 +22,7 @@ data/gold_state.json
 Thumbs.db
 .vscode/
 .idea/
+
+# Understand-Anything scratch (graph, lessons, fingerprints and meta are committed)
+.ua/tmp/
+.ua/.trash-*/
