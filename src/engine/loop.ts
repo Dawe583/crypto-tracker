@@ -152,7 +152,11 @@ export function createPaperEngine(options: {
     }
 
     const positions = [...portfolio.positions.values()];
-    const marks = new Map([...Object.entries(state.snapshot?.prices ?? {}), ...prices]);
+    const marks = new Map<string, number>();
+    for (const symbol of new Set([...symbols, ...positions.map((p) => p.symbol)])) {
+      const mark = prices.get(symbol) ?? state.snapshot?.prices[symbol];
+      if (mark !== undefined) marks.set(symbol, mark);
+    }
     for (const p of positions) {
       const priorMark = state.snapshot?.positions.find((previous) => previous.id === p.id)?.markPrice;
       if (!marks.has(p.symbol) && priorMark !== undefined) marks.set(p.symbol, priorMark);

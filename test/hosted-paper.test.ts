@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { test } from 'node:test';
+import { config } from '../src/config.js';
 import { hostedCron, hostedRead } from '../src/engine/hosted-api.js';
 import { runHostedCycle } from '../src/engine/hosted.js';
 import type { Feed } from '../src/engine/market.js';
@@ -75,6 +76,19 @@ test('an unpriced open position keeps its mark without producing a fresh equity 
   assert.equal(cycle.p_deck.snapshot.positions[0]?.markPrice, 100);
   assert.equal(cycle.p_deck.snapshot.equityCurve.length, 1);
   assert.equal(cycle.p_records.at(-1)?.type, 'checkpoint');
+});
+
+test('cached quotes stay visible only for configured markets or open positions', async (t) => {
+  const original = config.engine.symbols;
+  t.after(() => { config.engine.symbols = original; });
+  config.engine.symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT'];
+  const { store, writes } = memoryStore();
+  await runHostedCycle(store, 1, refreshAt(100), strategies);
+  config.engine.symbols = ['ETHUSDT', 'SOLUSDT'];
+  await runHostedCycle(store, 2, (symbol) => symbol === 'ETHUSDT' ? refreshAt(110)() : Promise.resolve(null), []);
+  assert.deepEqual(writes[1].p_deck.snapshot.prices, { BTCUSDT: 100, ETHUSDT: 110, SOLUSDT: 100 });
+  await runHostedCycle(store, 3, refreshAt(110), []);
+  assert.deepEqual(writes[2].p_deck.snapshot.prices, { ETHUSDT: 110, SOLUSDT: 110 });
 });
 
 test('only a distinct cron secret may write, and the deck routes are GET-only', async (t) => {
