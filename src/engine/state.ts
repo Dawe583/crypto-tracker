@@ -15,7 +15,8 @@ export interface EngineSnapshot {
   cycleAt: string;
 }
 
-export const engineState: { snapshot: EngineSnapshot | null; decisions: DecisionRecord[] } = {
+export const engineState: { snapshot: EngineSnapshot | null; decisions: DecisionRecord[]; halted: boolean } = {
   snapshot: null,
   decisions: [],
+  halted: false,
 };

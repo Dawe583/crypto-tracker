@@ -28,6 +28,18 @@ export class RiskEngine {
     this.dayStartEquity = cfg.startEquityUsd;
   }
 
+  checkpoint() {
+    return { dayStart: this.dayStart, dayStartEquity: this.dayStartEquity, losses: [...this.losses] };
+  }
+
+  restoreCheckpoint(c: ReturnType<RiskEngine['checkpoint']>) {
+    this.dayStart = c.dayStart;
+    this.dayStartEquity = c.dayStartEquity;
+    this.losses = new Map(c.losses);
+  }
+
+  get baselineDay() { return this.dayStart; }
+
   // returns null when allowed, else the veto reason (logged to ledger)
   check(i: TradeIntent, positions: Position[], equity: number, exposureUsd: number): string | null {
     if (this.killed || existsSync(KILL_FILE)) { this.killed = true; return 'kill switch ON (data/KILL)'; }

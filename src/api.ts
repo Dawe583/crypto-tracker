@@ -141,7 +141,7 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
       return send(res, 200, { count: signals.length, signals }, cors);
     }
     case '/api/engine/snapshot':
-      return send(res, 200, engineState.snapshot ?? { empty: true }, cors);
+      return send(res, 200, { ...(engineState.snapshot ?? { empty: true }), halted: engineState.halted }, cors);
     case '/api/engine/strategies':
       return send(res, 200, loadStrategies().map(({ strategy, params, enabled }) => ({ name: strategy.name, description: strategy.description, params, enabled })), cors);
     case '/api/engine/decisions': {
