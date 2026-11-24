@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "cab38691f4d66d2bcbae09e184781d2557fa2504",
-  "generatedAt": "2026-11-24T21:25:28.074Z",
+  "gitCommitHash": "137676abc189b49252901a99dd25932c34a5e1af",
+  "generatedAt": "2026-11-24T21:30:54.482Z",
   "files": {
     ".agent/work-state.json": {
       "filePath": ".agent/work-state.json",
@@ -35,7 +35,7 @@
     },
     "README.md": {
       "filePath": "README.md",
-      "contentHash": "83a8ec6806d1ad881c6a5f913cfad6080041e33eb4a0b96a4c65bc1cfbbbcbc2",
+      "contentHash": "1dd370ce8abbf8f34d67e42b90f0908dff8dd83b1c4500dcb44c1926a17ec561",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -45,7 +45,7 @@
     },
     "api/[...path].js": {
       "filePath": "api/[...path].js",
-      "contentHash": "c91a2efe2215473cedd49e75081cf21cf756ec54555fec1fb7e589c871170894",
+      "contentHash": "427bb6390b50cb0ea7e24e65ff78e67be962fd11c1b73093b4cc4e8d81e7016a",
       "functions": [
         {
           "name": "handler",
@@ -54,7 +54,7 @@
             "res"
           ],
           "exported": true,
-          "lineCount": 25
+          "lineCount": 26
         }
       ],
       "classes": [],
@@ -62,7 +62,7 @@
       "exports": [
         "handler"
       ],
-      "totalLines": 29,
+      "totalLines": 30,
       "hasStructuralAnalysis": true
     },
     "data/backtest-15m.json": {
@@ -277,7 +277,7 @@
     },
     "deck/app.js": {
       "filePath": "deck/app.js",
-      "contentHash": "a601ccdebc8c06793ccf180689e1c70b4bf8c795ed10143a31f5d696109e08ea",
+      "contentHash": "9bb902279ef2220a8ed6d192953d2ce34b395380852052e8a0d3f3b4866b90a5",
       "functions": [
         {
           "name": "$",
@@ -366,7 +366,7 @@
           "name": "refresh",
           "params": [],
           "exported": false,
-          "lineCount": 51
+          "lineCount": 52
         },
         {
           "name": "selectMarket",
@@ -394,7 +394,7 @@
           "name": "renderStatic",
           "params": [],
           "exported": false,
-          "lineCount": 91
+          "lineCount": 96
         },
         {
           "name": "renderFeed",
@@ -654,7 +654,7 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 1197,
+      "totalLines": 1205,
       "hasStructuralAnalysis": true
     },
     "deck/index.html": {
@@ -799,7 +799,7 @@
     },
     "src/api.ts": {
       "filePath": "src/api.ts",
-      "contentHash": "096db70dbc35c376c3f007da9972d665b5c09f477c9dee7c460860e0fe5073b6",
+      "contentHash": "3b71ef1a0a0492cf04aeb03a01209f8af12f2223f3db648d2d14885f37a6b3ff",
       "functions": [
         {
           "name": "corsHeaders",
@@ -858,7 +858,7 @@
             "res"
           ],
           "exported": false,
-          "lineCount": 69
+          "lineCount": 71
         },
         {
           "name": "startApi",
@@ -959,7 +959,7 @@
       "exports": [
         "startApi"
       ],
-      "totalLines": 181,
+      "totalLines": 183,
       "hasStructuralAnalysis": true
     },
     "src/config.ts": {
@@ -2639,13 +2639,13 @@
     },
     "tests/deck.test.mjs": {
       "filePath": "tests/deck.test.mjs",
-      "contentHash": "5ee7490e80e37b8d50bfcb956df03e515b861f71efd79c479d7f0c9f1e6b0723",
+      "contentHash": "adf4638f7c84ff0df2749d29e1a3537d4200762e1dbcca5bb52c8c9d31f5b26f",
       "functions": [
         {
           "name": "runtime",
           "params": [],
           "exported": false,
-          "lineCount": 16
+          "lineCount": 17
         }
       ],
       "classes": [],
@@ -2676,12 +2676,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 160,
+      "totalLines": 188,
       "hasStructuralAnalysis": true
     },
     "tests/hosting.test.mjs": {
       "filePath": "tests/hosting.test.mjs",
-      "contentHash": "9c023e5cd9240f804cacd07b1d3182e4603a4d217e0b4f31c7ef8b8bad1abac1",
+      "contentHash": "75fe6855a9f82b5fc413d87756abed64ad94a5add6ed40bd8c96e9bdacb7a3e9",
       "functions": [
         {
           "name": "request",
@@ -2716,7 +2716,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 47,
+      "totalLines": 55,
       "hasStructuralAnalysis": true
     },
     "tsconfig.json": {

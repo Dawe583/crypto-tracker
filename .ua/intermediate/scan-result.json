@@ -1,6 +1,5 @@
 {
-  "scriptCompleted": true,
-  "contentDigest": "1822c9b68bca8d39960b7e3dfb58c7a66903fc6ffe117bb56bf8147485281f20",
+  "contentDigest": "e36c7610f431ee927a8b326a8e9c7e1c18126d03813aa6e7b3f3020232667d07",
   "files": [
     {
       "path": ".agent/work-state.json",
@@ -29,7 +28,7 @@
     {
       "path": "api/[...path].js",
       "language": "javascript",
-      "sizeLines": 28,
+      "sizeLines": 29,
       "fileCategory": "code"
     },
     {
@@ -161,7 +160,7 @@
     {
       "path": "deck/app.js",
       "language": "javascript",
-      "sizeLines": 1196,
+      "sizeLines": 1204,
       "fileCategory": "code"
     },
     {
@@ -245,7 +244,7 @@
     {
       "path": "src/api.ts",
       "language": "typescript",
-      "sizeLines": 180,
+      "sizeLines": 182,
       "fileCategory": "code"
     },
     {
@@ -389,13 +388,13 @@
     {
       "path": "tests/deck.test.mjs",
       "language": "javascript",
-      "sizeLines": 159,
+      "sizeLines": 187,
       "fileCategory": "code"
     },
     {
       "path": "tests/hosting.test.mjs",
       "language": "javascript",
-      "sizeLines": 46,
+      "sizeLines": 54,
       "fileCategory": "code"
     },
     {
@@ -415,25 +414,170 @@
   "filteredByIgnore": 0,
   "estimatedComplexity": "moderate",
   "failures": [],
-  "stats": {
-    "filesScanned": 68,
-    "byCategory": {
-      "config": 26,
-      "docs": 9,
-      "code": 30,
-      "markup": 2,
-      "script": 1
-    },
-    "byLanguage": {
-      "json": 25,
-      "config": 1,
-      "markdown": 9,
-      "javascript": 5,
-      "html": 1,
-      "css": 1,
-      "shell": 1,
-      "service": 1,
-      "typescript": 24
-    }
-  }
+  "importMap": {
+    ".agent/work-state.json": [],
+    ".env.example": [],
+    "AGENTS.md": [],
+    "README.md": [],
+    "api/[...path].js": [],
+    "data/backtest-15m.json": [],
+    "data/backtest-1h.json": [],
+    "data/backtest-1m.json": [],
+    "data/backtest.json": [],
+    "data/strategies.json": [],
+    "data/stress-15m.json": [],
+    "data/sweep-atr_trend-15m.json": [],
+    "data/sweep-bollinger_reversion-15m.json": [],
+    "data/sweep-breakout-15m.json": [],
+    "data/sweep-donchian-15m.json": [],
+    "data/sweep-ema_cross-15m.json": [],
+    "data/sweep-engulfing-15m.json": [],
+    "data/sweep-macd_momentum-15m.json": [],
+    "data/sweep-obv_drift-15m.json": [],
+    "data/sweep-roc_momentum-15m.json": [],
+    "data/sweep-rsi_reversion-15m.json": [],
+    "data/sweep-stoch_cross-15m.json": [],
+    "data/sweep-vol_spike-15m.json": [],
+    "data/sweep-vwap_reversion-15m.json": [],
+    "data/sweep-zscore_reversion-15m.json": [],
+    "data/watchlist.json": [],
+    "deck/app.js": [],
+    "deck/index.html": [],
+    "deck/style.css": [],
+    "deploy/DEPLOY.md": [],
+    "deploy/install-service.sh": [],
+    "deploy/whale-tracker.service": [],
+    "docs/AUDIT_AND_TRADING_LANDSCAPE.md": [],
+    "docs/BACKTEST_RESULTS.md": [],
+    "docs/BROKER_ADAPTER.md": [],
+    "docs/LOOP_ENGINEERING.md": [],
+    "docs/RPI4_DEPLOYMENT.md": [],
+    "docs/SYSTEM_DESIGN.md": [],
+    "package.json": [],
+    "scripts/build-deck.mjs": [],
+    "src/api.ts": [
+      "src/config.ts",
+      "src/engine/ledger.ts",
+      "src/engine/risk.ts",
+      "src/engine/state.ts",
+      "src/logger.ts",
+      "src/store.ts",
+      "src/strategies/registry.ts",
+      "src/wallets.ts"
+    ],
+    "src/config.ts": [],
+    "src/engine/backtest.ts": [
+      "src/config.ts",
+      "src/engine/market.ts",
+      "src/engine/portfolio.ts",
+      "src/engine/types.ts",
+      "src/strategies/registry.ts"
+    ],
+    "src/engine/decisions.ts": [
+      "src/engine/types.ts",
+      "src/logger.ts"
+    ],
+    "src/engine/indicators.ts": [
+      "src/engine/types.ts"
+    ],
+    "src/engine/ledger.ts": [
+      "src/logger.ts"
+    ],
+    "src/engine/loop.ts": [
+      "src/config.ts",
+      "src/engine/ledger.ts",
+      "src/engine/market.ts",
+      "src/engine/portfolio.ts",
+      "src/engine/risk.ts",
+      "src/engine/state.ts",
+      "src/engine/types.ts",
+      "src/logger.ts",
+      "src/store.ts",
+      "src/strategies/registry.ts"
+    ],
+    "src/engine/market.ts": [
+      "src/engine/types.ts",
+      "src/logger.ts"
+    ],
+    "src/engine/portfolio.ts": [
+      "src/engine/types.ts"
+    ],
+    "src/engine/risk.ts": [
+      "src/engine/types.ts"
+    ],
+    "src/engine/state.ts": [
+      "src/engine/types.ts"
+    ],
+    "src/engine/stress.ts": [
+      "src/config.ts",
+      "src/engine/backtest.ts",
+      "src/engine/market.ts",
+      "src/strategies/registry.ts"
+    ],
+    "src/engine/sweep.ts": [
+      "src/config.ts",
+      "src/engine/backtest.ts",
+      "src/engine/market.ts",
+      "src/strategies/registry.ts"
+    ],
+    "src/engine/types.ts": [],
+    "src/filter.ts": [
+      "src/config.ts",
+      "src/logger.ts"
+    ],
+    "src/gold_rwa.ts": [
+      "src/config.ts",
+      "src/logger.ts",
+      "src/notifier.ts",
+      "src/store.ts"
+    ],
+    "src/index.ts": [
+      "src/api.ts",
+      "src/config.ts",
+      "src/engine/loop.ts",
+      "src/gold_rwa.ts",
+      "src/listener.ts",
+      "src/logger.ts"
+    ],
+    "src/listener.ts": [
+      "src/config.ts",
+      "src/filter.ts",
+      "src/logger.ts",
+      "src/notifier.ts",
+      "src/wallets.ts"
+    ],
+    "src/logger.ts": [],
+    "src/notifier.ts": [
+      "src/config.ts",
+      "src/filter.ts",
+      "src/logger.ts",
+      "src/store.ts"
+    ],
+    "src/store.ts": [
+      "src/gold_rwa.ts",
+      "src/notifier.ts"
+    ],
+    "src/strategies/library.ts": [
+      "src/engine/indicators.ts",
+      "src/engine/types.ts"
+    ],
+    "src/strategies/registry.ts": [
+      "src/engine/types.ts",
+      "src/logger.ts",
+      "src/strategies/library.ts"
+    ],
+    "src/wallets.ts": [
+      "src/logger.ts"
+    ],
+    "tests/deck.test.mjs": [],
+    "tests/hosting.test.mjs": [
+      "api/[...path].js"
+    ],
+    "tsconfig.json": [],
+    "vercel.json": []
+  },
+  "name": "crypto-tracker",
+  "description": "No description available",
+  "languages": [],
+  "frameworks": []
 }
