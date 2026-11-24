@@ -984,8 +984,9 @@ function drawPricer(now) {
   const p0 = cd[cd.length - 1].c;
   const rets = cd.slice(-60).map((c, i, a) => (i ? (c.c - a[i - 1].c) / a[i - 1].c : 0)).slice(1);
   const vol = Math.sqrt(rets.reduce((a, r) => a + r * r, 0) / rets.length) || .001;
-  if (!mcPaths.length || (!isStill() && now - (mcPaths.t || 0) > 5000)) {
-    mcPaths.length = 0; mcPaths.t = now;
+  const inputKey = `${STATE.sym}:${p0}:${vol}`;
+  if (!mcPaths.length || mcPaths.inputKey !== inputKey || (!isStill() && now - (mcPaths.t || 0) > 5000)) {
+    mcPaths.length = 0; mcPaths.t = now; mcPaths.inputKey = inputKey;
     for (let i = 0; i < 60; i++) {
       let v = p0; const path = [v];
       for (let s = 0; s < 40; s++) { v *= 1 + (Math.random() - .5) * 2 * vol * 1.4; path.push(v); }

@@ -101,3 +101,30 @@ test('agent focus toggles off and ignores names not present in the graph', () =>
   app.run('selectAgent("SPOTTER")');
   assert.equal(app.run('selectedAgent'), null);
 });
+
+test('paused simulation tracks new candle inputs but keeps identical inputs stable', () => {
+  const app = runtime();
+  app.context.devicePixelRatio = 1;
+  app.elements.set('pricer', { clientWidth: 400, clientHeight: 150, getContext: () => new Proxy({}, { get: () => () => {} }) });
+  app.run('motionPaused = true; STATE.candles.BTCUSDT = [{ c: 100 }, { c: 101 }]; drawPricer(0)');
+  const paths = app.run('JSON.stringify(mcPaths)');
+  app.run('drawPricer(2000)');
+  assert.equal(app.run('JSON.stringify(mcPaths)'), paths);
+  app.run('STATE.candles.BTCUSDT.push({ c: 103 }); drawPricer(3000)');
+  assert.equal(app.run('mcPaths[0][0]'), 103);
+});
+
+test('successful stop acknowledgement stays disabled while snapshots still say running', async () => {
+  const app = runtime(async () => ({ ok: true, json: async () => ({ killed: true }) }));
+  app.context.confirm = () => true;
+  app.run('STATE.snap = { killed: false }; refresh = async () => {};');
+  await app.elements.get('kill').onclick();
+  assert.equal(app.elements.get('kill').disabled, true);
+  assert.equal(app.elements.get('kill').textContent, 'Engine stopped');
+});
+
+test('market denominations follow the configured symbol suffix', () => {
+  const app = runtime();
+  assert.equal(app.run('marketQuote("BTCUSD")'), 'USD');
+  assert.equal(app.run('marketQuote("ETHUSDT")'), 'USDT');
+});
