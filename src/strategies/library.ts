@@ -1,7 +1,7 @@
-// Strategy library: 12 pure evaluators, each (ctx) -> TradeIntent[].
+// Strategy library: 19 pure evaluators, each (ctx) -> TradeIntent[].
 // Entries are typed narrow calls; sizing/risk/exits live in the engine.
 import type { Strategy } from '../engine/types.js';
-import { closes, vols, sma, ema, rsi, atr, macdHist, bollinger, zscore, pctChange } from '../engine/indicators.js';
+import { closes, highs, lows, vols, sma, ema, rsi, atr, macdHist, bollinger, zscore, pctChange } from '../engine/indicators.js';
 
 const buy = (strategy: string, symbol: string, confidence: number, reason: string, extra = {}): any =>
   ({ strategy, symbol, side: 'buy', confidence, reason, ...extra });
@@ -187,6 +187,132 @@ export const LIBRARY: Strategy[] = [
       if (dev <= -ctx.params.minSpreadPct && !has)
         return [buy('gold_spread', ctx.symbol, 0.6, `DEX discount ${dev.toFixed(2)}% vs spot`, { sizeUsd: ctx.params.sizeUsd, stopLossPct: ctx.params.stopLossPct, takeProfitPct: ctx.params.takeProfitPct, maxHoldMin: ctx.params.maxHoldMin })];
       if (dev >= -0.2 && has) return [sell('gold_spread', ctx.symbol, 0.6, `spread normalized ${dev.toFixed(2)}%`)];
+      return [];
+    },
+  },
+  {
+    name: 'donchian',
+    description: 'N-bar channel breakout, exit on midline cross',
+    defaults: { n: 30, sizeUsd: 250, stopLossPct: 4, takeProfitPct: 8, maxHoldMin: 720 },
+    evaluate(ctx) {
+      const hs = highs(ctx.candles), ls = lows(ctx.candles), n = ctx.params.n;
+      if (hs.length < n + 2) return [];
+      const hi = Math.max(...hs.slice(-n - 1, -1)), lo = Math.min(...ls.slice(-n - 1, -1));
+      const mid = (hi + lo) / 2, c = ctx.candles[ctx.candles.length - 1].c;
+      const has = ctx.positions.some((p) => p.strategy === 'donchian' && p.symbol === ctx.symbol);
+      if (c > hi && !has)
+        return [buy('donchian', ctx.symbol, 0.65, `close above ${n}bar channel ${hi.toFixed(2)}`, { sizeUsd: ctx.params.sizeUsd, stopLossPct: ctx.params.stopLossPct, takeProfitPct: ctx.params.takeProfitPct, maxHoldMin: ctx.params.maxHoldMin })];
+      if (c < mid && has) return [sell('donchian', ctx.symbol, 0.6, 'midline cross')];
+      return [];
+    },
+  },
+  {
+    name: 'vwap_reversion',
+    description: 'Fade stretch below rolling VWAP, exit at VWAP',
+    defaults: { n: 60, devPct: 1.2, sizeUsd: 250, stopLossPct: 4, takeProfitPct: 5, maxHoldMin: 480 },
+    evaluate(ctx) {
+      const cs = ctx.candles.slice(-ctx.params.n);
+      if (cs.length < 20) return [];
+      let pv = 0, v = 0;
+      for (const c of cs) { const tp = (c.h + c.l + c.c) / 3; pv += tp * c.v; v += c.v; }
+      if (!v) return [];
+      const vwap = pv / v, last = ctx.candles[ctx.candles.length - 1].c;
+      const dev = ((last - vwap) / vwap) * 100;
+      const has = ctx.positions.some((p) => p.strategy === 'vwap_reversion' && p.symbol === ctx.symbol);
+      if (dev <= -ctx.params.devPct && !has)
+        return [buy('vwap_reversion', ctx.symbol, 0.62, `${dev.toFixed(2)}% under VWAP`, { sizeUsd: ctx.params.sizeUsd, stopLossPct: ctx.params.stopLossPct, takeProfitPct: ctx.params.takeProfitPct, maxHoldMin: ctx.params.maxHoldMin })];
+      if (dev >= -0.1 && has) return [sell('vwap_reversion', ctx.symbol, 0.6, `reverted to VWAP (${dev.toFixed(2)}%)`)];
+      return [];
+    },
+  },
+  {
+    name: 'stoch_cross',
+    description: 'Stochastic %K/%D bullish cross below oversold zone',
+    defaults: { k: 14, d: 3, zone: 20, sizeUsd: 250, stopLossPct: 4, takeProfitPct: 6, maxHoldMin: 480 },
+    evaluate(ctx) {
+      const cs = ctx.candles, k = ctx.params.k, d = ctx.params.d;
+      if (cs.length < k + d + 2) return [];
+      const kline = (arr: typeof cs) => {
+        const w = arr.slice(-k);
+        const lo = Math.min(...w.map((c) => c.l)), hi = Math.max(...w.map((c) => c.h));
+        return ((arr[arr.length - 1].c - lo) / (hi - lo || 1e-9)) * 100;
+      };
+      const ks = Array.from({ length: d + 1 }, (_, i) => kline(cs.slice(0, cs.length - i)));
+      const kNow = ks[0], dNow = ks.slice(0, d).reduce((a, b) => a + b, 0) / d;
+      const kPrev = ks[1], dPrev = ks.slice(1, d + 1).reduce((a, b) => a + b, 0) / d;
+      const has = ctx.positions.some((p) => p.strategy === 'stoch_cross' && p.symbol === ctx.symbol);
+      if (kPrev <= dPrev && kNow > dNow && kNow < ctx.params.zone && !has)
+        return [buy('stoch_cross', ctx.symbol, 0.62, `stoch cross ${kNow.toFixed(0)} under ${ctx.params.zone}`, { sizeUsd: ctx.params.sizeUsd, stopLossPct: ctx.params.stopLossPct, takeProfitPct: ctx.params.takeProfitPct, maxHoldMin: ctx.params.maxHoldMin })];
+      if (kNow > 80 && has) return [sell('stoch_cross', ctx.symbol, 0.6, `stoch ${kNow.toFixed(0)} overbought`)];
+      return [];
+    },
+  },
+  {
+    name: 'keltner_squeeze',
+    description: 'Bollinger-inside-Keltner squeeze -> momentum expansion',
+    defaults: { n: 20, kcMult: 1.5, sizeUsd: 250, stopLossPct: 3.5, takeProfitPct: 7, maxHoldMin: 480 },
+    evaluate(ctx) {
+      const xs = closes(ctx.candles), n = ctx.params.n;
+      if (xs.length < n + 2) return [];
+      const b = bollinger(xs, n, 2);
+      const mid = ema(xs, n), a = atr(ctx.candles, 10);
+      const h = macdHist(xs);
+      if (!b || mid === null || a === null || h === null) return [];
+      const kc = ctx.params.kcMult * a;
+      const squeeze = (b.up - b.lo) < 2 * kc;            // bollinger inside keltner
+      const c = xs[xs.length - 1];
+      const has = ctx.positions.some((p) => p.strategy === 'keltner_squeeze' && p.symbol === ctx.symbol);
+      if (!squeeze && h > 0 && c > mid && !has)
+        return [buy('keltner_squeeze', ctx.symbol, 0.6, `squeeze fired, momentum up`, { sizeUsd: ctx.params.sizeUsd, stopLossPct: ctx.params.stopLossPct, takeProfitPct: ctx.params.takeProfitPct, maxHoldMin: ctx.params.maxHoldMin })];
+      if (h < 0 && has) return [sell('keltner_squeeze', ctx.symbol, 0.6, 'momentum faded')];
+      return [];
+    },
+  },
+  {
+    name: 'obv_drift',
+    description: 'On-balance-volume rising while price drifts down (accumulation)',
+    defaults: { n: 20, sizeUsd: 200, stopLossPct: 5, takeProfitPct: 8, maxHoldMin: 1440 },
+    evaluate(ctx) {
+      const cs = ctx.candles, n = ctx.params.n;
+      if (cs.length < n + 2) return [];
+      const w = cs.slice(-n - 1);
+      let obvSlope = 0;
+      for (let i = 1; i < w.length; i++) obvSlope += Math.sign(w[i].c - w[i - 1].c) * w[i].v;
+      const priceChg = ((w[w.length - 1].c - w[0].c) / w[0].c) * 100;
+      const has = ctx.positions.some((p) => p.strategy === 'obv_drift' && p.symbol === ctx.symbol);
+      if (obvSlope > 0 && priceChg < 0.2 && !has)
+        return [buy('obv_drift', ctx.symbol, 0.58, `OBV +, price ${priceChg.toFixed(2)}%`, { sizeUsd: ctx.params.sizeUsd, stopLossPct: ctx.params.stopLossPct, takeProfitPct: ctx.params.takeProfitPct, maxHoldMin: ctx.params.maxHoldMin })];
+      if (obvSlope < 0 && has) return [sell('obv_drift', ctx.symbol, 0.6, 'OBV turned down')];
+      return [];
+    },
+  },
+  {
+    name: 'roc_momentum',
+    description: 'Rate-of-change momentum burst entry, exit on ROC flip',
+    defaults: { n: 10, entry: 1.2, sizeUsd: 200, stopLossPct: 3, takeProfitPct: 6, maxHoldMin: 360 },
+    evaluate(ctx) {
+      const r = pctChange(closes(ctx.candles), ctx.params.n);
+      if (r === null) return [];
+      const has = ctx.positions.some((p) => p.strategy === 'roc_momentum' && p.symbol === ctx.symbol);
+      if (r > ctx.params.entry && !has)
+        return [buy('roc_momentum', ctx.symbol, 0.6, `ROC${ctx.params.n} +${r.toFixed(2)}%`, { sizeUsd: ctx.params.sizeUsd, stopLossPct: ctx.params.stopLossPct, takeProfitPct: ctx.params.takeProfitPct, maxHoldMin: ctx.params.maxHoldMin })];
+      if (r < 0 && has) return [sell('roc_momentum', ctx.symbol, 0.6, `ROC flipped ${r.toFixed(2)}%`)];
+      return [];
+    },
+  },
+  {
+    name: 'engulfing',
+    description: 'Bullish engulfing candle on elevated volume',
+    defaults: { volMult: 1.3, sizeUsd: 200, stopLossPct: 3, takeProfitPct: 5, maxHoldMin: 240 },
+    evaluate(ctx) {
+      const cs = ctx.candles;
+      if (cs.length < 22) return [];
+      const [p, l] = cs.slice(-2);
+      const vAvg = sma(vols(cs.slice(0, -1)), 20) ?? 0;
+      const engulf = p.c < p.o && l.c > l.o && l.c >= p.o && l.o <= p.c;
+      const has = ctx.positions.some((x) => x.strategy === 'engulfing' && x.symbol === ctx.symbol);
+      if (engulf && l.v > vAvg * ctx.params.volMult && !has)
+        return [buy('engulfing', ctx.symbol, 0.58, `bullish engulfing on ${(l.v / (vAvg || 1)).toFixed(1)}x vol`, { sizeUsd: ctx.params.sizeUsd, stopLossPct: ctx.params.stopLossPct, takeProfitPct: ctx.params.takeProfitPct, maxHoldMin: ctx.params.maxHoldMin })];
       return [];
     },
   },

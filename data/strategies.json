@@ -1,14 +1,69 @@
 {
-  "ema_cross":         { "enabled": true },
-  "rsi_reversion":     { "enabled": true },
-  "bollinger_reversion": { "enabled": true },
-  "breakout":          { "enabled": true },
-  "macd_momentum":     { "enabled": true },
-  "vol_spike":         { "enabled": true },
-  "atr_trend":         { "enabled": true },
-  "grid":              { "enabled": true },
-  "dca":               { "enabled": false, "params": { "intervalMin": 120 } },
-  "zscore_reversion":  { "enabled": true },
-  "whale_follow":      { "enabled": true },
-  "gold_spread":       { "enabled": true }
+  "ema_cross": {
+    "enabled": true
+  },
+  "rsi_reversion": {
+    "enabled": true
+  },
+  "bollinger_reversion": {
+    "enabled": true
+  },
+  "breakout": {
+    "enabled": true
+  },
+  "macd_momentum": {
+    "enabled": true
+  },
+  "vol_spike": {
+    "enabled": true
+  },
+  "atr_trend": {
+    "enabled": true
+  },
+  "grid": {
+    "enabled": true
+  },
+  "dca": {
+    "enabled": false,
+    "params": {
+      "intervalMin": 120
+    }
+  },
+  "zscore_reversion": {
+    "enabled": true
+  },
+  "whale_follow": {
+    "enabled": true
+  },
+  "gold_spread": {
+    "enabled": true
+  },
+  "donchian": {
+    "enabled": true,
+    "params": {}
+  },
+  "vwap_reversion": {
+    "enabled": true,
+    "params": {}
+  },
+  "stoch_cross": {
+    "enabled": true,
+    "params": {}
+  },
+  "keltner_squeeze": {
+    "enabled": true,
+    "params": {}
+  },
+  "obv_drift": {
+    "enabled": true,
+    "params": {}
+  },
+  "roc_momentum": {
+    "enabled": true,
+    "params": {}
+  },
+  "engulfing": {
+    "enabled": true,
+    "params": {}
+  }
 }
