@@ -2,7 +2,7 @@
 // paper fill -> ledger -> snapshot. One decision unit per cycle, hold when late.
 import { logger } from '../logger.js';
 import { config } from '../config.js';
-import { refreshSymbol, getFeed, getPrice } from './market.js';
+import { refreshSymbol, getFeed } from './market.js';
 import { PaperPortfolio } from './portfolio.js';
 import { RiskEngine } from './risk.js';
 import { ledgerAppend, ledgerResumeLatestCheckpoint, type LedgerRecord } from './ledger.js';
@@ -113,9 +113,14 @@ export async function runEngineCycle() {
   }
   const symbols = config.engine.symbols;
   const marketSymbols = [...new Set([...symbols, ...Array.from(portfolio.positions.values(), (p) => p.symbol)])];
-  await Promise.all(marketSymbols.map((s) => refreshSymbol(s, config.engine.interval)));
+  const feeds = new Map(await Promise.all(marketSymbols.map(async (symbol) =>
+    [symbol, await refreshSymbol(symbol, config.engine.interval)] as const)));
   if (engineState.halted) return;
-  const prices = new Map(marketSymbols.map((s) => [s, getPrice(s) ?? 0]).filter(([, p]) => (p as number) > 0) as [string, number][]);
+  const prices = new Map<string, number>();
+  for (const [symbol, feed] of feeds) {
+    if (feed) prices.set(symbol, feed.price);
+  }
+  if (!prices.size) return;
 
   checkExits(prices);
   const signals = monitorSignals();
@@ -123,7 +128,7 @@ export async function runEngineCycle() {
   for (const { strategy, params, enabled } of strategies) {
     if (!enabled) continue;
     for (const symbol of symbols) {
-      const feed = getFeed(symbol);
+      const feed = feeds.get(symbol);
       if (!feed || feed.candles.length < 30) continue;
       let intents: TradeIntent[] = [];
       try {
@@ -132,7 +137,7 @@ export async function runEngineCycle() {
       for (const i of intents) {
         const rec: DecisionRecord = { strategy: i.strategy, symbol, action: i.side, confidence: i.confidence, reason: i.reason, ts: Date.now() };
         if (i.side === 'sell') {
-          const fill = portfolio.close(i.strategy, symbol, prices.get(symbol) ?? feed.price, config.engine.feePct, i.reason);
+          const fill = portfolio.close(i.strategy, symbol, feed.price, config.engine.feePct, i.reason);
           if (fill) recordFill(fill);
           rec.vetoed = fill ? undefined : 'no position to close';
           append('decision', rec);
@@ -145,10 +150,12 @@ export async function runEngineCycle() {
           return total + (mark === p.entryPrice ? p.sizeUsd : p.qty * mark);
         }, 0);
         const baselineDay = risk.baselineDay;
-        const veto = risk.check(i, positions, portfolio.equity(prices), exposure);
+        const veto = positions.some((p) => !prices.has(p.symbol))
+          ? 'market price unavailable for an open position'
+          : risk.check(i, positions, portfolio.equity(prices), exposure);
         if (risk.baselineDay !== baselineDay) append('checkpoint', { checkpoint: checkpointState() });
         if (veto) { rec.vetoed = veto; append('decision', rec); append('risk', rec); engineState.decisions.unshift(rec); continue; }
-        const fill = portfolio.open(i, prices.get(symbol) ?? feed.price, config.engine.feePct);
+        const fill = portfolio.open(i, feed.price, config.engine.feePct);
         if (fill) {
           recordFill(fill);
           append('decision', rec);
@@ -159,17 +166,29 @@ export async function runEngineCycle() {
     }
   }
 
-  const eq = portfolio.equity(prices);
-  equityCurve.push({ ts: Date.now(), equityUsd: eq });
-  if (equityCurve.length > 2000) equityCurve.shift();
-  append('equity', { equityUsd: eq, cashUsd: portfolio.cashUsd, unrealizedUsd: portfolio.unrealized(prices) });
+  const positions = [...portfolio.positions.values()];
+  const marks = new Map(prices);
+  for (const p of positions) {
+    const cachedPrice = getFeed(p.symbol)?.price;
+    if (!marks.has(p.symbol) && cachedPrice !== undefined) marks.set(p.symbol, cachedPrice);
+  }
+  const eq = portfolio.equity(marks);
+  const unrealizedUsd = portfolio.unrealized(marks);
+  if (positions.every((p) => prices.has(p.symbol))) {
+    equityCurve.push({ ts: Date.now(), equityUsd: eq });
+    if (equityCurve.length > 2000) equityCurve.shift();
+    append('equity', { equityUsd: eq, cashUsd: portfolio.cashUsd, unrealizedUsd });
+  }
   engineState.snapshot = {
     equityUsd: eq,
     cashUsd: portfolio.cashUsd,
     realizedUsd: portfolio.realizedUsd,
-    unrealizedUsd: portfolio.unrealized(prices),
+    unrealizedUsd,
     feesUsd: portfolio.feesUsd,
-    positions: [...portfolio.positions.values()].map((p) => ({ ...p, markPrice: prices.get(p.symbol) ?? p.entryPrice, unrealizedUsd: p.qty * (prices.get(p.symbol) ?? p.entryPrice) - p.sizeUsd })),
+    positions: positions.map((p) => {
+      const markPrice = marks.get(p.symbol) ?? p.entryPrice;
+      return { ...p, markPrice, unrealizedUsd: p.qty * markPrice - p.sizeUsd };
+    }),
     stats: Object.fromEntries([...perStrategy.entries()]),
     equityCurve: equityCurve.slice(-500),
     killed: risk.killed,
@@ -182,7 +201,18 @@ export async function runEngineCycle() {
 export function startEngineLoop() {
   const enabled = strategies.filter((s) => s.enabled).map((s) => s.strategy.name);
   logger.info({ strategies: enabled, symbols: config.engine.symbols, interval: config.engine.interval }, 'trading engine starting');
-  const tick = () => runEngineCycle().catch((e) => logger.error({ err: String(e) }, 'engine cycle failed'));
+  let running = false;
+  const tick = async () => {
+    if (running) return;
+    running = true;
+    try {
+      await runEngineCycle();
+    } catch (e) {
+      logger.error({ err: String(e) }, 'engine cycle failed');
+    } finally {
+      running = false;
+    }
+  };
   tick();
   return setInterval(tick, config.engine.pollMs);
 }

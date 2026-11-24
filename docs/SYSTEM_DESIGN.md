@@ -85,6 +85,8 @@ Older fills lack the state needed for exact recovery. If the latest fill predate
 
 `GET /api/engine/snapshot` includes `halted` even before the first successful cycle. It is set on ledger recovery or append failure, separately from the `killed` switch.
 
+Each exchange request has a five-second timeout. Paper fills use only candles fetched in the current cycle; if no exchange refreshes any symbol, the snapshot and equity curve stay unchanged. During a partial outage, snapshot `prices` lists only refreshed symbols. Unavailable positions use their last fetched price (or entry price after restart) for display only. Missing prices on any held position pause new entries and equity recording until the portfolio can be fully marked; exits can still use a refreshed price.
+
 ## Trading deck (`/deck` on the API port)
 
 Self-contained dark dashboard (no build step, works offline on the Pi — plain HTML/JS/canvas):
