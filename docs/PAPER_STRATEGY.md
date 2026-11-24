@@ -19,6 +19,8 @@ Hummingbot Foundation and Jesse.Trade license notices: [Apache-2.0](HUMMINGBOT-L
 
 This is the only default strategy for **new paper entries**. Previously opened positions keep their existing stops and can still exit under their original strategies. The deployment, cadence, Supabase schema, credentials, and disabled hosted Stop control are unchanged. The cron can observe only periodic public marks; it does not send exchange orders. Historical ledger records are not rewritten; entry fees for old positions without an entry-fee field are not guessed.
 
+The MACD/Bollinger strategy requires a fixed-duration interval supported by a market feed. Calendar-month candles (`ENGINE_INTERVAL=1M`) can supply marks for existing protective exits but cannot generate strategy signals.
+
 ## Historical replay
 
 Data: checksum-verified [Binance spot archive](https://data.binance.vision/?prefix=data/spot/monthly/klines/) for July–September 2025. Each pair and time block starts with its own $10,000 paper wallet. Settings were not fitted to those blocks. The strategy sees only earlier bars, fills at the next bar's open, and checks exits against sampled opens. All rows assume 0.10% per side plus 3 bps adverse slippage; P&L includes fees. The full portfolios and live execution are not simulated.

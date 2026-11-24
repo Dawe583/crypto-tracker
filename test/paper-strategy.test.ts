@@ -40,6 +40,7 @@ test('only the sourced controller opens by default; it needs both Bollinger and 
 test('only fresh, contiguous, closed candles can produce a signal', () => {
   const feed = { candles: [...reversal, bar(120, 200)], price: 200, source: 'binance' as const, lastFetch: 120 * minute + 1000 };
   assert.deepEqual(closedStrategyBars(feed, '1m', 120), reversal);
+  assert.deepEqual(closedStrategyBars(feed, '1M', 120), []);
   assert.deepEqual(closedStrategyBars({ ...feed, candles: feed.candles.filter((c) => c.t !== 5 * minute) }, '1m', 120), []);
   assert.deepEqual(closedStrategyBars({ ...feed, lastFetch: 122 * minute }, '1m', 120), []);
 });
