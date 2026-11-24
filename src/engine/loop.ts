@@ -7,8 +7,7 @@ import { PaperPortfolio } from './portfolio.js';
 import { RiskEngine } from './risk.js';
 import { ledgerAppend, ledgerResumeLatestCheckpoint, type LedgerRecord } from './ledger.js';
 import { loadStrategies } from '../strategies/registry.js';
-import { listSignals } from '../store.js';
-import { getGoldSnapshot } from '../store.js';
+import { getGoldSnapshot, listSignals } from '../store.js';
 import { engineState } from './state.js';
 import type { DecisionRecord, Fill, StrategyContext, TradeIntent } from './types.js';
 
@@ -191,8 +190,7 @@ export function createPaperEngine(options: {
 function monitorSignals() {
   const whales = listSignals('whale_buy', 50).filter((s) => Date.now() - Date.parse(s.createdAt) < 4 * 3600_000);
   const gold = getGoldSnapshot();
-  const goldSpread: Record<string, number> = {};
-  for (const q of gold.quotes) goldSpread[`${q.symbol}USD`] = q.deviationPct;
+  const goldSpread = Object.fromEntries(gold.quotes.map((q) => [`${q.symbol}USD`, q.deviationPct]));
   return { whaleBuys: whales.length, newPools: listSignals('new_pool', 50).length, goldSpread };
 }
 
