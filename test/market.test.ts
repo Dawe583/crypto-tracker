@@ -5,7 +5,7 @@ import { fetchSymbol } from '../src/engine/market.js';
 test('market data skips stale and future candles and accepts a recent fallback', async (t) => {
   const now = Date.now();
   const old = now - 10 * 60_000;
-  const recent = Math.floor(now / 60_000) * 60 - 60;
+  const recent = Math.floor((now - 60_000) / 1000);
   let fallbackAt = recent;
   t.mock.method(globalThis, 'fetch', async (url: string) => {
     if (url.includes('binance')) return Response.json([[old, 99, 99, 99, 99, 1]]);
