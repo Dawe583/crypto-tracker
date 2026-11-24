@@ -16,7 +16,7 @@ const erc20 = parseAbi([
 export function makeClient(chain: ChainKey): PublicClient {
   const c = CHAINS[chain];
   const transport = c.wsRpc ? webSocket(c.wsRpc) : http(c.httpRpc);
-  return createPublicClient({ chain: chain === 'base' ? base : mainnet, transport });
+  return createPublicClient({ chain: chain === 'base' ? base : mainnet, transport }) as PublicClient;
 }
 
 export interface MarketData {

@@ -9,6 +9,7 @@
   },
   "scripts": {
     "start": "tsx src/index.ts",
+    "test": "tsx --test test/*.test.ts",
     "listen": "tsx src/listener.ts",
     "gold": "tsx src/gold_rwa.ts",
     "typecheck": "tsc --noEmit",
@@ -23,5 +24,8 @@
     "tsx": "^4.19.0",
     "typescript": "^5.6.0",
     "@types/node": "^22.7.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
   }
 }
