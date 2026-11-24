@@ -290,6 +290,19 @@ test('snapshot API reports a ledger recovery halt before the first cycle', (t) =
   `);
 });
 
+test('snapshot API reports immediate stop state without losing the independent halt flag', (t) => {
+  checkSnapshotApi(fixture(t), `
+    await runEngineCycle();
+    const healthy = await snapshot();
+    assert.equal(healthy.halted, false);
+    assert.equal(healthy.killed, false);
+    mkdirSync('./data/KILL');
+    assert.deepEqual(await snapshot(), { ...healthy, killed: true });
+    engineState.halted = true;
+    assert.deepEqual(await snapshot(), { ...healthy, killed: true, halted: true });
+  `);
+});
+
 test('snapshot API reports a ledger append halt alongside the last good snapshot', (t) => {
   checkSnapshotApi(fixture(t), `
     await runEngineCycle();

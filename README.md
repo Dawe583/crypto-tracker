@@ -1,5 +1,15 @@
 # Base & EVM Whale Tracker
 
+### Hosted crypto deck
+
+Vercel builds the zero-build HUD with `npm run build:deck`, serves it at `/` and `/deck`, and proxies the deck's allowlisted API routes through a small serverless function. The persistent paper engine and on-chain watchers still run separately; they are not started inside Vercel functions.
+
+Set `ENGINE_API_ORIGIN` in the existing Vercel project's environment settings to your already-deployed HTTPS engine origin, then redeploy each Preview/Production environment that needs it. The proxy forwards only the browser's API bearer token and never adds server credentials or follows upstream redirects. Hosted access is read-only: `/api/engine/kill` is not proxied, even with a token. Keep the engine's `API_TOKEN` protection enabled; no Pi or private engine is exposed automatically.
+
+If the origin is unset or unreachable, **the hosted page uses clearly labeled, generated DEMO data**. Its banner and status identify simulation, its stop control is disabled, and it retries the real engine every 12 seconds. Authentication errors are not hidden by switching to demo. Returning to live data clears generated candles/portfolio state first. Local `npm start` retains the real-engine-only behavior.
+
+Validate hosting with `npm run test:hosting` and `npm run build:deck`; deck behavior with `npm run test:deck`.
+
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![viem](https://img.shields.io/badge/viem-2.x-000000)](https://viem.sh/)

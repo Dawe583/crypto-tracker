@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run build:deck",
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/api/engine/:endpoint*", "destination": "/api/read?__deck_path=engine/:endpoint*" },
+    { "source": "/api/whales", "destination": "/api/read?__deck_path=whales" },
+    { "source": "/api/pools", "destination": "/api/read?__deck_path=pools" },
+    { "source": "/api/gold", "destination": "/api/read?__deck_path=gold" },
+    { "source": "/", "destination": "/deck/index.html" },
+    { "source": "/deck", "destination": "/deck/index.html" },
+    { "source": "/deck/", "destination": "/deck/index.html" }
+  ]
+}
