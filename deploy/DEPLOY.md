@@ -76,3 +76,34 @@ cd ~/crypto-tracker && git pull && npm i && sudo systemctl restart whale-tracker
 - `npm run build` writes `dist/`, but the service does not need it.
 - `data/state.json` and `data/gold_state.json` are runtime files. Back them up if you want to keep dedupe and gold-level state.
 - Keep `.env` at `chmod 600`. It holds bot tokens and API keys.
+
+# Vercel paper engine and deck
+
+Use the existing Vercel project and a dedicated Supabase project. The hosted
+runner uses public exchange candles and simulated fills only. It does not
+start the chain listener or Gold RWA monitor, or offer a remote stop action.
+
+1. Apply the checked-in Supabase migration using the authorized database
+   release workflow (or `supabase db push` against the linked project).
+2. In **Production** on Vercel, set the server-only variables:
+
+   | Variable | Purpose |
+   | --- | --- |
+   | `SUPABASE_URL` | Supabase project HTTPS origin |
+   | `SUPABASE_SECRET_KEY` | Supabase server-side `sb_secret_…` key |
+   | `CRON_SECRET` | Random secret used only by the Vercel cron job |
+   | `API_TOKEN` | Different random token given to authorized deck viewers |
+
+   Leave `ENGINE_API_ORIGIN` unset for the same-deployment reads. Do not
+   copy production credentials into Preview or into the static deck.
+3. Deploy through the project's release workflow. The one-minute schedule
+   requires Vercel Pro or Enterprise. Confirm a successful cron invocation,
+   then open the deck, enter the read token, and confirm that the snapshot
+   has a recent `cycleAt` and the page is not labeled demo.
+
+Postgres commits the position and risk checkpoint, deck snapshot and ledger
+batch together; an overlapping job cannot append to an old head. Check the
+Vercel function logs if the snapshot stops updating. The deck falls back
+to labeled demo data when there is no first cycle or the last cycle is more
+than five minutes old. Monitor Supabase database growth: the paper ledger
+is append-only and is not automatically pruned.

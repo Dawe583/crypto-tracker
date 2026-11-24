@@ -2,6 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "npm run build:deck",
   "outputDirectory": "public",
+  "functions": {
+    "api/read.js": { "includeFiles": "data/strategies.json" },
+    "api/cron/paper-engine.ts": { "includeFiles": "data/strategies.json", "maxDuration": 60 }
+  },
+  "crons": [{ "path": "/api/cron/paper-engine", "schedule": "* * * * *" }],
   "rewrites": [
     { "source": "/api/engine/:endpoint*", "destination": "/api/read?__deck_path=engine/:endpoint*" },
     { "source": "/api/whales", "destination": "/api/read?__deck_path=whales" },

@@ -1,5 +1,4 @@
-const paths = new Set(['/api/engine/snapshot', '/api/engine/strategies', '/api/engine/decisions',
-  '/api/engine/candles', '/api/whales', '/api/pools', '/api/gold']);
+import { hostedRead, hostedReadPaths } from '../src/engine/hosted-api.js';
 
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store');
@@ -7,10 +6,13 @@ export default async function handler(req, res) {
   const routedPath = req.query?.__deck_path ?? requested.searchParams.get('__deck_path');
   if (typeof routedPath === 'string') requested.pathname = `/api/${routedPath}`;
   requested.searchParams.delete('__deck_path');
-  if (!paths.has(requested.pathname)) return res.status(404).json({ error: 'Not found' });
-  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
   const authorization = typeof req.headers.authorization === 'string' ? req.headers.authorization : '';
-  if (!process.env.ENGINE_API_ORIGIN) return res.status(503).json({ error: 'Engine origin is not configured' });
+  if (!process.env.ENGINE_API_ORIGIN) {
+    const { status, body } = await hostedRead(requested, req.method, authorization);
+    return res.status(status).json(body);
+  }
+  if (!hostedReadPaths.has(requested.pathname)) return res.status(404).json({ error: 'Not found' });
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
   try {
     const origin = new URL(process.env.ENGINE_API_ORIGIN);
     if (origin.protocol !== 'https:' || origin.username || origin.password || origin.pathname !== '/' || origin.search || origin.hash) {
