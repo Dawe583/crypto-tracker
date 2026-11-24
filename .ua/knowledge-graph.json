@@ -3230,50 +3230,6 @@
       "complexity": "moderate"
     },
     {
-      "id": "file:test/hosted-paper.test.ts",
-      "type": "file",
-      "name": "hosted-paper.test.ts",
-      "filePath": "test/hosted-paper.test.ts",
-      "summary": "Verifies restart continuity, duplicate-cycle rejection, current-market marks, and authenticated read and cron behavior.",
-      "tags": [
-        "code",
-        "paper-engine"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:test/hosted-paper.test.ts:memoryStore",
-      "type": "function",
-      "name": "memoryStore",
-      "filePath": "test/hosted-paper.test.ts",
-      "lineRange": [
-        12,
-        32
-      ],
-      "summary": "Defines memoryStore in hosted-paper.test.ts.",
-      "tags": [
-        "paper-engine",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:test/hosted-paper.test.ts:refreshAt",
-      "type": "function",
-      "name": "refreshAt",
-      "filePath": "test/hosted-paper.test.ts",
-      "lineRange": [
-        34,
-        37
-      ],
-      "summary": "Defines refreshAt in hosted-paper.test.ts.",
-      "tags": [
-        "paper-engine",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
       "id": "file:test/market.test.ts",
       "type": "file",
       "name": "market.test.ts",
@@ -3904,6 +3860,50 @@
         "paper-engine"
       ],
       "complexity": "moderate"
+    },
+    {
+      "id": "file:test/hosted-paper.test.ts",
+      "type": "file",
+      "name": "hosted-paper.test.ts",
+      "filePath": "test/hosted-paper.test.ts",
+      "summary": "Verifies restart continuity, duplicate-cycle rejection, current-market marks, and authenticated read and cron behavior.",
+      "tags": [
+        "code",
+        "paper-engine"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:test/hosted-paper.test.ts:memoryStore",
+      "type": "function",
+      "name": "memoryStore",
+      "filePath": "test/hosted-paper.test.ts",
+      "lineRange": [
+        13,
+        33
+      ],
+      "summary": "Defines memoryStore in hosted-paper.test.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:test/hosted-paper.test.ts:refreshAt",
+      "type": "function",
+      "name": "refreshAt",
+      "filePath": "test/hosted-paper.test.ts",
+      "lineRange": [
+        35,
+        38
+      ],
+      "summary": "Defines refreshAt in hosted-paper.test.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
     }
   ],
   "edges": [
@@ -6358,20 +6358,6 @@
       "direction": "forward"
     },
     {
-      "source": "file:test/hosted-paper.test.ts",
-      "target": "function:test/hosted-paper.test.ts:memoryStore",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:test/hosted-paper.test.ts",
-      "target": "function:test/hosted-paper.test.ts:refreshAt",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
       "source": "file:tests/hosting.test.mjs",
       "target": "function:tests/hosting.test.mjs:request",
       "type": "contains",
@@ -7200,86 +7186,6 @@
       "recoveredFromImportMap": true
     },
     {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/ledger.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/portfolio.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/risk.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/state.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/store.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
-    },
-    {
       "source": "file:src/engine/market.ts",
       "target": "file:src/engine/types.ts",
       "type": "imports",
@@ -7648,6 +7554,124 @@
       "recoveredFromImportMap": true
     },
     {
+      "source": "file:test/market.test.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:tests/hosting.test.mjs",
+      "target": "file:api/read.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/hosted-paper.test.ts",
+      "target": "function:test/hosted-paper.test.ts:memoryStore",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:test/hosted-paper.test.ts",
+      "target": "function:test/hosted-paper.test.ts:refreshAt",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/ledger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/portfolio.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/risk.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/state.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/store.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/hosted-paper.test.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
       "source": "file:test/hosted-paper.test.ts",
       "target": "file:src/engine/hosted-api.ts",
       "type": "imports",
@@ -7678,22 +7702,6 @@
       "direction": "forward",
       "weight": 0.7,
       "recoveredFromImportMap": true
-    },
-    {
-      "source": "file:test/market.test.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
-    },
-    {
-      "source": "file:tests/hosting.test.mjs",
-      "target": "file:api/read.js",
-      "type": "imports",
-      "direction": "forward",
-      "weight": 0.7,
-      "recoveredFromImportMap": true
     }
   ],
   "version": "1.0.0",
@@ -7713,8 +7721,8 @@
     ],
     "frameworks": [],
     "description": "On-chain Base/Ethereum monitoring and a risk-gated paper-trading engine with an interactive animated live neural HUD deck.",
-    "analyzedAt": "2026-11-24T22:19:30.047Z",
-    "gitCommitHash": "ee0d522bd4d26753f2e10dbb4aa1e4419a4394ff"
+    "analyzedAt": "2026-11-24T22:23:16.842Z",
+    "gitCommitHash": "137471f87212a04cc234c5ffbe1492440d8e06ed"
   },
   "layers": [
     {

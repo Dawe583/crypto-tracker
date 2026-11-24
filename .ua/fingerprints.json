@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "ee0d522bd4d26753f2e10dbb4aa1e4419a4394ff",
-  "generatedAt": "2026-11-24T22:19:30.366Z",
+  "gitCommitHash": "137471f87212a04cc234c5ffbe1492440d8e06ed",
+  "generatedAt": "2026-11-24T22:23:16.980Z",
   "files": {
     ".agent/work-state.json": {
       "filePath": ".agent/work-state.json",
@@ -1398,7 +1398,7 @@
     },
     "src/engine/loop.ts": {
       "filePath": "src/engine/loop.ts",
-      "contentHash": "344d039a5d287bbbf698b606f18a5c8aaf034dea1671adeaa669cca15d2c48a0",
+      "contentHash": "493e4b438fd60480695d1367fc7ff8521bc84fa3349fa8878a8bcaa97e53bfda",
       "functions": [
         {
           "name": "createPaperEngine",
@@ -1406,7 +1406,7 @@
             "options"
           ],
           "exported": true,
-          "lineCount": 169
+          "lineCount": 173
         },
         {
           "name": "monitorSignals",
@@ -1503,7 +1503,7 @@
         "runEngineCycle",
         "startEngineLoop"
       ],
-      "totalLines": 240,
+      "totalLines": 244,
       "hasStructuralAnalysis": true
     },
     "src/engine/market.ts": {
@@ -3284,7 +3284,7 @@
     },
     "test/hosted-paper.test.ts": {
       "filePath": "test/hosted-paper.test.ts",
-      "contentHash": "bd6381fa8b93148e2dea7439b834be873e27607c3117a4229d2d418e95d0c693",
+      "contentHash": "e531cc6a86bd9a9a5bcf18db5438a38555c52e31e21772a962e5b3c75cb38071",
       "functions": [
         {
           "name": "memoryStore",
@@ -3322,6 +3322,12 @@
           ]
         },
         {
+          "source": "../src/config.js",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
           "source": "../src/engine/hosted-api.js",
           "specifiers": [
             "hostedCron",
@@ -3348,7 +3354,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 120,
+      "totalLines": 134,
       "hasStructuralAnalysis": true
     },
     "test/market.test.ts": {
