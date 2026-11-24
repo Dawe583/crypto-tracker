@@ -1,4 +1,6 @@
+import strategyConfig from '../../data/strategies.json' with { type: 'json' };
 import { config } from '../config.js';
+import { loadStrategies } from '../strategies/registry.js';
 import { hashLedgerPayload, type LedgerRecord } from './ledger.js';
 import { createPaperEngine, type EngineCheckpoint } from './loop.js';
 import { fetchSymbol, type Feed } from './market.js';
@@ -22,6 +24,8 @@ type Commit = {
   p_deck: DeckState & { candles: Record<string, Feed> };
   p_records: PersistedRecord[];
 };
+
+export const hostedStrategies = () => loadStrategies(strategyConfig);
 
 export function createHostedStore(env: NodeJS.ProcessEnv = process.env) {
   const url = env.SUPABASE_URL;
@@ -57,7 +61,7 @@ export async function runHostedCycle(
   store: Pick<NonNullable<ReturnType<typeof createHostedStore>>, 'load' | 'commit'>,
   slot = Math.floor(Date.now() / 60_000),
   refresh = fetchSymbol,
-  strategies?: Parameters<typeof createPaperEngine>[0]['strategies'],
+  strategies = hostedStrategies(),
 ) {
   const head = await store.load();
   if (head.slot >= slot) return false;

@@ -1,7 +1,6 @@
 import { timingSafeEqual } from 'node:crypto';
 import { logger } from '../logger.js';
-import { loadStrategies } from '../strategies/registry.js';
-import { createHostedStore, hostedEngineEnabled, runHostedCycle } from './hosted.js';
+import { createHostedStore, hostedEngineEnabled, hostedStrategies, runHostedCycle } from './hosted.js';
 import type { Feed } from './market.js';
 import type { EngineSnapshot } from './state.js';
 
@@ -39,7 +38,7 @@ export async function hostedRead(url: URL, method?: string, authorization?: stri
         return reply(200, { ...snapshot, halted: false });
       }
       case '/api/engine/strategies':
-        return reply(200, loadStrategies().map(({ strategy, params, enabled }) =>
+        return reply(200, hostedStrategies().map(({ strategy, params, enabled }) =>
           ({ name: strategy.name, description: strategy.description, params, enabled })));
       case '/api/engine/decisions': {
         const n = Number(url.searchParams.get('limit') ?? 50);

@@ -3,8 +3,7 @@
   "buildCommand": "npm run build:deck",
   "outputDirectory": "public",
   "functions": {
-    "api/read.js": { "includeFiles": "data/strategies.json" },
-    "api/cron/paper-engine.ts": { "includeFiles": "data/strategies.json", "maxDuration": 60 }
+    "api/cron/paper-engine.ts": { "maxDuration": 60 }
   },
   "crons": [{ "path": "/api/cron/paper-engine", "schedule": "* * * * *" }],
   "rewrites": [
