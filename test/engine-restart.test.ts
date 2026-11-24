@@ -24,16 +24,20 @@ function fixture(t: TestContext) {
 function runProcess(root: string, ts: number, prices: Record<string, number>, symbols = 'BTCUSDT,ETHUSDT', env?: Record<string, string>,
   script = 'await runEngineCycle(); console.log(JSON.stringify(engineState.snapshot));') {
   return spawnSync(process.execPath, ['--import', 'tsx', '--input-type=module', '--eval', `
+    let now = ${ts};
     globalThis.Date = new Proxy(Date, {
-      construct: (RealDate, args) => new RealDate(...(args.length ? args : [${ts}])),
+      construct: (RealDate, args) => new RealDate(...(args.length ? args : [now])),
     });
-    Date.now = () => ${ts};
+    Date.now = () => now;
     const prices = ${JSON.stringify(prices)};
     const realFetch = globalThis.fetch;
     globalThis.fetch = async (url) => {
       const price = prices[new URL(url).searchParams.get('symbol')];
-      const candles = Array.from({ length: 40 }, (_, i) =>
-        i === 39 ? [i * 60_000, 100, price + 1, 99, price, 1000] : [i * 60_000, 100, 101, 99, 100, 100]);
+      if (price === undefined) return new Response(null, { status: 503 });
+      const candles = Array.from({ length: 40 }, (_, i) => {
+        const time = now - (39 - i) * 60_000;
+        return i === 39 ? [time, 100, price + 1, 99, price, 1000] : [time, 100, 101, 99, 100, 100];
+      });
       return Response.json(candles);
     };
     const { runEngineCycle } = await import('./src/engine/loop.ts');
@@ -44,7 +48,7 @@ function runProcess(root: string, ts: number, prices: Record<string, number>, sy
     encoding: 'utf8',
     env: {
       ...process.env, LOG_LEVEL: 'silent', TZ: 'UTC',
-      ENGINE_SYMBOLS: symbols, ENGINE_START_USD: '10000', ENGINE_FEE_PCT: '0.1',
+      ENGINE_SYMBOLS: symbols, ENGINE_INTERVAL: '1m', ENGINE_START_USD: '10000', ENGINE_FEE_PCT: '0.1',
       ENGINE_MAX_POSITION_USD: '500', ENGINE_MAX_TOTAL_USD: '1000', ENGINE_MAX_OPEN_POSITIONS: '8',
       ENGINE_MIN_CONFIDENCE: '0.5', ENGINE_DAILY_LOSS_PCT: '5', ENGINE_COOLDOWN_MIN: '60',
       ...env,
@@ -60,6 +64,104 @@ function runCycle(...args: Parameters<typeof runProcess>): EngineSnapshot {
 
 const today = Date.UTC(2026, 10, 24, 23, 58);
 const tomorrow = today + 3 * 60_000;
+
+test('does not fill a max-hold exit from cached candles during a total outage', (t) => {
+  const result = runProcess(fixture(t), today, { BTCUSDT: 101.12 }, 'BTCUSDT', {}, `
+    import assert from 'node:assert/strict';
+    const { getFeed } = await import('./src/engine/market.ts');
+    await runEngineCycle();
+    const original = engineState.snapshot;
+    assert.equal(original.positions.length, 1);
+
+    delete prices.BTCUSDT;
+    now += 13 * 3600_000;
+    await runEngineCycle();
+    assert.deepEqual(engineState.snapshot, original);
+    assert.equal(getFeed('BTCUSDT').price, 101.12);
+    assert.equal(engineState.halted, false);
+
+    prices.BTCUSDT = 100;
+    await runEngineCycle();
+    assert.equal(engineState.snapshot.positions.length, 0);
+    assert.equal(engineState.snapshot.stats.ema_cross.trades, 1);
+  `);
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test('does not open a new trade while a held symbol has no current quote', (t) => {
+  const result = runProcess(fixture(t), today, { BTCUSDT: 101.12, ETHUSDT: 100 }, undefined, {}, `
+    import assert from 'node:assert/strict';
+    await runEngineCycle();
+    delete prices.BTCUSDT;
+    prices.ETHUSDT = 110;
+    await runEngineCycle();
+    assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['BTCUSDT']);
+    assert.deepEqual(engineState.snapshot.prices, { BTCUSDT: 101.12, ETHUSDT: 110 });
+    assert.equal(engineState.snapshot.positions[0].markPrice, 101.12);
+    assert.equal(engineState.snapshot.equityCurve.length, 1);
+    assert.equal(engineState.decisions[0].vetoed, 'market price unavailable for an open position');
+
+    prices.BTCUSDT = 100;
+    await runEngineCycle();
+    assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['BTCUSDT', 'ETHUSDT']);
+
+    delete prices.BTCUSDT;
+    prices.ETHUSDT = 120;
+    await runEngineCycle();
+    assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['BTCUSDT']);
+    assert.equal(engineState.snapshot.stats.ema_cross.trades, 1);
+  `);
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test('does not open a trade from a cached entry signal when another symbol still refreshes', (t) => {
+  const result = runProcess(fixture(t), today, { BTCUSDT: 100, ETHUSDT: 110 }, undefined, {}, `
+    import assert from 'node:assert/strict';
+    import { writeFileSync, rmSync } from 'node:fs';
+    const { risk } = await import('./src/engine/loop.ts');
+    writeFileSync('./data/KILL', '');
+    await runEngineCycle();
+    assert.equal(engineState.snapshot.positions.length, 0);
+    assert.match(engineState.decisions[0].vetoed, /kill switch/);
+
+    rmSync('./data/KILL');
+    risk.killed = false;
+    delete prices.ETHUSDT;
+    await runEngineCycle();
+    assert.equal(engineState.snapshot.positions.length, 0);
+    assert.equal(engineState.decisions.length, 1);
+    assert.deepEqual(engineState.snapshot.prices, { BTCUSDT: 100, ETHUSDT: 110 });
+  `);
+  assert.equal(result.status, 0, result.stderr);
+});
+
+test('does not start another scheduled cycle while the first refresh is pending', (t) => {
+  const result = runProcess(fixture(t), today, { BTCUSDT: 100 }, 'BTCUSDT', {}, `
+    import assert from 'node:assert/strict';
+    const { startEngineLoop } = await import('./src/engine/loop.ts');
+    let resolve;
+    const promise = new Promise((done) => { resolve = done; });
+    const fetchCandles = globalThis.fetch;
+    let requests = 0;
+    globalThis.fetch = async (...args) => {
+      requests++;
+      await promise;
+      return fetchCandles(...args);
+    };
+    let tick;
+    globalThis.setInterval = (callback) => { tick = callback; };
+    startEngineLoop();
+    const overlap = tick();
+    assert.equal(requests, 1);
+    resolve();
+    await overlap;
+    await new Promise(setImmediate);
+    assert.ok(engineState.snapshot);
+    await tick();
+    assert.equal(requests, 2);
+  `);
+  assert.equal(result.status, 0, result.stderr);
+});
 
 function checkSnapshotApi(root: string, assertions: string) {
   const result = runProcess(root, today, { BTCUSDT: 101.12 }, 'BTCUSDT', {
