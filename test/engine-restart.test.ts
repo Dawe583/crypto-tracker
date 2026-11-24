@@ -144,6 +144,32 @@ test('leaves legacy fills intact without guessing missing position state', (t) =
   assert.equal(readFileSync(file, 'utf8'), row);
 });
 
+test('opens an intact legacy ledger with a fork from a clock rollback', (t) => {
+  const root = fixture(t);
+  const directory = join(root, 'data', 'ledger');
+  mkdirSync(directory);
+  const equity = (seq: number, ts: number, prevHash: string, equityUsd: number) => {
+    const data = { equityUsd };
+    const type = 'equity';
+    const hash = createHash('sha256').update(`${prevHash}:${seq}:${type}:${JSON.stringify(data)}`).digest('hex');
+    return { seq, ts, type, prevHash, hash, data };
+  };
+  const first = equity(0, today, 'GENESIS', 10_000);
+  const nextDay = equity(1, tomorrow, first.hash, 10_001);
+  const fork = equity(1, today + 60_000, first.hash, 10_002);
+  const earlier = join(directory, '2026-11-24.jsonl');
+  const later = join(directory, '2026-11-25.jsonl');
+  const earlierContents = JSON.stringify(first) + '\n' + JSON.stringify(fork) + '\n';
+  writeFileSync(earlier, earlierContents);
+  writeFileSync(later, JSON.stringify(nextDay) + '\n');
+
+  assert.deepEqual(runCycle(root, tomorrow + 60_000, { BTCUSDT: 100, ETHUSDT: 100 }).positions, []);
+  assert.equal(readFileSync(earlier, 'utf8'), earlierContents);
+  const resumed = JSON.parse(readFileSync(later, 'utf8').split('\n')[1]);
+  assert.equal(resumed.seq, nextDay.seq + 1);
+  assert.equal(resumed.prevHash, nextDay.hash);
+});
+
 test('keeps a strategy on cooldown after restarting', (t) => {
   const root = fixture(t);
   for (let i = 0; i < 2; i++) {

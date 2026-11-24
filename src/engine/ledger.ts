@@ -40,6 +40,7 @@ export function ledgerResumeLatestCheckpoint<T>(): LedgerRecord<T> | undefined {
   const files = readdirSync(LEDGER_DIR).filter((file) => /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(file)).sort().reverse();
   let newer: LedgerRecord | undefined;
   for (const file of files) {
+    let crossingDay = newer !== undefined;
     const contents = readFileSync(join(LEDGER_DIR, file), 'utf8');
     if (contents && !contents.endsWith('\n')) throw new Error(`incomplete paper ledger row in ${file}`);
     const lines = contents.trim().split('\n');
@@ -57,8 +58,12 @@ export function ledgerResumeLatestCheckpoint<T>(): LedgerRecord<T> | undefined {
         throw new Error(`invalid paper ledger hash in ${file}:${i + 1}`);
       }
       if (newer && (newer.seq !== record.seq + 1 || newer.prevHash !== record.hash)) {
+        // Legacy writers could append a checkpoint-free fork to the end of an older day.
+        if (crossingDay && record.seq >= newer.seq - 1 && record.type !== 'checkpoint'
+          && !Object.hasOwn(Object(record.data), 'checkpoint')) continue;
         throw new Error(`broken paper ledger chain after ${file}:${i + 1}`);
       }
+      crossingDay = false;
       if (!newer) {
         day = file.slice(0, 10);
         path = join(LEDGER_DIR, file);
