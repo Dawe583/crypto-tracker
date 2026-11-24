@@ -61,3 +61,31 @@ test('live market refresh skips old candles and leaves historical callers unchan
   assert.equal((await refreshSymbol('ETHUSDT', '5m', live))?.source, 'binance');
   assert.equal((await refreshSymbol('ETHUSDT', '1m'))?.source, 'binance');
 });
+
+test('fallback requests the configured 30-minute candles and skips unsupported exchanges', async (t) => {
+  const now = Date.UTC(2026, 10, 24, 23, 10);
+  const open = now - 40 * 60_000;
+  t.mock.method(Date, 'now', () => now);
+  const requests: [string, string | null][] = [];
+  let bybitAvailable = true;
+  t.mock.method(globalThis, 'fetch', async (url: string) => {
+    const { hostname, searchParams } = new URL(url);
+    requests.push([hostname, searchParams.get('interval') ?? searchParams.get('granularity')]);
+    if (hostname === 'api.bybit.com' && bybitAvailable && searchParams.get('interval') === '30') {
+      return Response.json({ retCode: 0, result: { list: [[open, 100, 103, 99, 102, 10]] } });
+    }
+    if (hostname === 'api.kraken.com' && searchParams.get('interval') === '30') {
+      return Response.json({ error: [], result: { XBTUSD: [[open / 1000, 100, 103, 99, 102, 101, 10]] } });
+    }
+    return new Response(null, { status: 503 });
+  });
+
+  const live = { requireRecent: true };
+  assert.equal((await refreshSymbol('BTCUSDT', '30m', live))?.source, 'bybit');
+  bybitAvailable = false;
+  assert.equal((await refreshSymbol('BTCUSDT', '30m', live))?.source, 'kraken');
+  assert.deepEqual(requests, [
+    ['api.binance.com', '30m'], ['api.bybit.com', '30'],
+    ['api.binance.com', '30m'], ['api.bybit.com', '30'], ['api.kraken.com', '30'],
+  ]);
+});

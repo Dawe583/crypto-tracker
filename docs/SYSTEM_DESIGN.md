@@ -85,7 +85,7 @@ Older fills lack the state needed for exact recovery. If the latest fill predate
 
 `GET /api/engine/snapshot` includes `halted` even before the first successful cycle. It is set on ledger recovery or append failure, separately from the `killed` switch.
 
-Each exchange request has a five-second timeout. Paper fills use only candles fetched in the current cycle. At fetch time, the latest candle must have opened no more than two configured intervals ago and no more than five seconds in the future. If no exchange refreshes any symbol, the snapshot and equity curve stay unchanged. Snapshot `prices` can include cached prices so charts stay selectable; candle responses include `lastFetch`. Unavailable positions use their last fetched price (or entry price after restart) for display only. Missing prices on any held position pause new entries and equity recording until the portfolio can be fully marked; exits can still use a refreshed price.
+Each exchange request has a five-second timeout, and fallback skips exchanges that do not offer the requested candle interval. Paper fills use only candles fetched in the current cycle. At fetch time, the latest candle must have opened no more than two configured intervals ago and no more than five seconds in the future. If no exchange refreshes any symbol, the snapshot and equity curve stay unchanged. Snapshot `prices` can include cached prices so charts stay selectable; candle responses include `lastFetch`. Unavailable positions use their last fetched price (or entry price after restart) for display only. Missing prices on any held position pause new entries and equity recording until the portfolio can be fully marked; exits can still use a refreshed price.
 
 ## Trading deck (`/deck` on the API port)
 
