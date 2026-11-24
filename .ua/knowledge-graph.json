@@ -3916,7 +3916,7 @@
       "type": "file",
       "name": "signal-history.test.ts",
       "filePath": "test/signal-history.test.ts",
-      "summary": "Tests signal retention across separate daemon processes, read and write failures, live webhook delivery, and paper entry eligibility after watchlist edits.",
+      "summary": "Tests signal retention through daemon startup, read and write failures, live webhook delivery, and paper entry eligibility after watchlist edits.",
       "tags": [
         "code",
         "test"
@@ -7891,6 +7891,13 @@
     {
       "source": "file:test/signal-history.test.ts",
       "target": "file:src/api.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:test/signal-history.test.ts",
+      "target": "file:src/index.ts",
       "type": "depends_on",
       "direction": "forward",
       "weight": 1

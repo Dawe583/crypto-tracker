@@ -58,15 +58,38 @@ test('restores only the newest 200 signals and serves the same history via HTTP 
     assert.equal((await request('/api/whales?limit=200')).count, 199);
   `);
   run(root, `
-    store.initSignalHistory();
-    const whales = await request('/api/whales?limit=200');
+    const { Server } = await import('node:http');
+    const listen = Server.prototype.listen;
+    let server;
+    Server.prototype.listen = function (...args) {
+      server = this;
+      return listen.apply(this, args);
+    };
+    const fetchLocal = globalThis.fetch;
+    globalThis.fetch = (url, options) => {
+      if (new URL(url.url ?? url).hostname !== '127.0.0.1') throw new Error('Offline test');
+      return fetchLocal(url, options);
+    };
+    await import('./src/index.ts');
+    if (!server.listening) await once(server, 'listening');
+    const get = async (path) => {
+      const response = await fetch('http://127.0.0.1:' + server.address().port + path);
+      assert.equal(response.status, 200);
+      return response.json();
+    };
+    const whales = await get('/api/whales?limit=200');
     assert.equal(whales.count, 199);
     assert.equal(whales.signals[0].token.symbol, 'TOKEN-202');
     assert.equal(whales.signals.at(-1).token.symbol, 'TOKEN-4');
-    const pools = await request('/api/pools');
+    const pools = await get('/api/pools');
     assert.equal(pools.count, 1);
     assert.equal(pools.signals[0].token.symbol, 'TOKEN-203');
-  `);
+    process.exit(0);
+  `, {
+    ENGINE_ENABLED: 'false', BASE_RPC_WS: '', ETH_RPC_WS: '',
+    BASE_RPC_HTTP: 'http://127.0.0.1:1', ETH_RPC_HTTP: 'http://127.0.0.1:1',
+    GOLD_SPOT_URL: 'http://127.0.0.1:1',
+  });
   assert.equal(JSON.parse(readFileSync(join(root, 'data', 'signal_state.json'), 'utf8')).length, 200);
 });
 
