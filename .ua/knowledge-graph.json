@@ -3948,6 +3948,18 @@
         "test"
       ],
       "complexity": "simple"
+    },
+    {
+      "id": "file:test/signal-history.test.ts",
+      "type": "file",
+      "name": "signal-history.test.ts",
+      "filePath": "test/signal-history.test.ts",
+      "summary": "Tests signal retention across separate daemon processes, read and write failures, live webhook delivery, and paper entry eligibility after watchlist edits.",
+      "tags": [
+        "code",
+        "test"
+      ],
+      "complexity": "moderate"
     }
   ],
   "edges": [
@@ -7812,6 +7824,41 @@
       "direction": "forward",
       "weight": 0.7,
       "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/signal-history.test.ts",
+      "target": "file:src/strategies/library.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:test/signal-history.test.ts",
+      "target": "file:src/store.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:test/signal-history.test.ts",
+      "target": "file:src/api.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:test/signal-history.test.ts",
+      "target": "file:src/notifier.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:test/signal-history.test.ts",
+      "target": "file:src/engine/loop.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 1
     }
   ],
   "version": "1.0.0",
@@ -7874,7 +7921,8 @@
         "file:api/read.js",
         "file:api/cron/paper-engine.ts",
         "file:src/engine/hosted-api.ts",
-        "file:test/gold-rwa.test.ts"
+        "file:test/gold-rwa.test.ts",
+        "file:test/signal-history.test.ts"
       ]
     },
     {
