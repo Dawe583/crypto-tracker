@@ -90,7 +90,10 @@ export async function runEngineCycle() {
           continue;
         }
         const positions = [...portfolio.positions.values()];
-        const exposure = positions.reduce((a, p) => a + p.qty * (prices.get(p.symbol) ?? p.entryPrice), 0);
+        const exposure = positions.reduce((total, p) => {
+          const mark = prices.get(p.symbol) ?? p.entryPrice;
+          return total + (mark === p.entryPrice ? p.sizeUsd : p.qty * mark);
+        }, 0);
         const veto = risk.check(i, positions, portfolio.equity(prices), exposure);
         if (veto) { rec.vetoed = veto; ledgerAppend('decision', rec); ledgerAppend('risk', rec); engineState.decisions.unshift(rec); continue; }
         const fill = portfolio.open(i, prices.get(symbol) ?? feed.price, config.engine.feePct);
