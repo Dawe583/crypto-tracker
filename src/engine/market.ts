@@ -86,7 +86,7 @@ export function closedStrategyBars(feed: Feed, interval: string, count: number):
   const ms = intervalMs(interval);
   if (!Number.isSafeInteger(ms) || ms <= 0 || interval.endsWith('M')) return [];
   const bars = completedCandles(feed, interval).slice(-count);
-  if (bars.length !== count || feed.lastFetch - bars[bars.length - 1].t >= 2 * ms) return [];
+  if (bars.length !== count || (feed.requestedAt ?? feed.lastFetch) - bars[bars.length - 1].t >= 2 * ms) return [];
   return bars.every((c, i) => i === 0 || c.t - bars[i - 1].t === ms) ? bars : [];
 }
 

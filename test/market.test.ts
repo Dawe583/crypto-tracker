@@ -14,9 +14,11 @@ test('a request crossing the candle boundary does not finalize its pre-close sna
   const crossing = await fetchSymbol('BTCUSDT', '1m');
   assert.ok(crossing);
   assert.deepEqual(completedCandles(crossing, '1m').map((c) => c.t), [open - minute]);
+  assert.deepEqual(closedStrategyBars(crossing, '1m', 1).map((c) => c.t), [open - minute]);
   const after = await fetchSymbol('BTCUSDT', '1m');
   assert.ok(after);
   assert.deepEqual(completedCandles(after, '1m').map((c) => c.t), [open - minute, open]);
+  assert.deepEqual(closedStrategyBars(after, '1m', 1).map((c) => c.t), [open]);
 });
 
 test('market data skips stale and future candles and accepts a recent fallback', async (t) => {
