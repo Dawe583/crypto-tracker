@@ -3444,7 +3444,7 @@
       "filePath": "src/engine/loop.ts",
       "lineRange": [
         20,
-        188
+        192
       ],
       "summary": "Creates an isolated paper engine with injected market, signals and ledger adapters.",
       "tags": [
@@ -3492,7 +3492,7 @@
       "filePath": "src/engine/loop.ts",
       "lineRange": [
         98,
-        185
+        189
       ],
       "summary": "Defines createPaperEngine.cycle in loop.ts.",
       "tags": [
@@ -3507,8 +3507,8 @@
       "name": "monitorSignals",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        190,
-        195
+        194,
+        199
       ],
       "summary": "Projects recent whale, pool and gold monitor state into strategy context.",
       "tags": [
@@ -3523,8 +3523,8 @@
       "name": "runEngineCycle",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        205,
-        220
+        209,
+        224
       ],
       "summary": "Runs one local file-ledger cycle while preventing a concurrent local cycle.",
       "tags": [
@@ -3539,8 +3539,8 @@
       "name": "startEngineLoop",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        222,
-        239
+        226,
+        243
       ],
       "summary": "Starts periodic paper-engine cycles when enabled by configuration.",
       "tags": [
