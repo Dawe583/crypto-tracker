@@ -36,32 +36,64 @@ function recordHash(prevHash: string, seq: number, type: LedgerRecord['type'], d
   return createHash('sha256').update(`${prevHash}:${seq}:${type}:${JSON.stringify(data)}`).digest('hex');
 }
 
+function* readLedgerBackwards<T>(file: string): Generator<LedgerRecord<T>> {
+  const contents = readFileSync(join(LEDGER_DIR, file), 'utf8');
+  if (contents && !contents.endsWith('\n')) throw new Error(`incomplete paper ledger row in ${file}`);
+  const lines = contents.split('\n');
+  for (let i = lines.length - 1; i >= 0; i--) {
+    if (!lines[i].trim()) continue;
+    let record: LedgerRecord<T>;
+    try {
+      record = JSON.parse(lines[i]) as LedgerRecord<T>;
+    } catch {
+      throw new Error(`invalid paper ledger row in ${file}:${i + 1}`);
+    }
+    if (!record || !Number.isSafeInteger(record.seq) || record.seq < 0
+      || typeof record.prevHash !== 'string' || (record.seq === 0) !== (record.prevHash === 'GENESIS')
+      || record.hash !== recordHash(record.prevHash, record.seq, record.type, record.data)) {
+      throw new Error(`invalid paper ledger hash in ${file}:${i + 1}`);
+    }
+    yield record;
+  }
+}
+
+function follows(newer: LedgerRecord, older: LedgerRecord): boolean {
+  return newer.seq === older.seq + 1 && newer.prevHash === older.hash;
+}
+
+// Old writers could fork the chain by revisiting a day. Verify every parent by hash, not file date.
+function validateLegacyLedger<T>(files: string[]): LedgerRecord<T> | undefined {
+  const links = new Map<string, Pick<LedgerRecord, 'seq' | 'prevHash'>>();
+  let fill: LedgerRecord<T> | undefined;
+  for (const file of files) {
+    let newer: LedgerRecord | undefined;
+    for (const record of readLedgerBackwards<T>(file)) {
+      if (record.type === 'checkpoint' || Object.hasOwn(Object(record.data), 'checkpoint')
+        || (newer && !follows(newer, record))) {
+        throw new Error(`broken paper ledger chain in ${file}`);
+      }
+      if (record.type === 'fill') fill ??= record;
+      links.set(record.hash, { seq: record.seq, prevHash: record.prevHash });
+      newer = record;
+    }
+  }
+  for (const { seq, prevHash } of links.values()) {
+    if (seq > 0 && links.get(prevHash)?.seq !== seq - 1) {
+      throw new Error('missing paper ledger chain predecessor');
+    }
+  }
+  return fill;
+}
+
 export function ledgerResumeLatestCheckpoint<T>(): LedgerRecord<T> | undefined {
   const files = readdirSync(LEDGER_DIR).filter((file) => /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(file)).sort().reverse();
   let newer: LedgerRecord | undefined;
   for (const file of files) {
-    let crossingDay = newer !== undefined;
-    const contents = readFileSync(join(LEDGER_DIR, file), 'utf8');
-    if (contents && !contents.endsWith('\n')) throw new Error(`incomplete paper ledger row in ${file}`);
-    const lines = contents.trim().split('\n');
-    for (let i = lines.length - 1; i >= 0; i--) {
-      if (!lines[i].trim()) continue;
-      let record: LedgerRecord<T>;
-      try {
-        record = JSON.parse(lines[i]) as LedgerRecord<T>;
-      } catch {
-        throw new Error(`invalid paper ledger row in ${file}:${i + 1}`);
-      }
-      if (!record || !Number.isSafeInteger(record.seq) || record.seq < 0
-        || typeof record.prevHash !== 'string' || (record.seq === 0) !== (record.prevHash === 'GENESIS')
-        || record.hash !== recordHash(record.prevHash, record.seq, record.type, record.data)) {
-        throw new Error(`invalid paper ledger hash in ${file}:${i + 1}`);
-      }
-      if (newer && (newer.seq !== record.seq + 1 || newer.prevHash !== record.hash)) {
-        // Legacy writers could append a checkpoint-free fork to the end of an older day.
-        if (crossingDay && record.seq >= newer.seq - 1 && record.type !== 'checkpoint'
-          && !Object.hasOwn(Object(record.data), 'checkpoint')) continue;
-        throw new Error(`broken paper ledger chain after ${file}:${i + 1}`);
+    let crossingDay = true;
+    for (const record of readLedgerBackwards<T>(file)) {
+      if (newer && !follows(newer, record)) {
+        if (crossingDay) return validateLegacyLedger<T>(files);
+        throw new Error(`broken paper ledger chain in ${file}`);
       }
       crossingDay = false;
       if (!newer) {

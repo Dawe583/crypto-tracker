@@ -144,7 +144,7 @@ test('leaves legacy fills intact without guessing missing position state', (t) =
   assert.equal(readFileSync(file, 'utf8'), row);
 });
 
-test('opens an intact legacy ledger with a fork from a clock rollback', (t) => {
+function legacyFork(t: TestContext, missingRow = false) {
   const root = fixture(t);
   const directory = join(root, 'data', 'ledger');
   mkdirSync(directory);
@@ -157,17 +157,43 @@ test('opens an intact legacy ledger with a fork from a clock rollback', (t) => {
   const first = equity(0, today, 'GENESIS', 10_000);
   const nextDay = equity(1, tomorrow, first.hash, 10_001);
   const fork = equity(1, today + 60_000, first.hash, 10_002);
+  const forkTip = equity(2, today + 90_000, fork.hash, 10_003);
   const earlier = join(directory, '2026-11-24.jsonl');
   const later = join(directory, '2026-11-25.jsonl');
-  const earlierContents = JSON.stringify(first) + '\n' + JSON.stringify(fork) + '\n';
+  const earlierRecords = missingRow ? [first, forkTip] : [first, fork, forkTip];
+  const earlierContents = earlierRecords.map((row) => JSON.stringify(row)).join('\n') + '\n';
   writeFileSync(earlier, earlierContents);
   writeFileSync(later, JSON.stringify(nextDay) + '\n');
+  return { root, directory, earlier, earlierContents, later, nextDay, forkTip, equity };
+}
 
+test('opens an intact legacy ledger with a fork from a clock rollback', (t) => {
+  const { root, earlier, earlierContents, later, nextDay } = legacyFork(t);
   assert.deepEqual(runCycle(root, tomorrow + 60_000, { BTCUSDT: 100, ETHUSDT: 100 }).positions, []);
   assert.equal(readFileSync(earlier, 'utf8'), earlierContents);
   const resumed = JSON.parse(readFileSync(later, 'utf8').split('\n')[1]);
   assert.equal(resumed.seq, nextDay.seq + 1);
   assert.equal(resumed.prevHash, nextDay.hash);
+});
+
+test('rejects a missing row in a legacy fork', (t) => {
+  const { root, earlier, earlierContents } = legacyFork(t, true);
+  const result = runProcess(root, tomorrow + 60_000, { BTCUSDT: 100, ETHUSDT: 100 });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /ledger chain/i);
+  assert.equal(readFileSync(earlier, 'utf8'), earlierContents);
+});
+
+test('follows a legacy chain that skips a UTC date after rollback', (t) => {
+  const { root, directory, forkTip, equity } = legacyFork(t);
+  const dayThree = tomorrow + 86_400_000;
+  const row = equity(3, dayThree, forkTip.hash, 10_004);
+  const file = join(directory, '2026-11-26.jsonl');
+  writeFileSync(file, JSON.stringify(row) + '\n');
+
+  assert.deepEqual(runCycle(root, dayThree + 60_000, { BTCUSDT: 100, ETHUSDT: 100 }).positions, []);
+  const resumed = JSON.parse(readFileSync(file, 'utf8').split('\n')[1]);
+  assert.equal(resumed.prevHash, row.hash);
 });
 
 test('keeps a strategy on cooldown after restarting', (t) => {
