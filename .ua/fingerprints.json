@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "45cbdb6427988aaaa798b31ed33283fe4e95dd36",
-  "generatedAt": "2026-11-24T21:39:48.617Z",
+  "gitCommitHash": "f058390444fa566554c41a8274601f4cdba0b256",
+  "generatedAt": "2026-11-24T21:44:52.248Z",
   "files": {
     ".agent/work-state.json": {
       "filePath": ".agent/work-state.json",
@@ -277,7 +277,7 @@
     },
     "deck/app.js": {
       "filePath": "deck/app.js",
-      "contentHash": "90a41517b6ccda72710ef7aa38525541cc1fab2041608825b3fdd7dcd03dad93",
+      "contentHash": "a72d32f637170fc03267e098c76344760968fb7d45ba882f2b0dc9a588bab846",
       "functions": [
         {
           "name": "$",
@@ -418,7 +418,7 @@
           "name": "drawNavChart",
           "params": [],
           "exported": false,
-          "lineCount": 25
+          "lineCount": 26
         },
         {
           "name": "drawTape",
@@ -513,13 +513,13 @@
           "name": "drawWeights",
           "params": [],
           "exported": false,
-          "lineCount": 19
+          "lineCount": 20
         },
         {
           "name": "drawRotation",
           "params": [],
           "exported": false,
-          "lineCount": 48
+          "lineCount": 49
         },
         {
           "name": "cls2",
@@ -654,7 +654,7 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 1210,
+      "totalLines": 1213,
       "hasStructuralAnalysis": true
     },
     "deck/index.html": {
@@ -2639,7 +2639,7 @@
     },
     "tests/deck.test.mjs": {
       "filePath": "tests/deck.test.mjs",
-      "contentHash": "78e23fbb843a2e1ea39c67d2afdc5654408fbac772af1d4dc805adc6347a1272",
+      "contentHash": "4e1dec1a7d9b093f8cb41ac3ac06857ee507203779d0b0137ce9140d243da26f",
       "functions": [
         {
           "name": "runtime",
@@ -2676,7 +2676,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 221,
+      "totalLines": 241,
       "hasStructuralAnalysis": true
     },
     "tests/hosting.test.mjs": {

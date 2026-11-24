@@ -2552,7 +2552,7 @@
       "filePath": "deck/app.js",
       "lineRange": [
         339,
-        363
+        364
       ],
       "summary": "Renders the nav chart visualization from deck state.",
       "tags": [
@@ -2567,8 +2567,8 @@
       "name": "drawTape",
       "filePath": "deck/app.js",
       "lineRange": [
-        365,
-        436
+        366,
+        437
       ],
       "summary": "Renders the tape visualization from deck state.",
       "tags": [
@@ -2583,8 +2583,8 @@
       "name": "drawBook",
       "filePath": "deck/app.js",
       "lineRange": [
-        439,
-        474
+        440,
+        475
       ],
       "summary": "Maintains illustrative depth rows while preserving synthetic sizes in still mode.",
       "tags": [
@@ -2599,8 +2599,8 @@
       "name": "selectAgent",
       "filePath": "deck/app.js",
       "lineRange": [
-        486,
-        497
+        487,
+        498
       ],
       "summary": "Toggles validated visual agent focus and updates accessible pressed states.",
       "tags": [
@@ -2615,8 +2615,8 @@
       "name": "_r",
       "filePath": "deck/app.js",
       "lineRange": [
-        504,
-        504
+        505,
+        505
       ],
       "summary": "Provides _r for app.",
       "tags": [
@@ -2631,8 +2631,8 @@
       "name": "_norm",
       "filePath": "deck/app.js",
       "lineRange": [
-        505,
-        505
+        506,
+        506
       ],
       "summary": "Provides _norm for app.",
       "tags": [
@@ -2647,8 +2647,8 @@
       "name": "growTree",
       "filePath": "deck/app.js",
       "lineRange": [
-        508,
-        524
+        509,
+        525
       ],
       "summary": "Provides growTree for app.",
       "tags": [
@@ -2663,8 +2663,8 @@
       "name": "endDrag",
       "filePath": "deck/app.js",
       "lineRange": [
-        574,
-        574
+        575,
+        575
       ],
       "summary": "Provides endDrag for app.",
       "tags": [
@@ -2679,8 +2679,8 @@
       "name": "resetBrain",
       "filePath": "deck/app.js",
       "lineRange": [
-        582,
-        582
+        583,
+        583
       ],
       "summary": "Provides resetBrain for app.",
       "tags": [
@@ -2695,8 +2695,8 @@
       "name": "drawBrain",
       "filePath": "deck/app.js",
       "lineRange": [
-        597,
-        734
+        598,
+        735
       ],
       "summary": "Renders the brain visualization from deck state.",
       "tags": [
@@ -2711,8 +2711,8 @@
       "name": "drawCortex",
       "filePath": "deck/app.js",
       "lineRange": [
-        739,
-        768
+        740,
+        769
       ],
       "summary": "Renders the cortex visualization from deck state.",
       "tags": [
@@ -2727,8 +2727,8 @@
       "name": "drawCalcium",
       "filePath": "deck/app.js",
       "lineRange": [
-        771,
-        809
+        772,
+        810
       ],
       "summary": "Renders the calcium visualization from deck state.",
       "tags": [
@@ -2743,8 +2743,8 @@
       "name": "drawWeights",
       "filePath": "deck/app.js",
       "lineRange": [
-        812,
-        830
+        813,
+        832
       ],
       "summary": "Renders the weights visualization from deck state.",
       "tags": [
@@ -2759,8 +2759,8 @@
       "name": "drawRotation",
       "filePath": "deck/app.js",
       "lineRange": [
-        833,
-        880
+        835,
+        883
       ],
       "summary": "Renders the rotation visualization from deck state.",
       "tags": [
@@ -2775,8 +2775,8 @@
       "name": "cls2",
       "filePath": "deck/app.js",
       "lineRange": [
-        883,
-        883
+        886,
+        886
       ],
       "summary": "Provides cls2 for app.",
       "tags": [
@@ -2791,8 +2791,8 @@
       "name": "emaN",
       "filePath": "deck/app.js",
       "lineRange": [
-        884,
-        890
+        887,
+        893
       ],
       "summary": "Provides emaN for app.",
       "tags": [
@@ -2807,8 +2807,8 @@
       "name": "rsiN",
       "filePath": "deck/app.js",
       "lineRange": [
-        891,
-        896
+        894,
+        899
       ],
       "summary": "Provides rsiN for app.",
       "tags": [
@@ -2823,8 +2823,8 @@
       "name": "bollPctB",
       "filePath": "deck/app.js",
       "lineRange": [
-        897,
-        903
+        900,
+        906
       ],
       "summary": "Provides bollPctB for app.",
       "tags": [
@@ -2839,8 +2839,8 @@
       "name": "zsc",
       "filePath": "deck/app.js",
       "lineRange": [
-        904,
-        909
+        907,
+        912
       ],
       "summary": "Provides zsc for app.",
       "tags": [
@@ -2855,8 +2855,8 @@
       "name": "atrP",
       "filePath": "deck/app.js",
       "lineRange": [
-        910,
-        916
+        913,
+        919
       ],
       "summary": "Provides atrP for app.",
       "tags": [
@@ -2871,8 +2871,8 @@
       "name": "vwapN",
       "filePath": "deck/app.js",
       "lineRange": [
-        917,
-        921
+        920,
+        924
       ],
       "summary": "Provides vwapN for app.",
       "tags": [
@@ -2887,8 +2887,8 @@
       "name": "stochK",
       "filePath": "deck/app.js",
       "lineRange": [
-        922,
-        926
+        925,
+        929
       ],
       "summary": "Provides stochK for app.",
       "tags": [
@@ -2903,8 +2903,8 @@
       "name": "chip",
       "filePath": "deck/app.js",
       "lineRange": [
-        928,
-        930
+        931,
+        933
       ],
       "summary": "Provides chip for app.",
       "tags": [
@@ -2919,8 +2919,8 @@
       "name": "renderIndicators",
       "filePath": "deck/app.js",
       "lineRange": [
-        932,
-        1005
+        935,
+        1008
       ],
       "summary": "Provides renderIndicators for app.",
       "tags": [
@@ -2935,8 +2935,8 @@
       "name": "drawMembrane",
       "filePath": "deck/app.js",
       "lineRange": [
-        1008,
-        1038
+        1011,
+        1041
       ],
       "summary": "Renders the membrane visualization from deck state.",
       "tags": [
@@ -2951,8 +2951,8 @@
       "name": "drawPricer",
       "filePath": "deck/app.js",
       "lineRange": [
-        1042,
-        1084
+        1045,
+        1087
       ],
       "summary": "Updates illustrative price simulations when real inputs change, holding identical inputs stable in still mode.",
       "tags": [
@@ -2967,8 +2967,8 @@
       "name": "drawVisible",
       "filePath": "deck/app.js",
       "lineRange": [
-        1100,
-        1100
+        1103,
+        1103
       ],
       "summary": "Renders the visible visualization from deck state.",
       "tags": [
@@ -2983,8 +2983,8 @@
       "name": "frame",
       "filePath": "deck/app.js",
       "lineRange": [
-        1102,
-        1120
+        1105,
+        1123
       ],
       "summary": "Advances permitted visual time and schedules bounded visible canvas work.",
       "tags": [
@@ -2999,8 +2999,8 @@
       "name": "drawSlow",
       "filePath": "deck/app.js",
       "lineRange": [
-        1122,
-        1125
+        1125,
+        1128
       ],
       "summary": "Redraws only observed visible canvases, skipping hidden documents.",
       "tags": [
@@ -3015,8 +3015,8 @@
       "name": "redrawCanvas",
       "filePath": "deck/app.js",
       "lineRange": [
-        1127,
-        1133
+        1130,
+        1136
       ],
       "summary": "Dispatches visible chart rendering and initializes tape depth.",
       "tags": [
@@ -3102,7 +3102,7 @@
       "type": "file",
       "name": "deck.test.mjs",
       "filePath": "tests/deck.test.mjs",
-      "summary": "Deck regressions for authorization, stale replies, motion budgets, startup, agent focus, forecast invalidation, stop/restart, read-only demo and halted-ledger recovery.",
+      "summary": "Deck regressions for authorization, stale replies, motion budgets, startup, agent focus, forecast invalidation, stop/restart, read-only demo and halted-ledger recovery including canvas values.",
       "tags": [
         "code",
         "monitor"
@@ -6210,8 +6210,8 @@
     ],
     "frameworks": [],
     "description": "On-chain Base/Ethereum monitoring and a risk-gated paper-trading engine with an interactive animated live neural HUD deck.",
-    "analyzedAt": "2026-11-24T21:39:47.933863+00:00",
-    "gitCommitHash": "45cbdb6427988aaaa798b31ed33283fe4e95dd36"
+    "analyzedAt": "2026-11-24T21:44:51.855302+00:00",
+    "gitCommitHash": "f058390444fa566554c41a8274601f4cdba0b256"
   },
   "layers": [
     {
