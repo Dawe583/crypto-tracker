@@ -1,26 +1,312 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "0918e96d945478679b5d45812568b284b0fc9464",
-  "generatedAt": "2026-11-24T20:29:13.500Z",
+  "gitCommitHash": "08d8f9ecc466ca631d2c4cf5a568745983580a48",
+  "generatedAt": "2026-11-24T23:33:32.564Z",
   "files": {
-    ".env.example": {
-      "filePath": ".env.example",
-      "contentHash": "b3d03902b14dbd93ea4e13807d574c4646fdaaa6e0d8b72f521c72259498630e",
+    ".agent/work-state.json": {
+      "filePath": ".agent/work-state.json",
+      "contentHash": "38f50ee3917a44c050bb695bbfe3f9e169f8caa9e1c496e72bea05ccc643f90e",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 45,
+      "totalLines": 121,
+      "hasStructuralAnalysis": false
+    },
+    ".env.example": {
+      "filePath": ".env.example",
+      "contentHash": "de51a3ca4a696bae0c20cef3ccb52b40b6016f06052c312bba3ec6a5b8361f80",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 48,
+      "hasStructuralAnalysis": false
+    },
+    "AGENTS.md": {
+      "filePath": "AGENTS.md",
+      "contentHash": "8d7a9379b6c7c09db3a2df98c3780c09d89f49381910a1ea57e0fa675e669e55",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 7,
       "hasStructuralAnalysis": false
     },
     "README.md": {
       "filePath": "README.md",
-      "contentHash": "f38d5a46c572941b9a392045074f0abb5bf4590fe2841c5a39ea061bad3fd3e7",
+      "contentHash": "5286e9085440b557c3f5d0901d362858f857a51c5e23c999548c44e57321f3e6",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 316,
+      "totalLines": 330,
+      "hasStructuralAnalysis": false
+    },
+    "api/cron/paper-engine.ts": {
+      "filePath": "api/cron/paper-engine.ts",
+      "contentHash": "47f97c1aa7a2150fa0d5dd85d60d2a350b53059c1ec7aadf0008a7bd065935f7",
+      "functions": [
+        {
+          "name": "handler",
+          "params": [
+            "req",
+            "res"
+          ],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:http",
+          "specifiers": [
+            "IncomingMessage",
+            "ServerResponse"
+          ]
+        },
+        {
+          "source": "../../src/engine/hosted-api.js",
+          "specifiers": [
+            "hostedCron"
+          ]
+        }
+      ],
+      "exports": [
+        "handler"
+      ],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "api/read.js": {
+      "filePath": "api/read.js",
+      "contentHash": "fdf65a957ba836013b9c293807af65fc620527545d39c2b8fb542f4a7183266d",
+      "functions": [
+        {
+          "name": "handler",
+          "params": [
+            "req",
+            "res"
+          ],
+          "exported": true,
+          "lineCount": 32
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../src/engine/hosted-api.js",
+          "specifiers": [
+            "hostedRead",
+            "hostedReadPaths"
+          ]
+        }
+      ],
+      "exports": [
+        "handler"
+      ],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    "data/backtest-15m.json": {
+      "filePath": "data/backtest-15m.json",
+      "contentHash": "76d035ced81eebc6593f1dfad8856ee4fdf13c9da4dbc4ee2540b3a06d20fe1f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1194,
+      "hasStructuralAnalysis": false
+    },
+    "data/backtest-1h.json": {
+      "filePath": "data/backtest-1h.json",
+      "contentHash": "a5a3c4d2bc1d53c44b9c1bd212a061bb73433bc8d3ed14c0711f9e5f0d0fa301",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 600,
+      "hasStructuralAnalysis": false
+    },
+    "data/backtest-1m.json": {
+      "filePath": "data/backtest-1m.json",
+      "contentHash": "62dfa9c5ec92f12e3f2ca229d8f0735881819464c66726137f1857703d7fa1a5",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 600,
+      "hasStructuralAnalysis": false
+    },
+    "data/backtest.json": {
+      "filePath": "data/backtest.json",
+      "contentHash": "d6425e34c2dc0cb78884a6bf97d1718a7a41696e5562ffcdb8ecc204f177baeb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 600,
+      "hasStructuralAnalysis": false
+    },
+    "data/strategies.json": {
+      "filePath": "data/strategies.json",
+      "contentHash": "e80f340af2bd5f36e42776294a7941be2be80c9ee68cf63b1d4a4d1d0128ad00",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 179,
+      "hasStructuralAnalysis": false
+    },
+    "data/stress-15m.json": {
+      "filePath": "data/stress-15m.json",
+      "contentHash": "9304869596b29eb0f1237adf823370454d90f7799899832d9b90a6b258462b62",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 392,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-atr_trend-15m.json": {
+      "filePath": "data/sweep-atr_trend-15m.json",
+      "contentHash": "5fb64c3e21d23718b9985af0b525211e10367ea2414f67781589a17b0e694406",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 271,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-bollinger_reversion-15m.json": {
+      "filePath": "data/sweep-bollinger_reversion-15m.json",
+      "contentHash": "fdfc83bec8b4c4d08327809fb3cea2b71be82323db918ac0b6d4b31e9e96bcc1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 295,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-breakout-15m.json": {
+      "filePath": "data/sweep-breakout-15m.json",
+      "contentHash": "974f26a5f6164e62c0f1367ef1b212fad9fc28616a01ff240124e6e339bebd19",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 239,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-donchian-15m.json": {
+      "filePath": "data/sweep-donchian-15m.json",
+      "contentHash": "e73285f29e963831d2083ea78e237d521a45bb2350c64d4e061c220a7bc8b4c2",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 171,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-ema_cross-15m.json": {
+      "filePath": "data/sweep-ema_cross-15m.json",
+      "contentHash": "50446855fedd2cea21e8ba6cc368e8dad94b11a0c7fd33109408324a6f6f8fd1",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 295,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-engulfing-15m.json": {
+      "filePath": "data/sweep-engulfing-15m.json",
+      "contentHash": "1d6004b0d3e20ff7764e8f55340f0330e132a7f04bac706bd210125bd38b8f7b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 119,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-macd_momentum-15m.json": {
+      "filePath": "data/sweep-macd_momentum-15m.json",
+      "contentHash": "cf21f252e2ca9889b82b988c56db30904d4a3bd0b6c35c3a3a20418a4133b92d",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 63,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-obv_drift-15m.json": {
+      "filePath": "data/sweep-obv_drift-15m.json",
+      "contentHash": "f96f598f8644db71803d2b7838b835a98d8b88e9424f9902da2795e4796fc430",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 171,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-roc_momentum-15m.json": {
+      "filePath": "data/sweep-roc_momentum-15m.json",
+      "contentHash": "e7e64005b6d57dcc3b68a6b85ebfa8acee152961f039d588d4529cb0c3d3ca01",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 295,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-rsi_reversion-15m.json": {
+      "filePath": "data/sweep-rsi_reversion-15m.json",
+      "contentHash": "ebf399e898d79318db8a1275547bb7f3a0eba31fcff37016f4ce51ce925928eb",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 315,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-stoch_cross-15m.json": {
+      "filePath": "data/sweep-stoch_cross-15m.json",
+      "contentHash": "8eb3b4bf8a105fe45654be4e413b257a311eaf9a42f1cd8577bda59219b2eac9",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 315,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-vol_spike-15m.json": {
+      "filePath": "data/sweep-vol_spike-15m.json",
+      "contentHash": "7cdcb9bd7945c0b418a496731ddb31054b356225e0a472ad938c36c52bac5246",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 183,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-vwap_reversion-15m.json": {
+      "filePath": "data/sweep-vwap_reversion-15m.json",
+      "contentHash": "72171c533d4c510ef40e89021d1fbf354556420ff4d97de92a41bf2a869412bf",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 295,
+      "hasStructuralAnalysis": false
+    },
+    "data/sweep-zscore_reversion-15m.json": {
+      "filePath": "data/sweep-zscore_reversion-15m.json",
+      "contentHash": "1396f17c6292fb22183a5ed9b71036971e5b5875540ad1bc0189aa37e4445c35",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 255,
       "hasStructuralAnalysis": false
     },
     "data/watchlist.json": {
@@ -33,14 +319,416 @@
       "totalLines": 24,
       "hasStructuralAnalysis": false
     },
-    "deploy/DEPLOY.md": {
-      "filePath": "deploy/DEPLOY.md",
-      "contentHash": "43eaafe945c12f536af6d99aa277288ca65cf45d8e3c5ab589cc5ff236a077c4",
+    "deck/app.js": {
+      "filePath": "deck/app.js",
+      "contentHash": "8b6656a8f13050f7cf10555333ba8bef46214ca74f34823d6e5603b6e3c0f154",
+      "functions": [
+        {
+          "name": "$",
+          "params": [
+            "id"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "fmt$",
+          "params": [
+            "n"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "cls",
+          "params": [
+            "n"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "ago",
+          "params": [
+            "ts"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "isStill",
+          "params": [],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "updateMotion",
+          "params": [],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "setText",
+          "params": [
+            "id",
+            "value"
+          ],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "utc",
+          "params": [
+            "ts"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "api",
+          "params": [
+            "path"
+          ],
+          "exported": false,
+          "lineCount": 17
+        },
+        {
+          "name": "ctx2d",
+          "params": [
+            "id"
+          ],
+          "exported": false,
+          "lineCount": 14
+        },
+        {
+          "name": "loadDemo",
+          "params": [],
+          "exported": false,
+          "lineCount": 27
+        },
+        {
+          "name": "refresh",
+          "params": [],
+          "exported": false,
+          "lineCount": 56
+        },
+        {
+          "name": "selectMarket",
+          "params": [
+            "symbol"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "marketQuote",
+          "params": [
+            "symbol"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "renderMarkets",
+          "params": [],
+          "exported": false,
+          "lineCount": 38
+        },
+        {
+          "name": "renderStatic",
+          "params": [],
+          "exported": false,
+          "lineCount": 105
+        },
+        {
+          "name": "renderFeed",
+          "params": [
+            "id",
+            "limit",
+            "template"
+          ],
+          "exported": false,
+          "lineCount": 26
+        },
+        {
+          "name": "stageColor",
+          "params": [
+            "d"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "drawNavChart",
+          "params": [],
+          "exported": false,
+          "lineCount": 26
+        },
+        {
+          "name": "drawTape",
+          "params": [],
+          "exported": false,
+          "lineCount": 72
+        },
+        {
+          "name": "drawBook",
+          "params": [
+            "now"
+          ],
+          "exported": false,
+          "lineCount": 36
+        },
+        {
+          "name": "selectAgent",
+          "params": [
+            "name"
+          ],
+          "exported": false,
+          "lineCount": 12
+        },
+        {
+          "name": "_r",
+          "params": [
+            "a",
+            "b"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "_norm",
+          "params": [
+            "x",
+            "y",
+            "z"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "growTree",
+          "params": [
+            "root",
+            "dir",
+            "len",
+            "depth",
+            "color"
+          ],
+          "exported": false,
+          "lineCount": 17
+        },
+        {
+          "name": "endDrag",
+          "params": [],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "resetBrain",
+          "params": [],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "drawBrain",
+          "params": [
+            "now"
+          ],
+          "exported": false,
+          "lineCount": 138
+        },
+        {
+          "name": "drawCortex",
+          "params": [
+            "now"
+          ],
+          "exported": false,
+          "lineCount": 30
+        },
+        {
+          "name": "drawCalcium",
+          "params": [
+            "now"
+          ],
+          "exported": false,
+          "lineCount": 39
+        },
+        {
+          "name": "drawWeights",
+          "params": [],
+          "exported": false,
+          "lineCount": 20
+        },
+        {
+          "name": "drawRotation",
+          "params": [],
+          "exported": false,
+          "lineCount": 49
+        },
+        {
+          "name": "cls2",
+          "params": [
+            "v"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "emaN",
+          "params": [
+            "a",
+            "p"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "rsiN",
+          "params": [
+            "a"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "bollPctB",
+          "params": [
+            "a"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "zsc",
+          "params": [
+            "a"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "atrP",
+          "params": [
+            "cs"
+          ],
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "vwapN",
+          "params": [
+            "cs"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "stochK",
+          "params": [
+            "cs"
+          ],
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "chip",
+          "params": [
+            "name",
+            "val",
+            "tone"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "renderIndicators",
+          "params": [
+            "s"
+          ],
+          "exported": false,
+          "lineCount": 74
+        },
+        {
+          "name": "drawMembrane",
+          "params": [],
+          "exported": false,
+          "lineCount": 31
+        },
+        {
+          "name": "drawPricer",
+          "params": [
+            "now"
+          ],
+          "exported": false,
+          "lineCount": 43
+        },
+        {
+          "name": "drawVisible",
+          "params": [
+            "id",
+            "draw",
+            "now"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "frame",
+          "params": [
+            "now"
+          ],
+          "exported": false,
+          "lineCount": 19
+        },
+        {
+          "name": "drawSlow",
+          "params": [],
+          "exported": false,
+          "lineCount": 4
+        },
+        {
+          "name": "redrawCanvas",
+          "params": [
+            "id"
+          ],
+          "exported": false,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 1226,
+      "hasStructuralAnalysis": true
+    },
+    "deck/index.html": {
+      "filePath": "deck/index.html",
+      "contentHash": "6b949364ca8cc29dd405cfafd6a5db4dadc259a3ab816d7fdd399d7d3dd63348",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 79,
+      "totalLines": 107,
+      "hasStructuralAnalysis": false
+    },
+    "deck/style.css": {
+      "filePath": "deck/style.css",
+      "contentHash": "fe6f2366f2d2dab598c67372ecaab395ce705a90474f957b8f70468f3f203697",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 227,
+      "hasStructuralAnalysis": false
+    },
+    "deploy/DEPLOY.md": {
+      "filePath": "deploy/DEPLOY.md",
+      "contentHash": "4cd4036c1aba5033ab27b0fbe6680f81fe37920eb996069dcd9c48d39bfa23d7",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 122,
       "hasStructuralAnalysis": false
     },
     "deploy/install-service.sh": {
@@ -63,29 +751,129 @@
       "totalLines": 31,
       "hasStructuralAnalysis": false
     },
-    "docs/RPI4_DEPLOYMENT.md": {
-      "filePath": "docs/RPI4_DEPLOYMENT.md",
-      "contentHash": "153ff9d0da6fdff635ab0132be3bb36c62f285c801e7b1951d978438c592c115",
+    "docs/AUDIT_AND_TRADING_LANDSCAPE.md": {
+      "filePath": "docs/AUDIT_AND_TRADING_LANDSCAPE.md",
+      "contentHash": "5026bc9ae289f1ec251e817d6add4ec4359a78001224b2f67c5bf4d9d3f4c815",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 110,
+      "totalLines": 112,
+      "hasStructuralAnalysis": false
+    },
+    "docs/BACKTEST_RESULTS.md": {
+      "filePath": "docs/BACKTEST_RESULTS.md",
+      "contentHash": "cdd6a7302ec755162194afb2ff2f8ea19494d6321b54cdc0ec39b0852dab509e",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 55,
+      "hasStructuralAnalysis": false
+    },
+    "docs/BROKER_ADAPTER.md": {
+      "filePath": "docs/BROKER_ADAPTER.md",
+      "contentHash": "2ce8134cc1eaa9e37227c4a55eebb08bf539355cb679b1be7294f20aeeeded50",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 41,
+      "hasStructuralAnalysis": false
+    },
+    "docs/HUMMINGBOT-LICENSE.txt": {
+      "filePath": "docs/HUMMINGBOT-LICENSE.txt",
+      "contentHash": "f0dd03c14db3dfbce03c166645f88fda96599ad1a5d217fddb49134de8c72a29",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 202,
+      "hasStructuralAnalysis": false
+    },
+    "docs/JESSE-LICENSE.txt": {
+      "filePath": "docs/JESSE-LICENSE.txt",
+      "contentHash": "8985ca8447e233f34397a52fe77989c02e27b8145d43bd8c715ae9c7a96056d4",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 22,
+      "hasStructuralAnalysis": false
+    },
+    "docs/LOOP_ENGINEERING.md": {
+      "filePath": "docs/LOOP_ENGINEERING.md",
+      "contentHash": "6d31f67c4d1132fd5a7001a2d13fa23fe0842e39d5c2cb8262d1ac26b5147436",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 22,
+      "hasStructuralAnalysis": false
+    },
+    "docs/PAPER_STRATEGY.md": {
+      "filePath": "docs/PAPER_STRATEGY.md",
+      "contentHash": "79432577a97401bcf9dd78aba87ce0a21031c2fc2c5798935b20f4fad35ebd87",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 50,
+      "hasStructuralAnalysis": false
+    },
+    "docs/RPI4_DEPLOYMENT.md": {
+      "filePath": "docs/RPI4_DEPLOYMENT.md",
+      "contentHash": "c6460f97b091b417896a26788a418c7a8e4a064fb17e48e276c5a11126f1e61b",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 112,
+      "hasStructuralAnalysis": false
+    },
+    "docs/SYSTEM_DESIGN.md": {
+      "filePath": "docs/SYSTEM_DESIGN.md",
+      "contentHash": "ec799cb9043f7940d8e19a52b8d872b83d20de0c1fd234b531653b1773831a5f",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 103,
       "hasStructuralAnalysis": false
     },
     "package.json": {
       "filePath": "package.json",
-      "contentHash": "a2072cb09a44fcca8b0eb59f4743e8abf1fb9c9237983326eb0e625ddb0155c7",
+      "contentHash": "0eaf56d6e89582f682b857c91eec4c5fd9db4ea4a79fda0ded8b21ccf37e0a9c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 28,
+      "totalLines": 37,
       "hasStructuralAnalysis": false
+    },
+    "scripts/build-deck.mjs": {
+      "filePath": "scripts/build-deck.mjs",
+      "contentHash": "78e9df9b7be3b760be4d9b79e28c891901f5f93444839a8ab321bab8868c1611",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:fs/promises",
+          "specifiers": [
+            "mkdir",
+            "copyFile",
+            "readFile",
+            "writeFile"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 10,
+      "hasStructuralAnalysis": true
     },
     "src/api.ts": {
       "filePath": "src/api.ts",
-      "contentHash": "7975eb98a33252d8aab2df3b553788d89b254b5096545e3dd79c52d36a04d565",
+      "contentHash": "430aad76dc753c558be1b7fb8106e974a74acf82557ed1c0dc20e1c357574931",
       "functions": [
         {
           "name": "corsHeaders",
@@ -135,7 +923,7 @@
           "name": "goldPayload",
           "params": [],
           "exported": false,
-          "lineCount": 11
+          "lineCount": 10
         },
         {
           "name": "handle",
@@ -144,7 +932,7 @@
             "res"
           ],
           "exported": false,
-          "lineCount": 35
+          "lineCount": 74
         },
         {
           "name": "startApi",
@@ -163,6 +951,31 @@
             "IncomingMessage",
             "Server",
             "ServerResponse"
+          ]
+        },
+        {
+          "source": "node:fs/promises",
+          "specifiers": [
+            "readFile"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "existsSync"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "dirname",
+            "join"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
           ]
         },
         {
@@ -191,17 +1004,41 @@
             "listSignals",
             "startedAt"
           ]
+        },
+        {
+          "source": "./engine/state.js",
+          "specifiers": [
+            "engineState"
+          ]
+        },
+        {
+          "source": "./engine/ledger.js",
+          "specifiers": [
+            "ledgerTail"
+          ]
+        },
+        {
+          "source": "./strategies/registry.js",
+          "specifiers": [
+            "loadStrategies"
+          ]
+        },
+        {
+          "source": "./engine/risk.js",
+          "specifiers": [
+            "KILL_FILE"
+          ]
         }
       ],
       "exports": [
         "startApi"
       ],
-      "totalLines": 135,
+      "totalLines": 185,
       "hasStructuralAnalysis": true
     },
     "src/config.ts": {
       "filePath": "src/config.ts",
-      "contentHash": "8dfe02963da511283b4cb9ea72e0f3aedca67f009e1b478455eb8aa977317a86",
+      "contentHash": "d4d8d29c34b1ca2306aaaa830b557978149f48360bd66658e2e97dd4dd37b591",
       "functions": [
         {
           "name": "num",
@@ -236,12 +1073,1246 @@
         "QUOTE_TOKENS",
         "config"
       ],
-      "totalLines": 84,
+      "totalLines": 100,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/backtest.ts": {
+      "filePath": "src/engine/backtest.ts",
+      "contentHash": "7c7c58e22a8f2359672fbd1dce2e52f4cdba21f3d1378e9c51f658a9e1bb165a",
+      "functions": [
+        {
+          "name": "replayOne",
+          "params": [
+            "strategy",
+            "params",
+            "symbol",
+            "candles",
+            "feePct",
+            "slipBps",
+            "barMs"
+          ],
+          "returnType": "BacktestRow",
+          "exported": true,
+          "lineCount": 60
+        },
+        {
+          "name": "readBinanceCandles",
+          "params": [
+            "path",
+            "stepMs"
+          ],
+          "returnType": "Candle[]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "runBacktest",
+          "params": [
+            "symbols",
+            "interval",
+            "archive",
+            "names"
+          ],
+          "exported": true,
+          "lineCount": 20
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "readFileSync",
+            "writeFileSync",
+            "mkdirSync"
+          ]
+        },
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "Candle",
+            "Strategy"
+          ]
+        },
+        {
+          "source": "../strategies/registry.js",
+          "specifiers": [
+            "loadStrategies"
+          ]
+        },
+        {
+          "source": "./market.js",
+          "specifiers": [
+            "completedCandles",
+            "intervalMs",
+            "refreshSymbol"
+          ]
+        },
+        {
+          "source": "./portfolio.js",
+          "specifiers": [
+            "PaperPortfolio"
+          ]
+        },
+        {
+          "source": "./risk.js",
+          "specifiers": [
+            "RiskEngine"
+          ]
+        },
+        {
+          "source": "./execution.js",
+          "specifiers": [
+            "managedSize",
+            "MANAGED_SLIPPAGE_BPS",
+            "positionExit",
+            "slippedPrice"
+          ]
+        },
+        {
+          "source": "../config.js",
+          "specifiers": [
+            "config"
+          ]
+        }
+      ],
+      "exports": [
+        "replayOne",
+        "readBinanceCandles",
+        "runBacktest"
+      ],
+      "totalLines": 132,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/decisions.ts": {
+      "filePath": "src/engine/decisions.ts",
+      "contentHash": "b592c21f14c6033977df396ccf723846b62ed798d5f831fff58bb2e911098f2e",
+      "functions": [
+        {
+          "name": "makeModel",
+          "params": [
+            "env"
+          ],
+          "returnType": "DecisionModel | null",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [
+        {
+          "name": "JevModel",
+          "methods": [
+            "constructor",
+            "decide"
+          ],
+          "properties": [
+            "name"
+          ],
+          "exported": true,
+          "lineCount": 33
+        }
+      ],
+      "imports": [
+        {
+          "source": "../logger.js",
+          "specifiers": [
+            "logger"
+          ]
+        },
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "StrategyContext",
+            "TradeIntent"
+          ]
+        }
+      ],
+      "exports": [
+        "JevModel",
+        "makeModel"
+      ],
+      "totalLines": 51,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/execution.ts": {
+      "filePath": "src/engine/execution.ts",
+      "contentHash": "975005474ba16385dfe00b32d4d407c34b07c597ea66c146b910ab265ba8360f",
+      "functions": [
+        {
+          "name": "slippedPrice",
+          "params": [
+            "price",
+            "side",
+            "bps"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "managedSize",
+          "params": [
+            "intent",
+            "equity",
+            "feePct",
+            "slipBps",
+            "notionalCap"
+          ],
+          "exported": true,
+          "lineCount": 12
+        },
+        {
+          "name": "positionExit",
+          "params": [
+            "p",
+            "mark",
+            "now"
+          ],
+          "returnType": "string | null",
+          "exported": true,
+          "lineCount": 12
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "Position",
+            "Side",
+            "TradeIntent"
+          ]
+        }
+      ],
+      "exports": [
+        "MANAGED_SLIPPAGE_BPS",
+        "slippedPrice",
+        "managedSize",
+        "positionExit"
+      ],
+      "totalLines": 34,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/hosted-api.ts": {
+      "filePath": "src/engine/hosted-api.ts",
+      "contentHash": "388c748fc0f21613170c1a4197acbcd4d2fe8aba039a4af821050238eec6acc2",
+      "functions": [
+        {
+          "name": "reply",
+          "params": [
+            "status",
+            "body"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "failure",
+          "params": [
+            "status",
+            "error"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "authorized",
+          "params": [
+            "given",
+            "secret"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "hostedRead",
+          "params": [
+            "url",
+            "method",
+            "authorization"
+          ],
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "hostedCron",
+          "params": [
+            "method",
+            "authorization"
+          ],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:crypto",
+          "specifiers": [
+            "timingSafeEqual"
+          ]
+        },
+        {
+          "source": "../logger.js",
+          "specifiers": [
+            "logger"
+          ]
+        },
+        {
+          "source": "./hosted.js",
+          "specifiers": [
+            "createHostedStore",
+            "hostedEngineEnabled",
+            "hostedStrategies",
+            "runHostedCycle"
+          ]
+        },
+        {
+          "source": "./market.js",
+          "specifiers": [
+            "Feed"
+          ]
+        },
+        {
+          "source": "./state.js",
+          "specifiers": [
+            "EngineSnapshot"
+          ]
+        }
+      ],
+      "exports": [
+        "hostedReadPaths",
+        "hostedRead",
+        "hostedCron"
+      ],
+      "totalLines": 80,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/hosted.ts": {
+      "filePath": "src/engine/hosted.ts",
+      "contentHash": "68a85182a628a688dcc142712891c59ef41dc65aef65a46b6df9301e18351787",
+      "functions": [
+        {
+          "name": "hostedStrategies",
+          "params": [],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "createHostedStore",
+          "params": [
+            "env"
+          ],
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "runHostedCycle",
+          "params": [
+            "store",
+            "slot",
+            "refresh",
+            "strategies"
+          ],
+          "exported": true,
+          "lineCount": 42
+        },
+        {
+          "name": "hostedEngineEnabled",
+          "params": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../../data/strategies.json",
+          "specifiers": [
+            "strategyConfig"
+          ]
+        },
+        {
+          "source": "../config.js",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "../strategies/registry.js",
+          "specifiers": [
+            "loadStrategies"
+          ]
+        },
+        {
+          "source": "./ledger.js",
+          "specifiers": [
+            "hashLedgerPayload",
+            "LedgerRecord"
+          ]
+        },
+        {
+          "source": "./loop.js",
+          "specifiers": [
+            "createPaperEngine",
+            "EngineCheckpoint"
+          ]
+        },
+        {
+          "source": "./market.js",
+          "specifiers": [
+            "fetchSymbol",
+            "Feed"
+          ]
+        },
+        {
+          "source": "./state.js",
+          "specifiers": [
+            "EngineSnapshot"
+          ]
+        },
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "DecisionRecord"
+          ]
+        }
+      ],
+      "exports": [
+        "hostedStrategies",
+        "createHostedStore",
+        "runHostedCycle",
+        "hostedEngineEnabled"
+      ],
+      "totalLines": 104,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/indicators.ts": {
+      "filePath": "src/engine/indicators.ts",
+      "contentHash": "4a8086756d0b88966c177ced2eaa363b713f23a02ccd18a765e672825feae713",
+      "functions": [
+        {
+          "name": "closes",
+          "params": [
+            "cs"
+          ],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "highs",
+          "params": [
+            "cs"
+          ],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "lows",
+          "params": [
+            "cs"
+          ],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "vols",
+          "params": [
+            "cs"
+          ],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "sma",
+          "params": [
+            "xs",
+            "n"
+          ],
+          "returnType": "number | null",
+          "exported": true,
+          "lineCount": 6
+        },
+        {
+          "name": "emaSeries",
+          "params": [
+            "xs",
+            "n"
+          ],
+          "returnType": "number[]",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "ema",
+          "params": [
+            "xs",
+            "n"
+          ],
+          "returnType": "number | null",
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "rsi",
+          "params": [
+            "xs",
+            "n"
+          ],
+          "returnType": "number | null",
+          "exported": true,
+          "lineCount": 11
+        },
+        {
+          "name": "atr",
+          "params": [
+            "cs",
+            "n"
+          ],
+          "returnType": "number | null",
+          "exported": true,
+          "lineCount": 9
+        },
+        {
+          "name": "macd",
+          "params": [
+            "xs",
+            "fast",
+            "slow",
+            "sig"
+          ],
+          "returnType": "{ line: number; histogram: number } | null",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "macdHist",
+          "params": [
+            "xs",
+            "fast",
+            "slow",
+            "sig"
+          ],
+          "returnType": "number | null",
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "bollinger",
+          "params": [
+            "xs",
+            "n",
+            "mult"
+          ],
+          "returnType": "{ mid: number; up: number; lo: number } | null",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "zscore",
+          "params": [
+            "xs",
+            "n"
+          ],
+          "returnType": "number | null",
+          "exported": true,
+          "lineCount": 8
+        },
+        {
+          "name": "pctChange",
+          "params": [
+            "xs",
+            "n"
+          ],
+          "returnType": "number | null",
+          "exported": true,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "Candle"
+          ]
+        }
+      ],
+      "exports": [
+        "closes",
+        "highs",
+        "lows",
+        "vols",
+        "sma",
+        "emaSeries",
+        "ema",
+        "rsi",
+        "atr",
+        "macd",
+        "macdHist",
+        "bollinger",
+        "zscore",
+        "pctChange"
+      ],
+      "totalLines": 94,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/ledger.ts": {
+      "filePath": "src/engine/ledger.ts",
+      "contentHash": "59743252a4d3433dde3e0fec29a4054e264d1c4efeeca53600a1d6da0b1b068e",
+      "functions": [
+        {
+          "name": "rollDay",
+          "params": [
+            "ts"
+          ],
+          "exported": false,
+          "lineCount": 8
+        },
+        {
+          "name": "hashLedgerPayload",
+          "params": [
+            "prevHash",
+            "seq",
+            "type",
+            "payload"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "recordHash",
+          "params": [
+            "prevHash",
+            "seq",
+            "type",
+            "data"
+          ],
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "follows",
+          "params": [
+            "newer",
+            "older"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "validateLegacyLedger",
+          "params": [
+            "files"
+          ],
+          "returnType": "LedgerRecord<T> | undefined",
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "ledgerResumeLatestCheckpoint",
+          "params": [],
+          "returnType": "LedgerRecord<T> | undefined",
+          "exported": true,
+          "lineCount": 25
+        },
+        {
+          "name": "ledgerAppend",
+          "params": [
+            "type",
+            "data",
+            "ts"
+          ],
+          "returnType": "LedgerRecord<T>",
+          "exported": true,
+          "lineCount": 10
+        },
+        {
+          "name": "ledgerTail",
+          "params": [
+            "limit",
+            "type"
+          ],
+          "returnType": "LedgerRecord[]",
+          "exported": true,
+          "lineCount": 13
+        },
+        {
+          "name": "ledgerAllToday",
+          "params": [
+            "type"
+          ],
+          "returnType": "LedgerRecord[]",
+          "exported": true,
+          "lineCount": 3
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "appendFileSync",
+            "existsSync",
+            "mkdirSync",
+            "readdirSync",
+            "readFileSync"
+          ]
+        },
+        {
+          "source": "node:crypto",
+          "specifiers": [
+            "createHash"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "dirname",
+            "join"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        }
+      ],
+      "exports": [
+        "LEDGER_DIR",
+        "hashLedgerPayload",
+        "ledgerResumeLatestCheckpoint",
+        "ledgerAppend",
+        "ledgerTail",
+        "ledgerAllToday"
+      ],
+      "totalLines": 145,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/loop.ts": {
+      "filePath": "src/engine/loop.ts",
+      "contentHash": "368a62fcc41d20b1ed4a9a5d436f3d17362d8a46281dca82307da6d97a151705",
+      "functions": [
+        {
+          "name": "createPaperEngine",
+          "params": [
+            "options"
+          ],
+          "exported": true,
+          "lineCount": 205
+        },
+        {
+          "name": "monitorSignals",
+          "params": [],
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "runEngineCycle",
+          "params": [],
+          "exported": true,
+          "lineCount": 16
+        },
+        {
+          "name": "startEngineLoop",
+          "params": [],
+          "exported": true,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../logger.js",
+          "specifiers": [
+            "logger"
+          ]
+        },
+        {
+          "source": "../config.js",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "./market.js",
+          "specifiers": [
+            "closedStrategyBars",
+            "refreshSymbol",
+            "Feed",
+            "fetchSymbol"
+          ]
+        },
+        {
+          "source": "./execution.js",
+          "specifiers": [
+            "managedSize",
+            "MANAGED_SLIPPAGE_BPS",
+            "positionExit",
+            "slippedPrice"
+          ]
+        },
+        {
+          "source": "./portfolio.js",
+          "specifiers": [
+            "PaperPortfolio"
+          ]
+        },
+        {
+          "source": "./risk.js",
+          "specifiers": [
+            "RiskEngine"
+          ]
+        },
+        {
+          "source": "./ledger.js",
+          "specifiers": [
+            "ledgerAppend",
+            "ledgerResumeLatestCheckpoint",
+            "LedgerRecord"
+          ]
+        },
+        {
+          "source": "../strategies/registry.js",
+          "specifiers": [
+            "loadStrategies"
+          ]
+        },
+        {
+          "source": "../store.js",
+          "specifiers": [
+            "getGoldSnapshot",
+            "listSignals"
+          ]
+        },
+        {
+          "source": "./state.js",
+          "specifiers": [
+            "engineState"
+          ]
+        },
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "DecisionRecord",
+            "Fill",
+            "StrategyContext",
+            "TradeIntent"
+          ]
+        }
+      ],
+      "exports": [
+        "createPaperEngine",
+        "{ portfolio, risk }",
+        "runEngineCycle",
+        "startEngineLoop"
+      ],
+      "totalLines": 283,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/market.ts": {
+      "filePath": "src/engine/market.ts",
+      "contentHash": "ae158a4a3f7fe073d3ff2d55a4e34d7fbe2316da37879abc453b9163e36493c1",
+      "functions": [
+        {
+          "name": "fetchMarket",
+          "params": [
+            "url"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "fromBinance",
+          "params": [
+            "symbol",
+            "interval"
+          ],
+          "returnType": "Promise<Candle[]>",
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "fromBybit",
+          "params": [
+            "symbol",
+            "interval"
+          ],
+          "returnType": "Promise<Candle[]>",
+          "exported": false,
+          "lineCount": 7
+        },
+        {
+          "name": "fromCoinbase",
+          "params": [
+            "symbol",
+            "gran"
+          ],
+          "returnType": "Promise<Candle[]>",
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "fromKraken",
+          "params": [
+            "symbol",
+            "interval"
+          ],
+          "returnType": "Promise<Candle[]>",
+          "exported": false,
+          "lineCount": 10
+        },
+        {
+          "name": "intervalMs",
+          "params": [
+            "interval"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "completedCandles",
+          "params": [
+            "feed",
+            "interval"
+          ],
+          "exported": true,
+          "lineCount": 4
+        },
+        {
+          "name": "closedStrategyBars",
+          "params": [
+            "feed",
+            "interval",
+            "count"
+          ],
+          "returnType": "Candle[]",
+          "exported": true,
+          "lineCount": 7
+        },
+        {
+          "name": "fetchSymbol",
+          "params": [
+            "symbol",
+            "interval",
+            "{ requireRecent = true, closedBars = 0 }"
+          ],
+          "returnType": "Promise<Feed | null>",
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "refreshSymbol",
+          "params": [
+            "symbol",
+            "interval",
+            "{ requireRecent = false, closedBars = 0 }"
+          ],
+          "returnType": "Promise<Feed | null>",
+          "exported": true,
+          "lineCount": 5
+        },
+        {
+          "name": "getFeed",
+          "params": [
+            "symbol"
+          ],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../logger.js",
+          "specifiers": [
+            "logger"
+          ]
+        },
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "Candle"
+          ]
+        }
+      ],
+      "exports": [
+        "intervalMs",
+        "completedCandles",
+        "closedStrategyBars",
+        "fetchSymbol",
+        "refreshSymbol",
+        "getFeed"
+      ],
+      "totalLines": 130,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/portfolio.ts": {
+      "filePath": "src/engine/portfolio.ts",
+      "contentHash": "8afbd35d55f666ed63224ae94c02f3f36bb4f05d65462060b9a44a6ce6f926f9",
+      "functions": [],
+      "classes": [
+        {
+          "name": "PaperPortfolio",
+          "methods": [
+            "constructor",
+            "checkpoint",
+            "restoreCheckpoint",
+            "canOpen",
+            "open",
+            "close",
+            "equity",
+            "unrealized",
+            "key"
+          ],
+          "properties": [
+            "cashUsd",
+            "positions",
+            "realizedUsd",
+            "feesUsd",
+            "tradesClosed",
+            "wins",
+            "seq"
+          ],
+          "exported": true,
+          "lineCount": 101
+        }
+      ],
+      "imports": [
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "Fill",
+            "Position",
+            "TradeIntent"
+          ]
+        }
+      ],
+      "exports": [
+        "PaperPortfolio"
+      ],
+      "totalLines": 115,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/risk.ts": {
+      "filePath": "src/engine/risk.ts",
+      "contentHash": "540ffdb0186de2e0e8f08a9a4e88dbe6162598290a5234f93ae87ec723b380f0",
+      "functions": [],
+      "classes": [
+        {
+          "name": "RiskEngine",
+          "methods": [
+            "constructor",
+            "checkpoint",
+            "restoreCheckpoint",
+            "baselineDay",
+            "check",
+            "recordClose"
+          ],
+          "properties": [
+            "dayStart",
+            "dayStartEquity",
+            "losses",
+            "killed"
+          ],
+          "exported": true,
+          "lineCount": 49
+        }
+      ],
+      "imports": [
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "existsSync"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "dirname",
+            "join"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        },
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "TradeIntent",
+            "Position"
+          ]
+        }
+      ],
+      "exports": [
+        "KILL_FILE",
+        "RiskEngine"
+      ],
+      "totalLines": 70,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/state.ts": {
+      "filePath": "src/engine/state.ts",
+      "contentHash": "7314f63f9ea3c596eef0ce3b3ed4c4151ee8371000da946615f412ca6b0ec36e",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "DecisionRecord",
+            "Position"
+          ]
+        }
+      ],
+      "exports": [
+        "engineState"
+      ],
+      "totalLines": 23,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/stress.ts": {
+      "filePath": "src/engine/stress.ts",
+      "contentHash": "7d91ca0ce123c8aa5f73ccfe1768ae68254a17168698189eaad997364fa26a77",
+      "functions": [
+        {
+          "name": "runStress",
+          "params": [
+            "symbols",
+            "interval"
+          ],
+          "exported": true,
+          "lineCount": 24
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "mkdirSync",
+            "writeFileSync"
+          ]
+        },
+        {
+          "source": "../strategies/registry.js",
+          "specifiers": [
+            "loadStrategies"
+          ]
+        },
+        {
+          "source": "./market.js",
+          "specifiers": [
+            "completedCandles",
+            "intervalMs",
+            "refreshSymbol"
+          ]
+        },
+        {
+          "source": "./backtest.js",
+          "specifiers": [
+            "replayOne"
+          ]
+        },
+        {
+          "source": "../config.js",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "Candle"
+          ]
+        }
+      ],
+      "exports": [
+        "runStress"
+      ],
+      "totalLines": 53,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/sweep.ts": {
+      "filePath": "src/engine/sweep.ts",
+      "contentHash": "22933ee815e532d19558e394bc2904d64bdf84cf3819bc4a62644b3c56565891",
+      "functions": [
+        {
+          "name": "runSweep",
+          "params": [
+            "stratName",
+            "symbols",
+            "interval"
+          ],
+          "exported": true,
+          "lineCount": 26
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "mkdirSync",
+            "writeFileSync"
+          ]
+        },
+        {
+          "source": "../strategies/registry.js",
+          "specifiers": [
+            "loadStrategies"
+          ]
+        },
+        {
+          "source": "./market.js",
+          "specifiers": [
+            "completedCandles",
+            "intervalMs",
+            "refreshSymbol"
+          ]
+        },
+        {
+          "source": "./backtest.js",
+          "specifiers": [
+            "replayOne"
+          ]
+        },
+        {
+          "source": "../config.js",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "Candle"
+          ]
+        }
+      ],
+      "exports": [
+        "runSweep"
+      ],
+      "totalLines": 81,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/types.ts": {
+      "filePath": "src/engine/types.ts",
+      "contentHash": "f068318b1291a9276fd2da7eb438aebd34fefa131bde9c3cf92a0c28d51d82fd",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 91,
       "hasStructuralAnalysis": true
     },
     "src/filter.ts": {
       "filePath": "src/filter.ts",
-      "contentHash": "acc0018aa25081d31f0c6e488ca923469855b27cc6ebb80bb2b390a7a409a50d",
+      "contentHash": "3f58228aef24a1b161ee057c91aabf2dd934f875920c6486f8d0efcfd1ce6694",
       "functions": [
         {
           "name": "makeClient",
@@ -382,14 +2453,14 @@
     },
     "src/gold_rwa.ts": {
       "filePath": "src/gold_rwa.ts",
-      "contentHash": "6eb7acb794fd0caad53fa6f178170e7c80d370e663f0ec7030a6956a1458c23e",
+      "contentHash": "02c9567caa60cb4783320963cac42fd6fcd8ba89db4c48be7de4a14460415bf4",
       "functions": [
         {
           "name": "fetchSpotGold",
           "params": [],
           "returnType": "Promise<{ usd: number; source: string } | null>",
           "exported": true,
-          "lineCount": 13
+          "lineCount": 16
         },
         {
           "name": "dexQuote",
@@ -398,7 +2469,7 @@
             "address"
           ],
           "exported": false,
-          "lineCount": 15
+          "lineCount": 20
         },
         {
           "name": "classify",
@@ -445,13 +2516,13 @@
           "params": [],
           "returnType": "Promise<GoldQuote[]>",
           "exported": true,
-          "lineCount": 28
+          "lineCount": 29
         },
         {
           "name": "startGoldLoop",
           "params": [],
           "exported": true,
-          "lineCount": 5
+          "lineCount": 16
         }
       ],
       "classes": [],
@@ -521,12 +2592,12 @@
         "runGoldCycle",
         "startGoldLoop"
       ],
-      "totalLines": 166,
+      "totalLines": 187,
       "hasStructuralAnalysis": true
     },
     "src/index.ts": {
       "filePath": "src/index.ts",
-      "contentHash": "7a499e586aeba9c9be6aed8bf0b75d78a13e8719836210ef53b5296b112332e6",
+      "contentHash": "3ebe6168122a45882ba0cfbc2fe374fae62f649981f642060dcb9a37f2c4cf5d",
       "functions": [],
       "classes": [],
       "imports": [
@@ -549,6 +2620,18 @@
           ]
         },
         {
+          "source": "./engine/loop.js",
+          "specifiers": [
+            "startEngineLoop"
+          ]
+        },
+        {
+          "source": "./config.js",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
           "source": "./logger.js",
           "specifiers": [
             "logger"
@@ -556,12 +2639,12 @@
         }
       ],
       "exports": [],
-      "totalLines": 15,
+      "totalLines": 18,
       "hasStructuralAnalysis": true
     },
     "src/listener.ts": {
       "filePath": "src/listener.ts",
-      "contentHash": "357072ecfc28d8a775ca90946f14996781ae20f5674e23b1587531f7e43db624",
+      "contentHash": "da5127c430c9679ff720e73c0e6d66a86c7f0f5297ad4d8f02df829faf6cc847",
       "functions": [
         {
           "name": "dedupe",
@@ -592,10 +2675,29 @@
           "lineCount": 32
         },
         {
+          "name": "isFilterGone",
+          "params": [
+            "e"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 2
+        },
+        {
+          "name": "watchWithResubscribe",
+          "params": [
+            "client",
+            "ctx",
+            "params"
+          ],
+          "exported": false,
+          "lineCount": 16
+        },
+        {
           "name": "startListener",
           "params": [],
           "exported": true,
-          "lineCount": 27
+          "lineCount": 25
         }
       ],
       "classes": [],
@@ -607,7 +2709,8 @@
             "getAddress",
             "formatUnits",
             "Address",
-            "Log"
+            "Log",
+            "PublicClient"
           ]
         },
         {
@@ -654,7 +2757,7 @@
       "exports": [
         "startListener"
       ],
-      "totalLines": 127,
+      "totalLines": 147,
       "hasStructuralAnalysis": true
     },
     "src/logger.ts": {
@@ -678,7 +2781,7 @@
     },
     "src/notifier.ts": {
       "filePath": "src/notifier.ts",
-      "contentHash": "1949836cb07bb31f17504a65d77f38001c210861896a7df04510e483628197db",
+      "contentHash": "f14f0c17eb094eafff70a69ace4a067a503707f8f83ef6049df3ca59d521a925",
       "functions": [
         {
           "name": "fmtUsd",
@@ -704,7 +2807,7 @@
           ],
           "returnType": "Promise<void>",
           "exported": true,
-          "lineCount": 31
+          "lineCount": 33
         }
       ],
       "classes": [],
@@ -739,12 +2842,12 @@
         "renderText",
         "dispatch"
       ],
-      "totalLines": 76,
+      "totalLines": 80,
       "hasStructuralAnalysis": true
     },
     "src/store.ts": {
       "filePath": "src/store.ts",
-      "contentHash": "6d837f672824b54f288506043b96935c097763dd962b36a4268d002953a4dfa2",
+      "contentHash": "2cafb848f94e2ed136fac15a1b453d55f162522fcf3e836df6870d3c5c647c13",
       "functions": [
         {
           "name": "recordSignal",
@@ -779,14 +2882,14 @@
           ],
           "returnType": "void",
           "exported": true,
-          "lineCount": 8
+          "lineCount": 12
         },
         {
           "name": "getGoldSnapshot",
           "params": [],
           "returnType": "GoldSnapshot",
           "exported": true,
-          "lineCount": 3
+          "lineCount": 10
         }
       ],
       "classes": [],
@@ -802,6 +2905,12 @@
           "specifiers": [
             "WhaleSignal"
           ]
+        },
+        {
+          "source": "./config.js",
+          "specifiers": [
+            "config"
+          ]
         }
       ],
       "exports": [
@@ -812,7 +2921,164 @@
         "setGoldSnapshot",
         "getGoldSnapshot"
       ],
-      "totalLines": 46,
+      "totalLines": 58,
+      "hasStructuralAnalysis": true
+    },
+    "src/strategies/library.ts": {
+      "filePath": "src/strategies/library.ts",
+      "contentHash": "ac62bc0bdc300d6ecff89f8932e761f69a721a3e650c6f6ed564ca6620e40dfa",
+      "functions": [
+        {
+          "name": "buy",
+          "params": [
+            "strategy",
+            "symbol",
+            "confidence",
+            "reason",
+            "extra"
+          ],
+          "returnType": "any",
+          "exported": false,
+          "lineCount": 2
+        },
+        {
+          "name": "sell",
+          "params": [
+            "strategy",
+            "symbol",
+            "confidence",
+            "reason"
+          ],
+          "returnType": "any",
+          "exported": false,
+          "lineCount": 2
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../engine/types.js",
+          "specifiers": [
+            "Strategy"
+          ]
+        },
+        {
+          "source": "../engine/indicators.js",
+          "specifiers": [
+            "closes",
+            "highs",
+            "lows",
+            "vols",
+            "sma",
+            "ema",
+            "rsi",
+            "atr",
+            "macdHist",
+            "bollinger",
+            "zscore",
+            "pctChange"
+          ]
+        },
+        {
+          "source": "./macd-bb.js",
+          "specifiers": [
+            "macdBb"
+          ]
+        }
+      ],
+      "exports": [
+        "LIBRARY"
+      ],
+      "totalLines": 322,
+      "hasStructuralAnalysis": true
+    },
+    "src/strategies/macd-bb.ts": {
+      "filePath": "src/strategies/macd-bb.ts",
+      "contentHash": "2abc4ecefe52a49a994aee59e423f14dfa95c4d0ae1a769570b15894949f6d8c",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../engine/indicators.js",
+          "specifiers": [
+            "atr",
+            "bollinger",
+            "closes",
+            "macd"
+          ]
+        },
+        {
+          "source": "../engine/types.js",
+          "specifiers": [
+            "Strategy"
+          ]
+        }
+      ],
+      "exports": [
+        "macdBb"
+      ],
+      "totalLines": 38,
+      "hasStructuralAnalysis": true
+    },
+    "src/strategies/registry.ts": {
+      "filePath": "src/strategies/registry.ts",
+      "contentHash": "a7874153f989af2793692f32278ab9d7e485beeb9693de00175c66b6f4bdeeaf",
+      "functions": [
+        {
+          "name": "loadStrategies",
+          "params": [
+            "overrides"
+          ],
+          "returnType": "ActiveStrategy[]",
+          "exported": true,
+          "lineCount": 10
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "readFileSync",
+            "existsSync"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "dirname",
+            "join"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        },
+        {
+          "source": "../logger.js",
+          "specifiers": [
+            "logger"
+          ]
+        },
+        {
+          "source": "./library.js",
+          "specifiers": [
+            "LIBRARY"
+          ]
+        },
+        {
+          "source": "../engine/types.js",
+          "specifiers": [
+            "Strategy"
+          ]
+        }
+      ],
+      "exports": [
+        "loadStrategies"
+      ],
+      "totalLines": 26,
       "hasStructuralAnalysis": true
     },
     "src/wallets.ts": {
@@ -891,6 +3157,603 @@
       "totalLines": 56,
       "hasStructuralAnalysis": true
     },
+    "supabase/migrations/20261124215149_hosted_paper_engine.sql": {
+      "filePath": "supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "contentHash": "9433df7c99963919ef464ff0b2934a5c156e03803cb19c80aea7cdf4f4639574",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 88,
+      "hasStructuralAnalysis": false
+    },
+    "supabase/schedule-paper-engine.sql": {
+      "filePath": "supabase/schedule-paper-engine.sql",
+      "contentHash": "4bce081f712972f775fc71f2d7b1b263ed401dc0df538545d16243c21a53a564",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29,
+      "hasStructuralAnalysis": false
+    },
+    "test/engine-market.test.ts": {
+      "filePath": "test/engine-market.test.ts",
+      "contentHash": "c4645c35a98f1d7ede2a912ba10f57288bf6b5e94802e865268d1e65c805824b",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test"
+          ]
+        },
+        {
+          "source": "node:timers/promises",
+          "specifiers": [
+            "setTimeout"
+          ]
+        },
+        {
+          "source": "../src/engine/market.js",
+          "specifiers": [
+            "getFeed",
+            "refreshSymbol"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 92,
+      "hasStructuralAnalysis": true
+    },
+    "test/engine-restart.test.ts": {
+      "filePath": "test/engine-restart.test.ts",
+      "contentHash": "cbf7033688735920aa91ef1d42e3a4ab4d64c07a579c3e6d6e210de2b53d432a",
+      "functions": [
+        {
+          "name": "fixture",
+          "params": [
+            "t",
+            "enabledStrategy"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "runProcess",
+          "params": [
+            "root",
+            "ts",
+            "prices",
+            "symbols",
+            "env",
+            "script"
+          ],
+          "exported": false,
+          "lineCount": 34
+        },
+        {
+          "name": "runCycle",
+          "params": [
+            "...args"
+          ],
+          "returnType": "EngineSnapshot",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "checkSnapshotApi",
+          "params": [
+            "root",
+            "assertions"
+          ],
+          "exported": false,
+          "lineCount": 23
+        },
+        {
+          "name": "legacyFork",
+          "params": [
+            "t",
+            "missingRow"
+          ],
+          "exported": false,
+          "lineCount": 22
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:child_process",
+          "specifiers": [
+            "spawnSync"
+          ]
+        },
+        {
+          "source": "node:crypto",
+          "specifiers": [
+            "createHash"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "copyFileSync",
+            "cpSync",
+            "mkdirSync",
+            "mkdtempSync",
+            "readFileSync",
+            "rmSync",
+            "symlinkSync",
+            "writeFileSync"
+          ]
+        },
+        {
+          "source": "node:os",
+          "specifiers": [
+            "tmpdir"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "join"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test",
+            "TestContext"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        },
+        {
+          "source": "../src/engine/state.js",
+          "specifiers": [
+            "EngineSnapshot"
+          ]
+        },
+        {
+          "source": "../src/strategies/library.js",
+          "specifiers": [
+            "LIBRARY"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 520,
+      "hasStructuralAnalysis": true
+    },
+    "test/engine-risk.test.ts": {
+      "filePath": "test/engine-risk.test.ts",
+      "contentHash": "ae8a6cfb673034bbf2247ae9f9d69f00b506a91e91aed169c25a0a9302ccd504",
+      "functions": [
+        {
+          "name": "runCycle",
+          "params": [
+            "t",
+            "overrides",
+            "{ sizeUsd = 300, price = 110, seedBtc = false }"
+          ],
+          "exported": false,
+          "lineCount": 60
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "copyFileSync",
+            "cpSync",
+            "mkdirSync",
+            "mkdtempSync",
+            "rmSync",
+            "symlinkSync",
+            "writeFileSync"
+          ]
+        },
+        {
+          "source": "node:os",
+          "specifiers": [
+            "tmpdir"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "join"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test",
+            "TestContext"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath",
+            "pathToFileURL"
+          ]
+        },
+        {
+          "source": "../src/strategies/library.js",
+          "specifiers": [
+            "LIBRARY"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 100,
+      "hasStructuralAnalysis": true
+    },
+    "test/gold-rwa.test.ts": {
+      "filePath": "test/gold-rwa.test.ts",
+      "contentHash": "e0d58fab47a0903246d053ddb24e898b8561d1baf420afd23b522fb9ee433f1e",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test"
+          ]
+        },
+        {
+          "source": "node:timers/promises",
+          "specifiers": [
+            "setImmediate",
+            "setTimeout"
+          ]
+        },
+        {
+          "source": "../src/config.js",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "../src/gold_rwa.js",
+          "specifiers": [
+            "GOLD_ASSETS",
+            "scanGold",
+            "startGoldLoop"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 62,
+      "hasStructuralAnalysis": true
+    },
+    "test/hosted-paper.test.ts": {
+      "filePath": "test/hosted-paper.test.ts",
+      "contentHash": "cb3cf340a0aee206b54d1045eb4508d9847c95ce530584db9138bcd2911421e5",
+      "functions": [
+        {
+          "name": "memoryStore",
+          "params": [],
+          "exported": false,
+          "lineCount": 21
+        },
+        {
+          "name": "refreshAt",
+          "params": [
+            "price"
+          ],
+          "exported": false,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:crypto",
+          "specifiers": [
+            "createHash"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test"
+          ]
+        },
+        {
+          "source": "../src/config.js",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "../src/engine/hosted-api.js",
+          "specifiers": [
+            "hostedCron",
+            "hostedRead"
+          ]
+        },
+        {
+          "source": "../src/engine/hosted.js",
+          "specifiers": [
+            "runHostedCycle"
+          ]
+        },
+        {
+          "source": "../src/engine/market.js",
+          "specifiers": [
+            "Feed"
+          ]
+        },
+        {
+          "source": "../src/strategies/registry.js",
+          "specifiers": [
+            "ActiveStrategy"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 182,
+      "hasStructuralAnalysis": true
+    },
+    "test/market.test.ts": {
+      "filePath": "test/market.test.ts",
+      "contentHash": "a0146041707654a9a2d3d89d3cad5122c57e47417e682baf220e8cc1c488c791",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test"
+          ]
+        },
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "../src/engine/market.js",
+          "specifiers": [
+            "closedStrategyBars",
+            "completedCandles",
+            "fetchSymbol"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 66,
+      "hasStructuralAnalysis": true
+    },
+    "test/paper-strategy.test.ts": {
+      "filePath": "test/paper-strategy.test.ts",
+      "contentHash": "3a288e8367489a0740753c2a1d555dc46dac20f8c4aef6bbc6a591037bf02534",
+      "functions": [
+        {
+          "name": "bar",
+          "params": [
+            "i",
+            "c",
+            "o"
+          ],
+          "returnType": "Candle",
+          "exported": false,
+          "lineCount": 1
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "existsSync",
+            "mkdtempSync",
+            "rmSync",
+            "writeFileSync"
+          ]
+        },
+        {
+          "source": "node:os",
+          "specifiers": [
+            "tmpdir"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "join"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test"
+          ]
+        },
+        {
+          "source": "../src/config.js",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "../src/engine/backtest.js",
+          "specifiers": [
+            "replayOne",
+            "runBacktest"
+          ]
+        },
+        {
+          "source": "../src/engine/execution.js",
+          "specifiers": [
+            "managedSize"
+          ]
+        },
+        {
+          "source": "../src/engine/market.js",
+          "specifiers": [
+            "closedStrategyBars"
+          ]
+        },
+        {
+          "source": "../src/engine/portfolio.js",
+          "specifiers": [
+            "PaperPortfolio"
+          ]
+        },
+        {
+          "source": "../src/engine/types.js",
+          "specifiers": [
+            "Candle",
+            "Strategy",
+            "TradeIntent"
+          ]
+        },
+        {
+          "source": "../src/strategies/macd-bb.js",
+          "specifiers": [
+            "macdBb"
+          ]
+        },
+        {
+          "source": "../src/strategies/registry.js",
+          "specifiers": [
+            "loadStrategies"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 97,
+      "hasStructuralAnalysis": true
+    },
+    "tests/deck.test.mjs": {
+      "filePath": "tests/deck.test.mjs",
+      "contentHash": "73c96e3e5e73bde132848e7d4d125ff2acbfdf7ba4718ae070962922e02e8266",
+      "functions": [
+        {
+          "name": "runtime",
+          "params": [],
+          "exported": false,
+          "lineCount": 18
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test"
+          ]
+        },
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "readFileSync"
+          ]
+        },
+        {
+          "source": "node:vm",
+          "specifiers": [
+            "vm"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 290,
+      "hasStructuralAnalysis": true
+    },
+    "tests/hosting.test.mjs": {
+      "filePath": "tests/hosting.test.mjs",
+      "contentHash": "0e9026606ede7146d3db3d95ddb403d38aded5f86255c082ed96cd23e0ca8cd3",
+      "functions": [
+        {
+          "name": "request",
+          "params": [
+            "url",
+            "authorization",
+            "query"
+          ],
+          "exported": false,
+          "lineCount": 6
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test",
+            "afterEach"
+          ]
+        },
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "../api/read.js",
+          "specifiers": [
+            "handler"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 94,
+      "hasStructuralAnalysis": true
+    },
     "tsconfig.json": {
       "filePath": "tsconfig.json",
       "contentHash": "5e99a4624c441aab8775e051b58f9269a2615e8a632a98346e0ac3ea371ccd09",
@@ -899,6 +3762,16 @@
       "imports": [],
       "exports": [],
       "totalLines": 15,
+      "hasStructuralAnalysis": false
+    },
+    "vercel.json": {
+      "filePath": "vercel.json",
+      "contentHash": "b5df3af35b820a64070a4cd154fadd19ec593a5af5837066c52d81711f881658",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 18,
       "hasStructuralAnalysis": false
     }
   }

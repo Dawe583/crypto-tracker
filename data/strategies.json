@@ -1,0 +1,178 @@
+{
+  "macd_bb_v1": {
+    "enabled": true
+  },
+  "ema_cross": {
+    "enabled": false,
+    "params": {
+      "fast": 8,
+      "slow": 55,
+      "sizeUsd": 300,
+      "stopLossPct": 4,
+      "takeProfitPct": 8,
+      "maxHoldMin": 720
+    }
+  },
+  "rsi_reversion": {
+    "enabled": false,
+    "params": {
+      "n": 14,
+      "oversold": 30,
+      "exitAt": 55,
+      "sizeUsd": 250,
+      "stopLossPct": 4,
+      "takeProfitPct": 5,
+      "maxHoldMin": 480
+    }
+  },
+  "bollinger_reversion": {
+    "enabled": false,
+    "params": {
+      "n": 20,
+      "mult": 2,
+      "sizeUsd": 250,
+      "stopLossPct": 4,
+      "takeProfitPct": 5,
+      "maxHoldMin": 360
+    }
+  },
+  "breakout": {
+    "enabled": false,
+    "params": {
+      "n": 20,
+      "volMult": 1.5,
+      "sizeUsd": 300,
+      "stopLossPct": 5,
+      "takeProfitPct": 12,
+      "maxHoldMin": 720
+    }
+  },
+  "macd_momentum": {
+    "enabled": false,
+    "params": {
+      "sizeUsd": 250,
+      "stopLossPct": 3,
+      "takeProfitPct": 6,
+      "maxHoldMin": 720
+    }
+  },
+  "vol_spike": {
+    "enabled": false,
+    "params": {
+      "n": 30,
+      "mult": 2,
+      "sizeUsd": 200,
+      "stopLossPct": 3,
+      "takeProfitPct": 5,
+      "maxHoldMin": 240
+    }
+  },
+  "atr_trend": {
+    "enabled": false,
+    "params": {
+      "trendN": 50,
+      "atrMult": 2.5,
+      "sizeUsd": 300,
+      "takeProfitPct": 6,
+      "maxHoldMin": 1440,
+      "n": 10,
+      "mult": 2,
+      "stopLossPct": 4
+    }
+  },
+  "grid": {
+    "enabled": false
+  },
+  "dca": {
+    "enabled": false,
+    "params": {
+      "intervalMin": 120
+    }
+  },
+  "zscore_reversion": {
+    "enabled": false,
+    "params": {
+      "n": 50,
+      "entryZ": -2.5,
+      "exitZ": 0.5,
+      "sizeUsd": 250,
+      "stopLossPct": 5,
+      "takeProfitPct": 7,
+      "maxHoldMin": 720
+    }
+  },
+  "whale_follow": {
+    "enabled": false
+  },
+  "gold_spread": {
+    "enabled": false
+  },
+  "donchian": {
+    "enabled": false,
+    "params": {
+      "n": 50,
+      "sizeUsd": 250,
+      "stopLossPct": 4,
+      "takeProfitPct": 12,
+      "maxHoldMin": 720
+    }
+  },
+  "vwap_reversion": {
+    "enabled": false,
+    "params": {
+      "n": 40,
+      "devPct": 2.5,
+      "sizeUsd": 250,
+      "stopLossPct": 4,
+      "takeProfitPct": 4,
+      "maxHoldMin": 480
+    }
+  },
+  "stoch_cross": {
+    "enabled": false,
+    "params": {
+      "k": 14,
+      "d": 3,
+      "zone": 25,
+      "sizeUsd": 250,
+      "stopLossPct": 3,
+      "takeProfitPct": 5,
+      "maxHoldMin": 480
+    }
+  },
+  "keltner_squeeze": {
+    "enabled": false,
+    "params": {}
+  },
+  "obv_drift": {
+    "enabled": false,
+    "params": {
+      "n": 30,
+      "sizeUsd": 200,
+      "stopLossPct": 4,
+      "takeProfitPct": 6,
+      "maxHoldMin": 1440
+    }
+  },
+  "roc_momentum": {
+    "enabled": false,
+    "params": {
+      "n": 6,
+      "entry": 0.8,
+      "sizeUsd": 200,
+      "stopLossPct": 3,
+      "takeProfitPct": 5,
+      "maxHoldMin": 360
+    }
+  },
+  "engulfing": {
+    "enabled": false,
+    "params": {
+      "volMult": 1.3,
+      "sizeUsd": 200,
+      "stopLossPct": 3,
+      "takeProfitPct": 7,
+      "maxHoldMin": 240
+    }
+  }
+}

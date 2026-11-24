@@ -9,12 +9,16 @@ node_modules/
 # Build output
 dist/
 build/
+public/
+.vercel/
 
 # Logs and runtime state
 *.log
 npm-debug.log*
 data/state.json
 data/gold_state.json
+data/signal_state.json
+data/signal_state.json.tmp
 *.pid
 
 # OS / editor
@@ -23,6 +27,13 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Understand-Anything scratch (graph, lessons, fingerprints and meta are committed)
+# Trading engine runtime artifacts
+data/ledger/
+data/KILL
+data/replay/
+supabase/.temp/
+supabase/.branches/
+
+# Knowledge-graph scratch files
 .ua/tmp/
 .ua/.trash-*/

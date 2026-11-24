@@ -19,6 +19,8 @@ export interface WhaleSignal {
   text?: string; // pre-rendered body for non-token alerts (e.g. Gold RWA)
 }
 
+const SEND_TIMEOUT_MS = 5_000;
+
 const fmtUsd = (n: number | null | undefined) =>
   n === null || n === undefined ? 'n/a' : n >= 1e6 ? `$${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `$${(n / 1e3).toFixed(1)}K` : `$${n.toFixed(2)}`;
 
@@ -52,6 +54,7 @@ export async function dispatch(s: WhaleSignal): Promise<void> {
     try {
       const r = await fetch(`https://api.telegram.org/bot${config.telegramToken}/sendMessage`, {
         method: 'POST',
+        signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ chat_id: config.telegramChatId, text, disable_web_page_preview: true }),
       });
@@ -65,6 +68,7 @@ export async function dispatch(s: WhaleSignal): Promise<void> {
     try {
       await fetch(config.webhookUrl, {
         method: 'POST',
+        signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ text, signal: s }),
       });

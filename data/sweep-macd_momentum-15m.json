@@ -1,0 +1,63 @@
+{
+  "at": "2026-11-24T11:07:26.181Z",
+  "strategy": "macd_momentum",
+  "interval": "15m",
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT",
+    "DOGEUSDT",
+    "AVAXUSDT",
+    "LINKUSDT"
+  ],
+  "results": [
+    {
+      "params": {
+        "sizeUsd": 250,
+        "stopLossPct": 3,
+        "takeProfitPct": 6,
+        "maxHoldMin": 720
+      },
+      "pnlUsd": 0,
+      "maxDdUsd": 0,
+      "trades": 0,
+      "score": 0
+    },
+    {
+      "params": {
+        "sizeUsd": 250,
+        "stopLossPct": 3,
+        "takeProfitPct": 10,
+        "maxHoldMin": 720
+      },
+      "pnlUsd": 0,
+      "maxDdUsd": 0,
+      "trades": 0,
+      "score": 0
+    },
+    {
+      "params": {
+        "sizeUsd": 250,
+        "stopLossPct": 5,
+        "takeProfitPct": 6,
+        "maxHoldMin": 720
+      },
+      "pnlUsd": 0,
+      "maxDdUsd": 0,
+      "trades": 0,
+      "score": 0
+    },
+    {
+      "params": {
+        "sizeUsd": 250,
+        "stopLossPct": 5,
+        "takeProfitPct": 10,
+        "maxHoldMin": 720
+      },
+      "pnlUsd": 0,
+      "maxDdUsd": 0,
+      "trades": 0,
+      "score": 0
+    }
+  ]
+}

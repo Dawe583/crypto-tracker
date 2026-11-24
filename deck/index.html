@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#050911" />
+  <title>CRYPTO DESK — live trading intelligence</title>
+  <link rel="preload" href="/deck/space-grotesk-latin.woff2" as="font" type="font/woff2" crossorigin />
+  <link rel="stylesheet" href="/deck/style.css" />
+</head>
+<body>
+  <a class="skip-link" href="#desk">Skip to dashboard</a>
+  <!-- top strip -->
+  <header class="hud topbar">
+    <div class="cell brand"><svg class="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M20 3 35 11.5v17L20 37 5 28.5v-17L20 3Z"/><path d="m5 11.5 15 9 15-9M20 20.5V37M12.5 16v8l7.5 4.5 7.5-4.5v-8"/><circle cx="20" cy="12" r="2"/></svg><div><h1>CRYPTO&nbsp;DESK</h1><span class="sub">six agents · one book</span></div></div>
+    <div class="cell"><label>NAV</label><b id="sNav">—</b></div>
+    <div class="cell"><label>DAY PNL</label><b id="sPnl">—</b></div>
+    <div class="cell"><label>WIN RATE</label><b id="sWin">—</b></div>
+    <div class="cell clock"><b id="sClock">--:--:--</b><label>UTC</label></div>
+    <div class="cell"><label>OPEN</label><b id="sOpen">—</b></div>
+    <div class="desk-controls"><span class="paper-badge">PAPER</span><button id="motionToggle" class="tool-button" aria-pressed="false">Pause motion</button><button class="kill" id="kill" disabled>Awaiting engine</button></div>
+  </header>
+
+  <aside class="demo-banner" id="demoBanner" hidden role="status">DEMO MODE · GENERATED DATA · NO ENGINE CONNECTED · TRADING CONTROLS DISABLED</aside>
+
+  <!-- live wire -->
+  <div class="wire"><span class="wire-label"><i class="dot" aria-hidden="true"></i><b id="connection" role="status">CONNECTING</b></span><div class="wire-track"><span id="wireMsg">LIVE WIRE — connecting to engine</span></div><span class="sync-label" id="syncLabel">SYNC —</span><i class="sync-progress" aria-hidden="true"></i></div>
+
+  <nav class="market-rail" id="marketRail" aria-label="Select market"></nav>
+
+  <main id="desk" tabindex="-1">
+    <section class="row r1">
+      <div class="panel nav-panel">
+        <div class="ptitle">SWARM PNL — BOOK BALANCE HISTORY <span class="right" id="running"></span></div>
+        <div class="bignav" id="bigNav">—</div>
+        <div class="navdelta" id="bigDelta"></div>
+        <canvas id="navChart" height="110"></canvas>
+        <div class="biasrow"><label>DIRECTIONAL BIAS</label><div class="biasbar"><i id="biasUp" class="u"></i><i id="biasDn" class="d"></i></div><span id="biasTxt"></span></div>
+        <div class="biasrow"><label>MATCHED INVENTORY</label><div class="biasbar"><i id="invB" class="u"></i><i id="invS" class="d"></i></div><span id="invTxt"></span></div>
+        <div class="stats4">
+          <div><label>TICKETS</label><b id="stTickets">0</b></div>
+          <div><label>WIN RATE</label><b id="stWin">—</b></div>
+          <div><label>AVG EDGE</label><b id="stEdge">—</b></div>
+          <div><label>MAX DD</label><b id="stDD">—</b></div>
+        </div>
+        <div class="ptitle" style="margin-top:8px">OPEN TICKETS <span class="right" id="openTickets"></span></div>
+        <div id="cortexList"></div>
+      </div>
+      <div class="panel brain-panel">
+        <div class="ptitle brain-title"><span>THE BRAIN <em>LIVE SYSTEM GRAPH</em></span><span id="brainMeta"></span></div>
+        <div class="brain-stage"><div class="brain-coordinate" aria-hidden="true">AGENTS × STRATEGIES × MARKETS</div><canvas id="brain" tabindex="0" role="img" aria-label="Interactive agent network. Drag or use arrow keys to rotate; plus and minus to zoom; zero to reset."></canvas><div class="brain-caption"><span>DRAG TO ORBIT · + / − TO ZOOM</span><button class="tool-button" id="resetBrain">Reset view</button></div></div>
+        <div class="pipeline" id="pipeline"></div>
+        <div class="agent-detail" id="agentDetail" role="status">SELECT AN AGENT TO ISOLATE ITS NEURAL PATHWAYS</div>
+      </div>
+      <div class="panel side-panel">
+        <div class="instrument">
+        <div class="ptitle">MODEL — FAIR vs MARKET</div>
+        <div id="modelRows"></div>
+        </div><div class="instrument">
+        <div class="ptitle">KELLY — SIZING THE STAKE</div>
+        <div id="kellyBox"></div>
+        </div><div class="instrument">
+        <div class="ptitle">MEMBRANE — EXECUTION BAND</div>
+        <canvas id="membrane" height="72"></canvas>
+        </div><div class="instrument">
+        <div class="ptitle">SYNAPTIC WEIGHTS</div>
+        <canvas id="weights" height="72"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <section class="row r2">
+      <div class="panel tape-panel">
+        <div class="ptitle">THE TAPE — <span id="tapeSym">BTCUSDT</span> · VWAP Σ-BANDS <span class="right"><span id="tapeRsi"></span> <span id="tapeChg"></span></span></div>
+        <div class="bigprice"><b id="bigPrice">—</b><span id="bigPriceSub"></span><span class="tape-note dim">ILLUSTRATIVE DEPTH & HEAT</span></div>
+        <div class="tape-body">
+          <canvas id="tapeChart"></canvas>
+          <div class="book" id="orderBook"></div>
+        </div>
+        <div class="ind-chips" id="indChips"></div>
+        <div class="sym-tabs" id="symTabs"></div>
+      </div>
+      <div class="panel cortex-panel">
+        <div class="ptitle">SENSORY CORTEX</div>
+        <canvas id="cortex"></canvas>
+        <div class="ptitle">CALCIUM IMAGING <span class="right dim">features × momentum</span></div>
+        <canvas id="calcium" height="110"></canvas>
+        <div class="ptitle">THOUGHT LOG</div>
+        <div class="thoughts" id="thoughts"></div>
+      </div>
+      <div class="panel">
+        <div class="ptitle">THE TRACE — EVERY STEP THE DESK TAKES</div>
+        <div class="trace" id="trace"></div>
+        <div class="ptitle" style="margin-top:8px">THE PRICER — FAN OF FUTURES</div>
+        <canvas id="pricer" height="150"></canvas>
+        <div class="instrument rotation-instrument">
+          <div class="ptitle">SIGNAL ROTATION <span class="right dim">strength × activity</span></div>
+          <canvas id="rotation" height="180"></canvas>
+          <div id="rotLegend" class="rot-legend"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="deck-footer"><span><i class="dot" aria-hidden="true"></i> CRYPTO DESK / PAPER TRADING</span><span>MARKET DATA · ILLUSTRATIVE NEURAL VISUALIZATION</span><span id="lastSync">Awaiting first sync</span></footer>
+
+  <script src="/deck/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,315 @@
+{
+  "at": "2026-11-24T11:07:13.939Z",
+  "strategy": "stoch_cross",
+  "interval": "15m",
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT",
+    "DOGEUSDT",
+    "AVAXUSDT",
+    "LINKUSDT"
+  ],
+  "results": [
+    {
+      "params": {
+        "k": 14,
+        "d": 3,
+        "zone": 25,
+        "sizeUsd": 250,
+        "stopLossPct": 3,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 29.69,
+      "maxDdUsd": 32.68,
+      "trades": 31,
+      "score": 13.35
+    },
+    {
+      "params": {
+        "k": 14,
+        "d": 3,
+        "zone": 25,
+        "sizeUsd": 250,
+        "stopLossPct": 3,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 29.69,
+      "maxDdUsd": 32.68,
+      "trades": 31,
+      "score": 13.35
+    },
+    {
+      "params": {
+        "k": 14,
+        "d": 3,
+        "zone": 25,
+        "sizeUsd": 250,
+        "stopLossPct": 5,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 29.69,
+      "maxDdUsd": 32.68,
+      "trades": 31,
+      "score": 13.35
+    },
+    {
+      "params": {
+        "k": 14,
+        "d": 3,
+        "zone": 25,
+        "sizeUsd": 250,
+        "stopLossPct": 5,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 29.69,
+      "maxDdUsd": 32.68,
+      "trades": 31,
+      "score": 13.35
+    },
+    {
+      "params": {
+        "k": 14,
+        "d": 3,
+        "zone": 20,
+        "sizeUsd": 250,
+        "stopLossPct": 3,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 20.85,
+      "maxDdUsd": 32.34,
+      "trades": 25,
+      "score": 4.68
+    },
+    {
+      "params": {
+        "k": 14,
+        "d": 3,
+        "zone": 20,
+        "sizeUsd": 250,
+        "stopLossPct": 3,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 20.85,
+      "maxDdUsd": 32.34,
+      "trades": 25,
+      "score": 4.68
+    },
+    {
+      "params": {
+        "k": 14,
+        "d": 3,
+        "zone": 20,
+        "sizeUsd": 250,
+        "stopLossPct": 5,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 20.85,
+      "maxDdUsd": 32.34,
+      "trades": 25,
+      "score": 4.68
+    },
+    {
+      "params": {
+        "k": 14,
+        "d": 3,
+        "zone": 20,
+        "sizeUsd": 250,
+        "stopLossPct": 5,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 20.85,
+      "maxDdUsd": 32.34,
+      "trades": 25,
+      "score": 4.68
+    },
+    {
+      "params": {
+        "k": 10,
+        "d": 3,
+        "zone": 25,
+        "sizeUsd": 250,
+        "stopLossPct": 3,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 4.01,
+      "maxDdUsd": 44.24,
+      "trades": 34,
+      "score": -18.11
+    },
+    {
+      "params": {
+        "k": 10,
+        "d": 3,
+        "zone": 25,
+        "sizeUsd": 250,
+        "stopLossPct": 3,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 4.01,
+      "maxDdUsd": 44.24,
+      "trades": 34,
+      "score": -18.11
+    },
+    {
+      "params": {
+        "k": 10,
+        "d": 3,
+        "zone": 20,
+        "sizeUsd": 250,
+        "stopLossPct": 3,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": -2.99,
+      "maxDdUsd": 32.38,
+      "trades": 22,
+      "score": -19.18
+    },
+    {
+      "params": {
+        "k": 10,
+        "d": 3,
+        "zone": 20,
+        "sizeUsd": 250,
+        "stopLossPct": 3,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": -2.99,
+      "maxDdUsd": 32.38,
+      "trades": 22,
+      "score": -19.18
+    },
+    {
+      "params": {
+        "k": 10,
+        "d": 3,
+        "zone": 20,
+        "sizeUsd": 250,
+        "stopLossPct": 5,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": -4.32,
+      "maxDdUsd": 33.41,
+      "trades": 21,
+      "score": -21.02
+    },
+    {
+      "params": {
+        "k": 10,
+        "d": 3,
+        "zone": 20,
+        "sizeUsd": 250,
+        "stopLossPct": 5,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": -4.32,
+      "maxDdUsd": 33.41,
+      "trades": 21,
+      "score": -21.02
+    },
+    {
+      "params": {
+        "k": 10,
+        "d": 3,
+        "zone": 25,
+        "sizeUsd": 250,
+        "stopLossPct": 5,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 0.96,
+      "maxDdUsd": 45.59,
+      "trades": 31,
+      "score": -21.83
+    },
+    {
+      "params": {
+        "k": 10,
+        "d": 3,
+        "zone": 25,
+        "sizeUsd": 250,
+        "stopLossPct": 5,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": 0.96,
+      "maxDdUsd": 45.59,
+      "trades": 31,
+      "score": -21.83
+    },
+    {
+      "params": {
+        "k": 10,
+        "d": 3,
+        "zone": 15,
+        "sizeUsd": 250,
+        "stopLossPct": 3,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": -10.02,
+      "maxDdUsd": 28.76,
+      "trades": 10,
+      "score": -24.4
+    },
+    {
+      "params": {
+        "k": 10,
+        "d": 3,
+        "zone": 15,
+        "sizeUsd": 250,
+        "stopLossPct": 3,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": -10.02,
+      "maxDdUsd": 28.76,
+      "trades": 10,
+      "score": -24.4
+    },
+    {
+      "params": {
+        "k": 10,
+        "d": 3,
+        "zone": 15,
+        "sizeUsd": 250,
+        "stopLossPct": 5,
+        "takeProfitPct": 5,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": -10.02,
+      "maxDdUsd": 28.76,
+      "trades": 10,
+      "score": -24.4
+    },
+    {
+      "params": {
+        "k": 10,
+        "d": 3,
+        "zone": 15,
+        "sizeUsd": 250,
+        "stopLossPct": 5,
+        "takeProfitPct": 8,
+        "maxHoldMin": 480
+      },
+      "pnlUsd": -10.02,
+      "maxDdUsd": 28.76,
+      "trades": 10,
+      "score": -24.4
+    }
+  ]
+}

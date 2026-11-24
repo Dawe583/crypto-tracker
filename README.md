@@ -1,5 +1,17 @@
 # Base & EVM Whale Tracker
 
+### Hosted crypto deck
+
+Vercel serves the deck at `/` and `/deck`. For the [hosted paper engine](deploy/DEPLOY.md#vercel-paper-engine-and-deck), leave `ENGINE_API_ORIGIN` unset: Supabase Cron calls the Vercel engine, which saves simulated positions and fills in Supabase. The deck reads that state through its authenticated Vercel API. The whale, pool, and gold monitors do not run in this setup.
+
+New paper entries use a [Hummingbot-derived MACD/Bollinger strategy](docs/PAPER_STRATEGY.md). Historical replay did not establish a profitable edge; the default is for paper observation only, not live trading.
+
+Set `ENGINE_API_ORIGIN` only if deliberately using an external HTTPS engine instead. The proxy forwards only the browser's API bearer token and never adds server credentials or follows upstream redirects. Both modes are read-only: `/api/engine/kill` is unavailable, even with a token.
+
+If no fresh paper snapshot is available, **the hosted page uses clearly labeled, generated DEMO data**. Its stop control remains disabled, and it retries the API every 12 seconds. Authentication errors are not hidden by switching to demo. Returning to live data clears generated candles and portfolio state first. Local `npm start` does not use demo data.
+
+Validate hosting with `npm run test:hosting` and `npm run build:deck`; deck behavior with `npm run test:deck`.
+
 [![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![viem](https://img.shields.io/badge/viem-2.x-000000)](https://viem.sh/)
@@ -67,7 +79,7 @@ A always-on monitor for Base (chain 8453) and Ethereum mainnet. It watches smart
   index.ts starts the listener, the gold loop, and the API in one process.
   wallets.ts loads data/watchlist.json. config.ts reads .env.
   store.ts holds the recent data that the API serves.
-  State: data/gold_state.json (gold alert levels). Dedupe is in memory.
+  State: data/gold_state.json (gold alert levels), data/signal_state.json (recent alerts). Dedupe is in memory.
 ```
 
 Key design points:
@@ -174,6 +186,8 @@ The tracker process serves a read-only JSON API from `src/api.ts`, backed by the
 | GET | `/api/whales` | Recent watched-wallet buy activity. |
 | GET | `/api/pools` | Recently detected new pools and their filter results. |
 
+Gold quotes are cached per asset and chain. Each quote has its own `updatedAt` (when the tracker refreshed it) and `stale` flag. A quote is stale if the latest poll missed it or it is older than three poll intervals. The response-level `updatedAt` is the last successful refresh of any asset; `stale` means that no asset has a fresh quote. Stale quotes are kept for display but never used by the paper engine's gold-spread strategy.
+
 Example:
 
 ```bash
@@ -236,7 +250,7 @@ crypto-tracker/
 │   ├── filter.ts        # market data, honeypot, LP lock, verification, verdicts
 │   ├── wallets.ts       # watchlist loader and lookup
 │   ├── gold_rwa.ts      # PAXG/XAUt vs spot monitor
-│   ├── store.ts         # in-memory store of recent gold, whale, and pool data
+│   ├── store.ts         # recent signal history and in-memory gold quotes
 │   ├── api.ts           # HTTP JSON API (/api/health, /api/gold, /api/whales, /api/pools)
 │   ├── notifier.ts      # alert rendering and dispatch (Telegram/webhook)
 │   └── logger.ts        # pino logger
@@ -253,7 +267,7 @@ crypto-tracker/
 └── tsconfig.json
 ```
 
-Runtime files such as `data/state.json` and `data/gold_state.json` are created on first run and are git-ignored.
+Runtime files such as `data/gold_state.json` and `data/signal_state.json` are git-ignored.
 
 ## Scripts
 
@@ -308,7 +322,7 @@ journalctl -u whale-tracker -n 200 --no-pager
 - Honeypot and DexScreener data are third-party heuristics.
 - The LP lock check covers Uniswap V2-style LPs only. V3 positions are NFTs.
 - The gold spread compares DEX prices with a spot reference. Redemption fees, mint fees, and slippage are not netted out.
-- Dedupe state for pools and transfers is in memory, so it resets on restart. The API data in `src/store.ts` is also in memory and resets on restart.
+- The daemon keeps its latest 200 alerts across restarts. If it cannot save the history, new alerts still work in memory. Gold quotes and pool/transfer dedupe reset on restart.
 - No watchlist addresses ship as verified. You must curate them.
 
 ## License
