@@ -9,6 +9,7 @@ function runtime(fetch = async () => ({ ok: true, json: async () => ({}) })) {
   const elements = new Map();
   const element = () => ({ textContent: '', innerHTML: '', children: [], dataset: {},
     style: {},
+    replaceChildren(...children) { this.children = children; },
     classList: { toggle() {}, add() {}, remove() {} }, addEventListener() {}, setAttribute() {}, getAnimations: () => [],
   });
   const body = element();
@@ -187,18 +188,28 @@ test('warmup after generated data clears every displayed demo balance and count'
 });
 
 test('ledger halt overrides running, stop and startup labels, and clears after a healthy restart', async () => {
+  let offline = false;
   let snapshot = { empty: true, halted: true };
-  const app = runtime(async (path) => ({ ok: true, json: async () => path.includes('snapshot') ? snapshot
-    : path.includes('strategies') || path.includes('decisions') ? [] : {} }));
+  const app = runtime(async (path) => offline ? { ok: false, status: 503 } : { ok: true, json: async () => path.includes('snapshot') ? snapshot
+    : path.includes('strategies') || path.includes('decisions') ? [] : {} });
+  app.context.window.DECK_DEMO_FALLBACK = true;
   await app.run('refresh()');
   assert.equal(app.elements.get('connection').textContent, 'HALTED');
   assert.equal(app.elements.get('running').textContent, 'HALTED');
   assert.match(app.elements.get('wireMsg').textContent, /ledger.*restart/i);
   assert.equal(app.elements.get('kill').disabled, true);
+  await app.elements.get('kill').onclick();
+  offline = true;
+  await app.run('refresh()');
+  assert.equal(app.run('demoMode'), false);
+  assert.equal(app.run('STATE.halted'), true);
+  offline = false;
+  app.elements.get('marketRail').dataset.symbols = 'BTCUSDT,ETHUSDT';
   app.run('loadDemo(); STATE.halted = true; STATE.snap.killed = true; renderStatic();');
   assert.equal(app.elements.get('running').textContent, 'HALTED');
   assert.match(app.elements.get('wireMsg').textContent, /HALTED/);
   assert.doesNotMatch(app.elements.get('wireMsg').textContent, /ONLINE|scanning|LIVE WIRE/);
+  assert.equal(app.elements.get('marketRail').dataset.symbols, undefined);
   snapshot = { empty: true, halted: false };
   await app.run('refresh()');
   assert.equal(app.elements.get('connection').textContent, 'WARMING UP');

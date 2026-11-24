@@ -215,6 +215,9 @@ function renderStatic() {
     $('wireMsg').textContent = STATE.halted ? 'ENGINE HALTED · ledger unavailable · repair the ledger and restart the engine' : 'ENGINE CONNECTED · waiting for first snapshot · checking every 12 seconds';
     $('kill').disabled = true;
     $('kill').textContent = STATE.halted ? 'Engine halted' : 'Awaiting engine';
+    delete $('marketRail').dataset.symbols;
+    $('symTabs').replaceChildren();
+    $('rotLegend').textContent = '';
     const waiting = `<div class="empty-state">${STATE.halted ? 'Engine halted · ledger recovery required' : 'Waiting for the first engine snapshot…'}</div>`;
     for (const id of ['marketRail', 'cortexList', 'indChips', 'modelRows', 'kellyBox', 'thoughts', 'trace', 'orderBook']) $(id).innerHTML = waiting;
     return;
