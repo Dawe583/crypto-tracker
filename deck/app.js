@@ -63,6 +63,7 @@ const ctx2d = (id) => {
 };
 
 const STATE = { snap: null, strats: [], decisions: [], candles: {}, sym: 'BTCUSDT', whales: 0, pools: 0, gold: [], book: null, bookAt: 0 };
+let engineStopped = false;
 
 // ---------- data ----------
 async function refresh() {
@@ -88,7 +89,7 @@ async function refresh() {
   STATE.gold = gold?.assets || [];
   lastSync = Date.now();
   document.body.classList.remove('data-stale');
-  $('connection').textContent = snap?.empty ? 'WARMING UP' : snap?.killed ? 'STOPPED' : 'CONNECTED';
+  $('connection').textContent = engineStopped || snap?.killed ? 'STOPPED' : snap?.empty ? 'WARMING UP' : 'CONNECTED';
   $('lastSync').textContent = `LAST SYNC ${utc(lastSync)} UTC`;
   const progress = document.querySelector('.sync-progress');
   progress.getAnimations().forEach((a) => { a.currentTime = 0; });
@@ -176,8 +177,9 @@ function renderStatic() {
   setText('bigNav', fmt$(s.equityUsd));
   $('bigNav').classList.toggle('up', dayPnl >= 0);
   $('bigDelta').innerHTML = `<span class="${cls(dayPnl)}">${dayPnl >= 0 ? '▲' : '▼'} ${fmt$(Math.abs(dayPnl), 2)} session</span> · cash ${fmt$(s.cashUsd)}`;
-  $('running').textContent = s.killed ? 'STOPPED' : 'RUNNING';
-  $('running').className = `right ${s.killed ? 'neg' : 'pos'}`;
+  const stopped = engineStopped || s.killed;
+  $('running').textContent = stopped ? 'STOPPED' : 'RUNNING';
+  $('running').className = `right ${stopped ? 'neg' : 'pos'}`;
   $('stTickets').textContent = trades;
   $('stWin').textContent = trades ? `${((wins / trades) * 100).toFixed(0)}%` : '—';
   $('stEdge').textContent = trades ? fmt$(s.realizedUsd / trades, 2) : '—';
@@ -186,9 +188,9 @@ function renderStatic() {
   for (const v of eq) { peak = Math.max(peak, v); dd = Math.max(dd, peak - v); }
   $('stDD').textContent = fmt$(dd, 2);
   $('openTickets').textContent = `${s.positions.length} open`;
-  $('kill').classList.toggle('killed', !!s.killed);
-  $('kill').textContent = s.killed ? 'Engine stopped' : 'Stop engine';
-  $('kill').disabled = !!s.killed;
+  $('kill').classList.toggle('killed', !!stopped);
+  $('kill').textContent = stopped ? 'Engine stopped' : 'Stop engine';
+  $('kill').disabled = !!stopped;
   $('tapeSym').textContent = STATE.sym;
 
   const cd = STATE.candles[STATE.sym];
@@ -1082,12 +1084,12 @@ $('kill').onclick = async () => {
   $('kill').textContent = 'Stopping…';
   try {
     const r = await api('/api/engine/kill', { method: 'POST' });
-    if (r?.killed) await refresh();
+    if (r?.killed) { engineStopped = true; await refresh(); }
   } catch (err) {
     alert(`Engine stop failed: ${err.message}`);
   } finally {
-    $('kill').disabled = !!STATE.snap?.killed;
-    $('kill').textContent = STATE.snap?.killed ? 'Engine stopped' : 'Stop engine';
+    $('kill').disabled = !STATE.snap || engineStopped || !!STATE.snap.killed;
+    $('kill').textContent = engineStopped || STATE.snap?.killed ? 'Engine stopped' : 'Stop engine';
   }
 };
 
