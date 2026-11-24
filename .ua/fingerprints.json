@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "8b75acade7c8dd367b21245f4d047b901f119d4f",
-  "generatedAt": "2026-11-24T23:25:33.123Z",
+  "gitCommitHash": "0546db92902b3099a9a33020e37c73487ed48755",
+  "generatedAt": "2026-11-24T23:29:34.426Z",
   "files": {
     ".agent/work-state.json": {
       "filePath": ".agent/work-state.json",
@@ -1913,7 +1913,7 @@
     },
     "src/engine/market.ts": {
       "filePath": "src/engine/market.ts",
-      "contentHash": "19634169c1021066ec566a2bd734457cea245fc6b69fcb9004783eafcb7611f7",
+      "contentHash": "ae158a4a3f7fe073d3ff2d55a4e34d7fbe2316da37879abc453b9163e36493c1",
       "functions": [
         {
           "name": "fetchMarket",
@@ -3535,7 +3535,7 @@
     },
     "test/market.test.ts": {
       "filePath": "test/market.test.ts",
-      "contentHash": "f4e8442cef29bbe756e4ebde39641270ae2ee024d747009e8abf6fdc3c954d6f",
+      "contentHash": "5283918dee64f4a70f1115415dfa2e8630dc6490850cdcfcc780f5f3c713a276",
       "functions": [],
       "classes": [],
       "imports": [
@@ -3561,7 +3561,7 @@
         }
       ],
       "exports": [],
-      "totalLines": 63,
+      "totalLines": 65,
       "hasStructuralAnalysis": true
     },
     "test/paper-strategy.test.ts": {
