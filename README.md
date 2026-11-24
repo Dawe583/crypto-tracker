@@ -86,7 +86,7 @@ Key design points:
 - One process, independent loops (event listener and a polling gold loop) plus the optional API server. systemd keeps it running.
 - Every signal goes through one dispatcher, so new alert sinks are a single change in `notifier.ts`.
 - Alert spam is limited: pools and transfers are deduplicated in memory, and gold alerts fire only when an asset changes level.
-- Transport: a WebSocket RPC (`*_RPC_WS`) is used when set, otherwise HTTP polling.
+- Transport: a WebSocket RPC (`*_RPC_WS`) is used when set. HTTP polling scans bounded block ranges and retries failed ranges while the tracker stays running.
 
 ## Hardware requirements (Raspberry Pi 4)
 
@@ -206,9 +206,9 @@ All settings come from `.env`. The template is `.env.example`.
 
 | Variable | Required | Default | Description |
 |---|---|---|---|
-| `BASE_RPC_HTTP` | No | `https://mainnet.base.org` | Base HTTP RPC, used when no WebSocket is set. |
+| `BASE_RPC_HTTP` | No | `https://base.drpc.org` | Base HTTP RPC, used when no WebSocket is set. |
 | `BASE_RPC_WS` | Recommended | (empty) | Base WebSocket RPC, for example from Alchemy or Infura. |
-| `ETH_RPC_HTTP` | No | `https://eth.llamarpc.com` | Ethereum HTTP RPC. |
+| `ETH_RPC_HTTP` | No | `https://eth.drpc.org` | Ethereum HTTP RPC. |
 | `ETH_RPC_WS` | Recommended | (empty) | Ethereum WebSocket RPC. |
 | `BASESCAN_API_KEY` | No | (empty) | Enables Base source-verification checks. |
 | `ETHERSCAN_API_KEY` | No | (empty) | Enables Ethereum source-verification checks. |
@@ -294,7 +294,7 @@ Alert types:
 |---|---|---|
 | `npm i` fails with `EBADENGINE` or syntax errors | Node.js older than 20 | Install Node 20 or 22, then run `node -v`. |
 | `Error: Invalid URL` or RPC connection errors | Empty or wrong `*_RPC_*` value | Check `.env`. Make sure the WebSocket URL starts with `wss://`. |
-| `429` or `rate limit` in logs | Public RPC throttling event filters | Use a paid WebSocket RPC (Alchemy or Infura). |
+| `429` or `rate limit` in logs | Public RPC throttling log requests | Use a paid WebSocket RPC (Alchemy or Infura). |
 | `watchlist loaded` with `count: 0` | Only template entries are present | Replace the `REPLACE_WITH_VERIFIED_0x_ADDRESS` entries with real addresses. |
 | No gold alerts and `no spot gold reference` warnings | Spot feed unreachable or changed shape | Check `GOLD_SPOT_URL` in a browser. Set `GOLD_SPOT_URL` to a feed that returns `{ "price": number }`. |
 | Telegram alerts missing | Wrong token or chat ID, or the bot was never started in the chat | Send `/start` to the bot. Check `telegram send failed` in the log. |
@@ -318,7 +318,7 @@ journalctl -u whale-tracker -n 200 --no-pager
 ```
 
 ## Limitations
-- Public RPCs rate-limit `eth_newFilter` and watch calls. Use a WebSocket provider for production.
+- Some public RPCs rate-limit `eth_getLogs` or reject wallet queries that have no token contract address. HTTP polling starts at the current head after a restart. Use a WebSocket provider for production.
 - Honeypot and DexScreener data are third-party heuristics.
 - The LP lock check covers Uniswap V2-style LPs only. V3 positions are NFTs.
 - The gold spread compares DEX prices with a spot reference. Redemption fees, mint fees, and slippage are not netted out.

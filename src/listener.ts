@@ -1,5 +1,5 @@
 // Event listener: factory PoolCreated/PairCreated events, watched-wallet Transfer logs (whale buys).
-import { parseAbiItem, getAddress, formatUnits, type Address, type Log, type PublicClient } from 'viem';
+import { parseAbiItem, getAddress, formatUnits, BaseError, HttpRequestError, RpcRequestError, type Address, type Log, type PublicClient } from 'viem';
 import { CHAINS, QUOTE_TOKENS, config } from './config.js';
 import { logger } from './logger.js';
 import { WATCHLIST, lookupWallet, watchedAddresses } from './wallets.js';
@@ -95,26 +95,42 @@ async function onWatchedTransfer(chain: ChainKey, logs: Log[]) {
   }
 }
 
-// Public HTTP RPCs evict eth filters quickly; viem then fails every poll with
-// "filter not found" forever. Detect it and resubscribe instead.
-const isFilterGone = (e: unknown): boolean =>
-  /filter not found/i.test(String((e as any)?.details ?? (e as any)?.shortMessage ?? e));
+const MAX_BLOCKS_PER_POLL = 100n;
 
-function watchWithResubscribe(client: PublicClient, ctx: Record<string, unknown>, params: Parameters<PublicClient['watchEvent']>[0]) {
-  let unwatch: (() => void) | undefined;
-  const subscribe = () => {
-    unwatch = client.watchEvent({
-      ...params,
-      onError: (e) => {
-        logger.error({ err: String(e), ...ctx }, 'watcher error');
-        if (isFilterGone(e)) {
-          unwatch?.();
-          setTimeout(subscribe, 10_000);
-        }
-      },
-    });
+export function watchLogs(client: PublicClient, ctx: Record<string, unknown>, { onLogs, ...filter }: Parameters<PublicClient['watchEvent']>[0]) {
+  const onError = (err: unknown) => {
+    const rpcError = err instanceof BaseError ? err.walk((cause) => cause instanceof HttpRequestError || cause instanceof RpcRequestError) : undefined;
+    const status = rpcError instanceof HttpRequestError || rpcError instanceof RpcRequestError ? rpcError.status : undefined;
+    logger.error({ ...ctx, err: err instanceof BaseError ? err.shortMessage : String(err), status }, 'watcher error');
   };
-  subscribe();
+  if (client.transport.type !== 'http') return client.watchEvent({ ...filter, onLogs, onError });
+
+  let active = true;
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  let nextBlock: bigint | undefined;
+  const scan = async () => {
+    try {
+      const head = await client.getBlockNumber();
+      nextBlock ??= head + 1n;
+      if (!active || nextBlock > head) return;
+      const end = nextBlock + MAX_BLOCKS_PER_POLL - 1n;
+      const toBlock = end < head ? end : head;
+      const logs = await client.getLogs({ ...filter, fromBlock: nextBlock, toBlock, blockRange: MAX_BLOCKS_PER_POLL });
+      if (!active) return;
+      nextBlock = toBlock + 1n;
+      if (logs.length) onLogs(logs);
+    } catch (err) {
+      if (active) onError(err);
+    } finally {
+      if (active) timer = setTimeout(scan, client.pollingInterval);
+    }
+  };
+  void scan();
+
+  return () => {
+    active = false;
+    clearTimeout(timer);
+  };
 }
 
 export function startListener() {
@@ -122,7 +138,7 @@ export function startListener() {
     const client = makeClient(chain);
     for (const f of CHAINS[chain].factories) {
       const ev = f.kind === 'v2' ? EV.pairV2 : f.kind === 'aero' ? EV.poolAero : EV.poolV3;
-      watchWithResubscribe(client, { chain, dex: f.name }, {
+      watchLogs(client, { chain, dex: f.name }, {
         address: getAddress(f.address),
         event: ev as any,
         onLogs: (logs) => logs.forEach((l) => onNewPool(chain, f.name, f.kind, l).catch((e) => logger.error({ err: String(e) }, 'pool handler'))),
@@ -132,7 +148,7 @@ export function startListener() {
 
     const watched = watchedAddresses(chain);
     if (watched.length) {
-      watchWithResubscribe(client, { chain }, {
+      watchLogs(client, { chain }, {
         event: EV.transfer,
         args: { to: watched },
         onLogs: (logs) => onWatchedTransfer(chain, logs).catch((e) => logger.error({ err: String(e) }, 'transfer handler')),

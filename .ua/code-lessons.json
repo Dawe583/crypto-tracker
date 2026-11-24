@@ -2,16 +2,20 @@
   "version": 1,
   "generatedAt": "2026-11-24T23:25:33.123Z",
   "files": {
-    "src/api.ts": {
-      "overview": "Serves authenticated monitor/engine JSON endpoints, the stop-engine action and zero-build deck static assets.",
+    "src/index.ts": {
+      "overview": "Starts on-chain listeners, gold monitoring, the HTTP API and paper engine with process-level error/shutdown handling.",
       "sections": []
     },
     "src/config.ts": {
       "overview": "Central env-driven configuration: chain definitions (RPCs, explorers, DEX factories), quote tokens, alert thresholds, API settings and Gold RWA parameters.",
       "sections": []
     },
-    "src/engine/ledger.ts": {
-      "overview": "Daily append-only JSONL paper ledger with a record hash chain and bounded API reads.",
+    "src/listener.ts": {
+      "overview": "Subscribes to DEX factory pool-creation events and watched-wallet Transfer logs on Base and Ethereum, enriches them with market and safety data, and dispatches new-pool and whale-buy signals.",
+      "sections": []
+    },
+    "src/wallets.ts": {
+      "overview": "Loads the smart-money/VC/insider watchlist from data/watchlist.json, skipping invalid addresses, and offers lookups by address and by chain.",
       "sections": []
     },
     "src/filter.ts": {
@@ -22,18 +26,6 @@
       "overview": "Gold RWA monitor comparing PAXG and XAUt DEX prices with a spot gold feed, classifying spreads into alert/major levels and alerting only on level changes persisted in data/gold_state.json.",
       "sections": []
     },
-    "src/index.ts": {
-      "overview": "Starts on-chain listeners, gold monitoring, the HTTP API and paper engine with process-level error/shutdown handling.",
-      "sections": []
-    },
-    "src/listener.ts": {
-      "overview": "Subscribes to DEX factory pool-creation events and watched-wallet Transfer logs on Base and Ethereum, enriches them with market and safety data, and dispatches new-pool and whale-buy signals.",
-      "sections": []
-    },
-    "src/logger.ts": {
-      "overview": "Creates the shared pino structured logger whose level comes from LOG_LEVEL.",
-      "sections": []
-    },
     "src/notifier.ts": {
       "overview": "Defines the WhaleSignal shape and dispatches rendered alerts to stdout, Telegram and a generic webhook, recording every signal in the in-memory store.",
       "sections": []
@@ -42,8 +34,52 @@
       "overview": "In-memory ring buffer of the last 200 signals plus the latest Gold RWA snapshot, read by the HTTP API; resets on restart.",
       "sections": []
     },
-    "src/wallets.ts": {
-      "overview": "Loads the smart-money/VC/insider watchlist from data/watchlist.json, skipping invalid addresses, and offers lookups by address and by chain.",
+    "src/api.ts": {
+      "overview": "Serves authenticated monitor/engine JSON endpoints, the stop-engine action and zero-build deck static assets.",
+      "sections": []
+    },
+    "src/logger.ts": {
+      "overview": "Creates the shared pino structured logger whose level comes from LOG_LEVEL.",
+      "sections": []
+    },
+    ".env.example": {
+      "overview": "Template of every runtime environment variable: RPC endpoints, explorer keys, Telegram/webhook alert targets, whale and pool thresholds, Gold RWA settings, API host/port/token/CORS and log level.",
+      "sections": []
+    },
+    "README.md": {
+      "overview": "Project overview covering features, architecture diagram, Raspberry Pi 4 quick start, systemd auto-start, the HTTP JSON API, configuration, layout, alerts, troubleshooting and limitations.",
+      "sections": []
+    },
+    "package.json": {
+      "overview": "npm manifest for an ESM TypeScript app run with tsx, with start/listen/gold/typecheck/build scripts and viem, pino and dotenv dependencies.",
+      "sections": []
+    },
+    "tsconfig.json": {
+      "overview": "Strict TypeScript compiler settings targeting ES2022 ESM with bundler resolution, compiling src/ to dist/.",
+      "sections": []
+    },
+    "data/watchlist.json": {
+      "overview": "Seed watchlist template with placeholder smart-money, VC and insider-cluster wallets that must be replaced with verified addresses.",
+      "sections": []
+    },
+    "deploy/DEPLOY.md": {
+      "overview": "Step-by-step Raspberry Pi 4 deployment guide: prerequisites, clone, install, configure, smoke test, systemd install, operation and updates.",
+      "sections": []
+    },
+    "deploy/install-service.sh": {
+      "overview": "Installer script that checks npm and .env, installs dependencies, renders the systemd unit with the current user and path, enables the service and prints an API health check command.",
+      "sections": []
+    },
+    "deploy/whale-tracker.service": {
+      "overview": "Hardened systemd unit running `npm start` for the tracker with always-restart, no start limit and an optional .env EnvironmentFile.",
+      "sections": []
+    },
+    "docs/RPI4_DEPLOYMENT.md": {
+      "overview": "Raspberry Pi 4 deployment and OpenTerminal integration guide covering setup, verification, API settings, endpoints, CORS, custom wallets, Gold RWA parameters and troubleshooting.",
+      "sections": []
+    },
+    "src/engine/ledger.ts": {
+      "overview": "Daily append-only JSONL paper ledger with a record hash chain and bounded API reads.",
       "sections": []
     },
     "src/engine/decisions.ts": {
@@ -99,14 +135,6 @@
     },
     "src/strategies/registry.ts": {
       "overview": "Loads enabled strategy settings by merging JSON overrides with evaluator defaults.",
-      "sections": []
-    },
-    "deploy/install-service.sh": {
-      "overview": "Installer script that checks npm and .env, installs dependencies, renders the systemd unit with the current user and path, enables the service and prints an API health check command.",
-      "sections": []
-    },
-    "deploy/whale-tracker.service": {
-      "overview": "Hardened systemd unit running `npm start` for the tracker with always-restart, no start limit and an optional .env EnvironmentFile.",
       "sections": []
     },
     "tests/deck.test.mjs": {

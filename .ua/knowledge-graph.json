@@ -569,36 +569,20 @@
       "complexity": "moderate"
     },
     {
-      "id": "function:src/listener.ts:isFilterGone",
+      "id": "function:src/listener.ts:watchLogs",
       "type": "function",
-      "name": "isFilterGone",
+      "name": "watchLogs",
       "filePath": "src/listener.ts",
       "lineRange": [
         100,
-        101
+        134
       ],
-      "summary": "Provides isFilterGone for listener.",
+      "summary": "Polls HTTP logs in bounded block ranges and retries failed ranges; uses native event subscriptions for non-HTTP transports.",
       "tags": [
         "runtime",
         "code"
       ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/listener.ts:watchWithResubscribe",
-      "type": "function",
-      "name": "watchWithResubscribe",
-      "filePath": "src/listener.ts",
-      "lineRange": [
-        103,
-        118
-      ],
-      "summary": "Provides watchWithResubscribe for listener.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
+      "complexity": "moderate"
     },
     {
       "id": "function:src/listener.ts:startListener",
@@ -606,8 +590,8 @@
       "name": "startListener",
       "filePath": "src/listener.ts",
       "lineRange": [
-        120,
-        144
+        136,
+        160
       ],
       "summary": "Registers factory and watched-wallet Transfer subscriptions for Base and Ethereum.",
       "tags": [
@@ -4124,6 +4108,18 @@
         "paper-trading"
       ],
       "complexity": "simple"
+    },
+    {
+      "id": "file:test/listener.test.ts",
+      "type": "file",
+      "name": "listener.test.ts",
+      "filePath": "test/listener.test.ts",
+      "summary": "Verifies bounded HTTP log recovery after RPC failures and native WebSocket subscriptions.",
+      "tags": [
+        "code",
+        "test"
+      ],
+      "complexity": "moderate"
     }
   ],
   "edges": [
@@ -4346,14 +4342,7 @@
     },
     {
       "source": "file:src/listener.ts",
-      "target": "function:src/listener.ts:isFilterGone",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "function:src/listener.ts:watchWithResubscribe",
+      "target": "function:src/listener.ts:watchLogs",
       "type": "contains",
       "weight": 1,
       "direction": "forward"
@@ -4871,7 +4860,7 @@
     },
     {
       "source": "function:src/listener.ts:startListener",
-      "target": "function:src/listener.ts:watchWithResubscribe",
+      "target": "function:src/listener.ts:watchLogs",
       "type": "calls",
       "weight": 0.9,
       "direction": "forward"
@@ -8418,6 +8407,195 @@
       "direction": "forward",
       "weight": 0.7,
       "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "function:src/listener.ts:startListener",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "function:src/gold_rwa.ts:startGoldLoop",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "function:src/api.ts:startApi",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "config:.env.example",
+      "target": "file:src/config.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:src/index.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:src/listener.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:src/filter.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:src/notifier.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:src/gold_rwa.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:src/api.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:README.md",
+      "target": "file:src/config.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "config:package.json",
+      "target": "file:src/index.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:package.json",
+      "target": "file:src/listener.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:package.json",
+      "target": "file:src/gold_rwa.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:tsconfig.json",
+      "target": "file:src/index.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "config:data/watchlist.json",
+      "target": "file:src/wallets.ts",
+      "type": "configures",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:deploy/DEPLOY.md",
+      "target": "file:deploy/install-service.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:deploy/DEPLOY.md",
+      "target": "file:deploy/whale-tracker.service",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "file:deploy/install-service.sh",
+      "target": "file:deploy/whale-tracker.service",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "file:deploy/whale-tracker.service",
+      "target": "file:src/index.ts",
+      "type": "deploys",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:deploy/whale-tracker.service",
+      "target": "config:.env.example",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 0.6
+    },
+    {
+      "source": "document:docs/RPI4_DEPLOYMENT.md",
+      "target": "file:src/api.ts",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/RPI4_DEPLOYMENT.md",
+      "target": "file:deploy/install-service.sh",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "document:docs/RPI4_DEPLOYMENT.md",
+      "target": "config:.env.example",
+      "type": "documents",
+      "direction": "forward",
+      "weight": 0.5
+    },
+    {
+      "source": "function:src/gold_rwa.ts:startGoldLoop",
+      "target": "function:src/gold_rwa.ts:runGoldCycle",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.8
+    },
+    {
+      "source": "file:test/listener.test.ts",
+      "target": "file:src/listener.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:test/listener.test.ts",
+      "target": "function:src/listener.ts:watchLogs",
+      "type": "calls",
+      "direction": "forward",
+      "weight": 0.9
     }
   ],
   "version": "1.0.0",
@@ -8514,9 +8692,9 @@
         "function:src/listener.ts:dedupe",
         "function:src/listener.ts:onNewPool",
         "function:src/listener.ts:onWatchedTransfer",
-        "function:src/listener.ts:isFilterGone",
-        "function:src/listener.ts:watchWithResubscribe",
-        "function:src/listener.ts:startListener"
+        "function:src/listener.ts:watchLogs",
+        "function:src/listener.ts:startListener",
+        "file:test/listener.test.ts"
       ]
     },
     {
