@@ -69,14 +69,21 @@ test('restores only the newest 200 signals and serves the same history via HTTP 
   assert.equal(JSON.parse(readFileSync(join(root, 'data', 'signal_state.json'), 'utf8')).length, 200);
 });
 
-test('recovers from invalid saved history without dropping live signals', (t) => {
+test('leaves invalid saved history intact while accepting live signals', (t) => {
   const root = fixture(t);
-  writeFileSync(join(root, 'data', 'signal_state.json'), JSON.stringify([null]));
+  const snapshot = join(root, 'data', 'signal_state.json');
+  writeFileSync(snapshot, '[null]');
   run(root, `
     store.initSignalHistory();
     assert.equal((await request('/api/pools')).count, 0);
     store.recordSignal(signal(1, 'new_pool'));
     assert.equal((await request('/api/pools')).count, 1);
+  `);
+  assert.equal(readFileSync(snapshot, 'utf8'), '[null]');
+  rmSync(snapshot);
+  run(root, `
+    store.initSignalHistory();
+    store.recordSignal(signal(2, 'new_pool'));
   `);
   run(root, `
     store.initSignalHistory();

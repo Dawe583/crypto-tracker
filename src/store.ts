@@ -32,15 +32,18 @@ function isSavedSignal(value: unknown): value is WhaleSignal {
 
 export function initSignalHistory(): void {
   if (persistSignals) return;
-  persistSignals = true;
   try {
     const saved: unknown = JSON.parse(readFileSync(signalFile, 'utf8'));
     if (!Array.isArray(saved) || !saved.every(isSavedSignal)) throw new Error('invalid signal history');
     signals.push(...saved.slice(0, MAX_SIGNALS - signals.length));
   } catch (err) {
     const code = (err as NodeJS.ErrnoException).code;
-    if (code !== 'ENOENT') logger.warn({ code }, 'could not restore signal history');
+    if (code !== 'ENOENT') {
+      logger.warn({ code }, 'could not restore signal history; saving is disabled');
+      return;
+    }
   }
+  persistSignals = true;
 }
 
 export function recordSignal(s: WhaleSignal): void {

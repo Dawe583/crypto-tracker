@@ -7,6 +7,8 @@ The tracker runs as one Node.js process (src/index.ts) that starts three parts t
 
 All alerts go through src/notifier.ts, which logs, sends Telegram or webhook, and records the signal for the API. The daemon restores its latest 200 alerts from `data/signal_state.json` without sending them again. Gold quotes reset on restart; gold alert levels persist in `data/gold_state.json`.
 
+If the daemon cannot read the saved signal history at startup, it leaves the file untouched and records new alerts in memory only. Restore read access, or move a corrupt file aside, then restart the daemon to resume saving.
+
 ## 1. Prerequisites on the Pi
 
 Raspberry Pi OS 64-bit, Node.js 20 or 22, git.
