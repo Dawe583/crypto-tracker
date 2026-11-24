@@ -185,98 +185,6 @@
       "complexity": "simple"
     },
     {
-      "id": "file:src/engine/ledger.ts",
-      "type": "file",
-      "name": "ledger.ts",
-      "filePath": "src/engine/ledger.ts",
-      "summary": "Daily append-only JSONL paper ledger with a record hash chain and bounded API reads.",
-      "tags": [
-        "code",
-        "paper-trading"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:src/engine/ledger.ts:rollDay",
-      "type": "function",
-      "name": "rollDay",
-      "filePath": "src/engine/ledger.ts",
-      "lineRange": [
-        27,
-        41
-      ],
-      "summary": "Provides rollDay for ledger.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/ledger.ts:h",
-      "type": "function",
-      "name": "h",
-      "filePath": "src/engine/ledger.ts",
-      "lineRange": [
-        43,
-        43
-      ],
-      "summary": "Provides h for ledger.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/ledger.ts:ledgerAppend",
-      "type": "function",
-      "name": "ledgerAppend",
-      "filePath": "src/engine/ledger.ts",
-      "lineRange": [
-        45,
-        54
-      ],
-      "summary": "Appends a timestamped hash-chained event to the daily paper ledger.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/ledger.ts:ledgerTail",
-      "type": "function",
-      "name": "ledgerTail",
-      "filePath": "src/engine/ledger.ts",
-      "lineRange": [
-        56,
-        68
-      ],
-      "summary": "Reads bounded recent ledger events.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/ledger.ts:ledgerAllToday",
-      "type": "function",
-      "name": "ledgerAllToday",
-      "filePath": "src/engine/ledger.ts",
-      "lineRange": [
-        70,
-        72
-      ],
-      "summary": "Reads the current daily audit ledger.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
       "id": "file:src/filter.ts",
       "type": "file",
       "name": "filter.ts",
@@ -1221,274 +1129,6 @@
       "complexity": "simple"
     },
     {
-      "id": "file:src/engine/loop.ts",
-      "type": "file",
-      "name": "loop.ts",
-      "filePath": "src/engine/loop.ts",
-      "summary": "Refreshes candles, processes exits, evaluates strategies, checks entry risk and publishes paper fills, decisions and snapshots.",
-      "tags": [
-        "code",
-        "paper-trading"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:src/engine/loop.ts:statFor",
-      "type": "function",
-      "name": "statFor",
-      "filePath": "src/engine/loop.ts",
-      "lineRange": [
-        30,
-        34
-      ],
-      "summary": "Gets or initializes per-strategy PnL/trade/win counters.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/loop.ts:monitorSignals",
-      "type": "function",
-      "name": "monitorSignals",
-      "filePath": "src/engine/loop.ts",
-      "lineRange": [
-        36,
-        42
-      ],
-      "summary": "Projects recent whale, pool and gold monitor state into strategy context.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/loop.ts:checkExits",
-      "type": "function",
-      "name": "checkExits",
-      "filePath": "src/engine/loop.ts",
-      "lineRange": [
-        44,
-        63
-      ],
-      "summary": "Closes paper positions on stop-loss, take-profit and hold-time triggers and journals results.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/loop.ts:cycle",
-      "type": "function",
-      "name": "cycle",
-      "filePath": "src/engine/loop.ts",
-      "lineRange": [
-        65,
-        125
-      ],
-      "summary": "Runs a candle-refresh, exits, strategy, risk, fill and snapshot decision cycle.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:src/engine/loop.ts:startEngineLoop",
-      "type": "function",
-      "name": "startEngineLoop",
-      "filePath": "src/engine/loop.ts",
-      "lineRange": [
-        127,
-        133
-      ],
-      "summary": "Starts periodic paper-engine cycles when enabled by configuration.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "file:src/engine/portfolio.ts",
-      "type": "file",
-      "name": "portfolio.ts",
-      "filePath": "src/engine/portfolio.ts",
-      "summary": "Tracks paper cash, position keys, simulated fills, fees and realized/unrealized PnL; places no live orders.",
-      "tags": [
-        "code",
-        "paper-trading"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "class:src/engine/portfolio.ts:PaperPortfolio",
-      "type": "class",
-      "name": "PaperPortfolio",
-      "filePath": "src/engine/portfolio.ts",
-      "lineRange": [
-        4,
-        75
-      ],
-      "summary": "Tracks paper cash, position keys, simulated fills, fees and realized/unrealized PnL; places no live orders.",
-      "tags": [
-        "paper-trading",
-        "state"
-      ],
-      "complexity": "complex"
-    },
-    {
-      "id": "function:src/engine/portfolio.ts:PaperPortfolio.constructor",
-      "type": "function",
-      "name": "PaperPortfolio.constructor",
-      "filePath": "src/engine/portfolio.ts",
-      "summary": "Initializes PaperPortfolio.",
-      "tags": [
-        "paper-trading",
-        "method"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:src/engine/portfolio.ts:PaperPortfolio.canOpen",
-      "type": "function",
-      "name": "PaperPortfolio.canOpen",
-      "filePath": "src/engine/portfolio.ts",
-      "summary": "Implements canOpen for PaperPortfolio.",
-      "tags": [
-        "paper-trading",
-        "method"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:src/engine/portfolio.ts:PaperPortfolio.open",
-      "type": "function",
-      "name": "PaperPortfolio.open",
-      "filePath": "src/engine/portfolio.ts",
-      "summary": "Implements open for PaperPortfolio.",
-      "tags": [
-        "paper-trading",
-        "method"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:src/engine/portfolio.ts:PaperPortfolio.close",
-      "type": "function",
-      "name": "PaperPortfolio.close",
-      "filePath": "src/engine/portfolio.ts",
-      "summary": "Implements close for PaperPortfolio.",
-      "tags": [
-        "paper-trading",
-        "method"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:src/engine/portfolio.ts:PaperPortfolio.equity",
-      "type": "function",
-      "name": "PaperPortfolio.equity",
-      "filePath": "src/engine/portfolio.ts",
-      "summary": "Implements equity for PaperPortfolio.",
-      "tags": [
-        "paper-trading",
-        "method"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:src/engine/portfolio.ts:PaperPortfolio.unrealized",
-      "type": "function",
-      "name": "PaperPortfolio.unrealized",
-      "filePath": "src/engine/portfolio.ts",
-      "summary": "Implements unrealized for PaperPortfolio.",
-      "tags": [
-        "paper-trading",
-        "method"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:src/engine/portfolio.ts:PaperPortfolio.key",
-      "type": "function",
-      "name": "PaperPortfolio.key",
-      "filePath": "src/engine/portfolio.ts",
-      "summary": "Implements key for PaperPortfolio.",
-      "tags": [
-        "paper-trading",
-        "method"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "file:src/engine/risk.ts",
-      "type": "file",
-      "name": "risk.ts",
-      "filePath": "src/engine/risk.ts",
-      "summary": "Hard entry-risk vetoes for kill state, daily loss, confidence, position count, exposure and strategy cooldown.",
-      "tags": [
-        "code",
-        "paper-trading"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "class:src/engine/risk.ts:RiskEngine",
-      "type": "class",
-      "name": "RiskEngine",
-      "filePath": "src/engine/risk.ts",
-      "lineRange": [
-        21,
-        55
-      ],
-      "summary": "Hard entry-risk vetoes for kill state, daily loss, confidence, position count, exposure and strategy cooldown.",
-      "tags": [
-        "paper-trading",
-        "state"
-      ],
-      "complexity": "complex"
-    },
-    {
-      "id": "function:src/engine/risk.ts:RiskEngine.constructor",
-      "type": "function",
-      "name": "RiskEngine.constructor",
-      "filePath": "src/engine/risk.ts",
-      "summary": "Initializes RiskEngine.",
-      "tags": [
-        "paper-trading",
-        "method"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:src/engine/risk.ts:RiskEngine.check",
-      "type": "function",
-      "name": "RiskEngine.check",
-      "filePath": "src/engine/risk.ts",
-      "summary": "Implements check for RiskEngine.",
-      "tags": [
-        "paper-trading",
-        "method"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:src/engine/risk.ts:RiskEngine.recordClose",
-      "type": "function",
-      "name": "RiskEngine.recordClose",
-      "filePath": "src/engine/risk.ts",
-      "summary": "Implements recordClose for RiskEngine.",
-      "tags": [
-        "paper-trading",
-        "method"
-      ],
-      "complexity": "moderate"
-    },
-    {
       "id": "file:src/engine/state.ts",
       "type": "file",
       "name": "state.ts",
@@ -1601,130 +1241,6 @@
       "complexity": "simple"
     },
     {
-      "id": "file:src/engine/market.ts",
-      "type": "file",
-      "name": "market.ts",
-      "filePath": "src/engine/market.ts",
-      "summary": "Public candle cache with Binance, Bybit, Coinbase and Kraken fallback sources.",
-      "tags": [
-        "code",
-        "paper-trading"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "function:src/engine/market.ts:fromBinance",
-      "type": "function",
-      "name": "fromBinance",
-      "filePath": "src/engine/market.ts",
-      "lineRange": [
-        10,
-        15
-      ],
-      "summary": "Fetches and normalizes public candles from Binance.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/market.ts:fromBybit",
-      "type": "function",
-      "name": "fromBybit",
-      "filePath": "src/engine/market.ts",
-      "lineRange": [
-        17,
-        24
-      ],
-      "summary": "Fetches and normalizes public candles from Bybit.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/market.ts:fromCoinbase",
-      "type": "function",
-      "name": "fromCoinbase",
-      "filePath": "src/engine/market.ts",
-      "lineRange": [
-        27,
-        38
-      ],
-      "summary": "Fetches and normalizes public candles from Coinbase.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/market.ts:fromKraken",
-      "type": "function",
-      "name": "fromKraken",
-      "filePath": "src/engine/market.ts",
-      "lineRange": [
-        41,
-        51
-      ],
-      "summary": "Fetches and normalizes public candles from Kraken.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/market.ts:refreshSymbol",
-      "type": "function",
-      "name": "refreshSymbol",
-      "filePath": "src/engine/market.ts",
-      "lineRange": [
-        53,
-        65
-      ],
-      "summary": "Fetches market candles through source fallbacks and refreshes the feed cache.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/market.ts:getFeed",
-      "type": "function",
-      "name": "getFeed",
-      "filePath": "src/engine/market.ts",
-      "lineRange": [
-        67,
-        67
-      ],
-      "summary": "Returns cached candles for a configured market.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/engine/market.ts:getPrice",
-      "type": "function",
-      "name": "getPrice",
-      "filePath": "src/engine/market.ts",
-      "lineRange": [
-        68,
-        68
-      ],
-      "summary": "Returns the latest cached close.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
       "id": "file:src/engine/stress.ts",
       "type": "file",
       "name": "stress.ts",
@@ -1781,46 +1297,6 @@
       "complexity": "moderate"
     },
     {
-      "id": "file:src/strategies/registry.ts",
-      "type": "file",
-      "name": "registry.ts",
-      "filePath": "src/strategies/registry.ts",
-      "summary": "Loads enabled strategy settings by merging JSON overrides with evaluator defaults.",
-      "tags": [
-        "code",
-        "paper-trading"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:src/strategies/registry.ts:loadStrategies",
-      "type": "function",
-      "name": "loadStrategies",
-      "filePath": "src/strategies/registry.ts",
-      "lineRange": [
-        15,
-        24
-      ],
-      "summary": "Merges JSON strategy settings with library evaluators and defaults.",
-      "tags": [
-        "runtime",
-        "code"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "config:.env.example",
-      "type": "config",
-      "name": ".env.example",
-      "filePath": ".env.example",
-      "summary": "Template of every runtime environment variable: RPC endpoints, explorer keys, Telegram/webhook alert targets, whale and pool thresholds, Gold RWA settings, API host/port/token/CORS and log level.",
-      "tags": [
-        "config",
-        "monitor"
-      ],
-      "complexity": "simple"
-    },
-    {
       "id": "document:AGENTS.md",
       "type": "document",
       "name": "AGENTS.md",
@@ -1833,47 +1309,11 @@
       "complexity": "simple"
     },
     {
-      "id": "document:README.md",
-      "type": "document",
-      "name": "README.md",
-      "filePath": "README.md",
-      "summary": "Project overview covering features, architecture diagram, Raspberry Pi 4 quick start, systemd auto-start, the HTTP JSON API, configuration, layout, alerts, troubleshooting and limitations.",
-      "tags": [
-        "docs",
-        "monitor"
-      ],
-      "complexity": "complex"
-    },
-    {
-      "id": "config:package.json",
-      "type": "config",
-      "name": "package.json",
-      "filePath": "package.json",
-      "summary": "Node dependencies and commands for runtime, TypeScript checks, deck regressions and strategy research.",
-      "tags": [
-        "config",
-        "monitor"
-      ],
-      "complexity": "simple"
-    },
-    {
       "id": "config:tsconfig.json",
       "type": "config",
       "name": "tsconfig.json",
       "filePath": "tsconfig.json",
       "summary": "Strict TypeScript compiler settings targeting ES2022 ESM with bundler resolution, compiling src/ to dist/.",
-      "tags": [
-        "config",
-        "monitor"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "config:vercel.json",
-      "type": "config",
-      "name": "vercel.json",
-      "filePath": "vercel.json",
-      "summary": "Existing-project Vercel build command, isolated static output and root/deck routing configuration.",
       "tags": [
         "config",
         "monitor"
@@ -2181,18 +1621,6 @@
       "complexity": "moderate"
     },
     {
-      "id": "document:docs/SYSTEM_DESIGN.md",
-      "type": "document",
-      "name": "SYSTEM_DESIGN.md",
-      "filePath": "docs/SYSTEM_DESIGN.md",
-      "summary": "Paper-engine architecture, strategy contracts, audit loop and risk boundaries.",
-      "tags": [
-        "docs",
-        "monitor"
-      ],
-      "complexity": "moderate"
-    },
-    {
       "id": "config:.agent/work-state.json",
       "type": "config",
       "name": "work-state.json",
@@ -2201,34 +1629,6 @@
       "tags": [
         "config",
         "monitor"
-      ],
-      "complexity": "moderate"
-    },
-    {
-      "id": "file:api/[...path].js",
-      "type": "file",
-      "name": "[...path].js",
-      "filePath": "api/[...path].js",
-      "summary": "Allowlisted same-origin Vercel proxy to a configured HTTPS engine origin; forwards browser authorization, rejects redirects, bounds requests and preserves explicit upstream/auth failures.",
-      "tags": [
-        "code",
-        "monitor"
-      ],
-      "complexity": "simple"
-    },
-    {
-      "id": "function:api/[...path].js:handler",
-      "type": "function",
-      "name": "handler",
-      "filePath": "api/[...path].js",
-      "lineRange": [
-        4,
-        29
-      ],
-      "summary": "Provides handler for [...path].",
-      "tags": [
-        "runtime",
-        "code"
       ],
       "complexity": "moderate"
     },
@@ -3026,18 +2426,6 @@
       "complexity": "simple"
     },
     {
-      "id": "file:deck/index.html",
-      "type": "file",
-      "name": "index.html",
-      "filePath": "deck/index.html",
-      "summary": "Accessible zero-build deck structure with portfolio, interactive brain, model, tape, cortex and trace panels plus live status controls.",
-      "tags": [
-        "markup",
-        "deck"
-      ],
-      "complexity": "moderate"
-    },
-    {
       "id": "file:deck/style.css",
       "type": "file",
       "name": "style.css",
@@ -3048,18 +2436,6 @@
         "deck"
       ],
       "complexity": "complex"
-    },
-    {
-      "id": "document:deploy/DEPLOY.md",
-      "type": "document",
-      "name": "DEPLOY.md",
-      "filePath": "deploy/DEPLOY.md",
-      "summary": "Step-by-step Raspberry Pi 4 deployment guide: prerequisites, clone, install, configure, smoke test, systemd install, operation and updates.",
-      "tags": [
-        "docs",
-        "monitor"
-      ],
-      "complexity": "moderate"
     },
     {
       "id": "file:deploy/install-service.sh",
@@ -3126,11 +2502,795 @@
       "complexity": "simple"
     },
     {
+      "id": "file:src/engine/portfolio.ts",
+      "type": "file",
+      "name": "portfolio.ts",
+      "filePath": "src/engine/portfolio.ts",
+      "summary": "Tracks paper cash, position keys, simulated fills, fees and realized/unrealized PnL; places no live orders.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/engine/portfolio.ts:PaperPortfolio",
+      "type": "class",
+      "name": "PaperPortfolio",
+      "filePath": "src/engine/portfolio.ts",
+      "lineRange": [
+        14,
+        108
+      ],
+      "summary": "Tracks paper cash, position keys, simulated fills, fees and realized/unrealized PnL; places no live orders.",
+      "tags": [
+        "paper-trading",
+        "state"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/engine/portfolio.ts:PaperPortfolio.constructor",
+      "type": "function",
+      "name": "PaperPortfolio.constructor",
+      "filePath": "src/engine/portfolio.ts",
+      "lineRange": [
+        23,
+        25
+      ],
+      "summary": "Initializes PaperPortfolio.",
+      "tags": [
+        "paper-trading",
+        "method"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/engine/portfolio.ts:PaperPortfolio.checkpoint",
+      "type": "function",
+      "name": "PaperPortfolio.checkpoint",
+      "filePath": "src/engine/portfolio.ts",
+      "lineRange": [
+        27,
+        33
+      ],
+      "summary": "Defines PaperPortfolio.checkpoint in portfolio.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/portfolio.ts:PaperPortfolio.restoreCheckpoint",
+      "type": "function",
+      "name": "PaperPortfolio.restoreCheckpoint",
+      "filePath": "src/engine/portfolio.ts",
+      "lineRange": [
+        35,
+        48
+      ],
+      "summary": "Defines PaperPortfolio.restoreCheckpoint in portfolio.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/portfolio.ts:PaperPortfolio.canOpen",
+      "type": "function",
+      "name": "PaperPortfolio.canOpen",
+      "filePath": "src/engine/portfolio.ts",
+      "lineRange": [
+        50,
+        52
+      ],
+      "summary": "Implements canOpen for PaperPortfolio.",
+      "tags": [
+        "paper-trading",
+        "method"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/engine/portfolio.ts:PaperPortfolio.open",
+      "type": "function",
+      "name": "PaperPortfolio.open",
+      "filePath": "src/engine/portfolio.ts",
+      "lineRange": [
+        54,
+        75
+      ],
+      "summary": "Implements open for PaperPortfolio.",
+      "tags": [
+        "paper-trading",
+        "method"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/engine/portfolio.ts:PaperPortfolio.close",
+      "type": "function",
+      "name": "PaperPortfolio.close",
+      "filePath": "src/engine/portfolio.ts",
+      "lineRange": [
+        77,
+        91
+      ],
+      "summary": "Implements close for PaperPortfolio.",
+      "tags": [
+        "paper-trading",
+        "method"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/engine/portfolio.ts:PaperPortfolio.equity",
+      "type": "function",
+      "name": "PaperPortfolio.equity",
+      "filePath": "src/engine/portfolio.ts",
+      "lineRange": [
+        93,
+        97
+      ],
+      "summary": "Implements equity for PaperPortfolio.",
+      "tags": [
+        "paper-trading",
+        "method"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/engine/portfolio.ts:PaperPortfolio.unrealized",
+      "type": "function",
+      "name": "PaperPortfolio.unrealized",
+      "filePath": "src/engine/portfolio.ts",
+      "lineRange": [
+        99,
+        103
+      ],
+      "summary": "Implements unrealized for PaperPortfolio.",
+      "tags": [
+        "paper-trading",
+        "method"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/engine/portfolio.ts:PaperPortfolio.key",
+      "type": "function",
+      "name": "PaperPortfolio.key",
+      "filePath": "src/engine/portfolio.ts",
+      "lineRange": [
+        105,
+        107
+      ],
+      "summary": "Implements key for PaperPortfolio.",
+      "tags": [
+        "paper-trading",
+        "method"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:src/strategies/registry.ts",
+      "type": "file",
+      "name": "registry.ts",
+      "filePath": "src/strategies/registry.ts",
+      "summary": "Loads enabled strategy settings by merging JSON overrides with evaluator defaults.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/strategies/registry.ts:loadStrategies",
+      "type": "function",
+      "name": "loadStrategies",
+      "filePath": "src/strategies/registry.ts",
+      "lineRange": [
+        16,
+        25
+      ],
+      "summary": "Merges JSON strategy settings with library evaluators and defaults.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:test/engine-restart.test.ts",
+      "type": "file",
+      "name": "engine-restart.test.ts",
+      "filePath": "test/engine-restart.test.ts",
+      "summary": "Project code: engine-restart.test.ts.",
+      "tags": [
+        "code",
+        "paper-engine"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:test/engine-restart.test.ts:fixture",
+      "type": "function",
+      "name": "fixture",
+      "filePath": "test/engine-restart.test.ts",
+      "lineRange": [
+        12,
+        22
+      ],
+      "summary": "Defines fixture in engine-restart.test.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:test/engine-restart.test.ts:runProcess",
+      "type": "function",
+      "name": "runProcess",
+      "filePath": "test/engine-restart.test.ts",
+      "lineRange": [
+        24,
+        57
+      ],
+      "summary": "Defines runProcess in engine-restart.test.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:test/engine-restart.test.ts:runCycle",
+      "type": "function",
+      "name": "runCycle",
+      "filePath": "test/engine-restart.test.ts",
+      "lineRange": [
+        59,
+        63
+      ],
+      "summary": "Defines runCycle in engine-restart.test.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:test/engine-restart.test.ts:checkSnapshotApi",
+      "type": "function",
+      "name": "checkSnapshotApi",
+      "filePath": "test/engine-restart.test.ts",
+      "lineRange": [
+        166,
+        188
+      ],
+      "summary": "Defines checkSnapshotApi in engine-restart.test.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:test/engine-restart.test.ts:legacyFork",
+      "type": "function",
+      "name": "legacyFork",
+      "filePath": "test/engine-restart.test.ts",
+      "lineRange": [
+        315,
+        336
+      ],
+      "summary": "Defines legacyFork in engine-restart.test.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:test/engine-risk.test.ts",
+      "type": "file",
+      "name": "engine-risk.test.ts",
+      "filePath": "test/engine-risk.test.ts",
+      "summary": "Project code: engine-risk.test.ts.",
+      "tags": [
+        "code",
+        "paper-engine"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:test/engine-risk.test.ts:runCycle",
+      "type": "function",
+      "name": "runCycle",
+      "filePath": "test/engine-risk.test.ts",
+      "lineRange": [
+        9,
+        68
+      ],
+      "summary": "Defines runCycle in engine-risk.test.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:api/cron/paper-engine.ts",
+      "type": "file",
+      "name": "paper-engine.ts",
+      "filePath": "api/cron/paper-engine.ts",
+      "summary": "Returns the authenticated production paper-cycle status to Supabase Cron.",
+      "tags": [
+        "code",
+        "paper-engine"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:api/cron/paper-engine.ts:handler",
+      "type": "function",
+      "name": "handler",
+      "filePath": "api/cron/paper-engine.ts",
+      "lineRange": [
+        4,
+        10
+      ],
+      "summary": "Defines handler in paper-engine.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:api/read.js",
+      "type": "file",
+      "name": "read.js",
+      "filePath": "api/read.js",
+      "summary": "Allowlisted Vercel read handler: either authenticated Supabase snapshots or an external HTTPS engine.",
+      "tags": [
+        "code",
+        "paper-engine"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:api/read.js:handler",
+      "type": "function",
+      "name": "handler",
+      "filePath": "api/read.js",
+      "lineRange": [
+        3,
+        34
+      ],
+      "summary": "Defines handler in read.js.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/engine/hosted-api.ts",
+      "type": "file",
+      "name": "hosted-api.ts",
+      "filePath": "src/engine/hosted-api.ts",
+      "summary": "Separates cron and deck bearer credentials; rejects stale snapshots and disables hosted mutations.",
+      "tags": [
+        "code",
+        "paper-engine"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/engine/hosted-api.ts:reply",
+      "type": "function",
+      "name": "reply",
+      "filePath": "src/engine/hosted-api.ts",
+      "lineRange": [
+        7,
+        7
+      ],
+      "summary": "Defines reply in hosted-api.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/hosted-api.ts:failure",
+      "type": "function",
+      "name": "failure",
+      "filePath": "src/engine/hosted-api.ts",
+      "lineRange": [
+        8,
+        8
+      ],
+      "summary": "Defines failure in hosted-api.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/hosted-api.ts:authorized",
+      "type": "function",
+      "name": "authorized",
+      "filePath": "src/engine/hosted-api.ts",
+      "lineRange": [
+        9,
+        14
+      ],
+      "summary": "Defines authorized in hosted-api.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/hosted-api.ts:hostedRead",
+      "type": "function",
+      "name": "hostedRead",
+      "filePath": "src/engine/hosted-api.ts",
+      "lineRange": [
+        21,
+        64
+      ],
+      "summary": "Authenticates a viewer and serves allowlisted GET data only when the hosted snapshot is fresh.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/hosted-api.ts:hostedCron",
+      "type": "function",
+      "name": "hostedCron",
+      "filePath": "src/engine/hosted-api.ts",
+      "lineRange": [
+        66,
+        79
+      ],
+      "summary": "Authenticates the cron separately and runs a paper-only production cycle.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/engine/hosted.ts",
+      "type": "file",
+      "name": "hosted.ts",
+      "filePath": "src/engine/hosted.ts",
+      "summary": "Restores a fresh paper engine from Supabase, evaluates public market data and commits the new state and ledger atomically.",
+      "tags": [
+        "code",
+        "paper-engine"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/engine/hosted.ts:hostedStrategies",
+      "type": "function",
+      "name": "hostedStrategies",
+      "filePath": "src/engine/hosted.ts",
+      "lineRange": [
+        28,
+        28
+      ],
+      "summary": "Loads bundled strategy overrides for Vercel without reading process-local files.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/hosted.ts:createHostedStore",
+      "type": "function",
+      "name": "createHostedStore",
+      "filePath": "src/engine/hosted.ts",
+      "lineRange": [
+        30,
+        58
+      ],
+      "summary": "Calls the restricted Supabase read, load and atomic commit RPCs with server-only credentials.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/hosted.ts:rpc",
+      "type": "function",
+      "name": "rpc",
+      "filePath": "src/engine/hosted.ts",
+      "lineRange": [
+        40,
+        50
+      ],
+      "summary": "Defines rpc in hosted.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/hosted.ts:runHostedCycle",
+      "type": "function",
+      "name": "runHostedCycle",
+      "filePath": "src/engine/hosted.ts",
+      "lineRange": [
+        60,
+        101
+      ],
+      "summary": "Loads the ledger head and engine checkpoint, runs one slot, and commits only if the loaded head is still current.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/hosted.ts:append",
+      "type": "function",
+      "name": "append",
+      "filePath": "src/engine/hosted.ts",
+      "lineRange": [
+        74,
+        79
+      ],
+      "summary": "Defines append in hosted.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/hosted.ts:hostedEngineEnabled",
+      "type": "function",
+      "name": "hostedEngineEnabled",
+      "filePath": "src/engine/hosted.ts",
+      "lineRange": [
+        103,
+        103
+      ],
+      "summary": "Enables hosted paper execution only in production when the engine is enabled.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/engine/market.ts",
+      "type": "file",
+      "name": "market.ts",
+      "filePath": "src/engine/market.ts",
+      "summary": "Accepts fresh public candle data from Binance, Bybit, Coinbase or Kraken; skips stale or invalid feeds.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/engine/market.ts:fetchMarket",
+      "type": "function",
+      "name": "fetchMarket",
+      "filePath": "src/engine/market.ts",
+      "lineRange": [
+        26,
+        26
+      ],
+      "summary": "Defines fetchMarket in market.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/market.ts:fromBinance",
+      "type": "function",
+      "name": "fromBinance",
+      "filePath": "src/engine/market.ts",
+      "lineRange": [
+        28,
+        33
+      ],
+      "summary": "Fetches and normalizes public candles from Binance.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/market.ts:fromBybit",
+      "type": "function",
+      "name": "fromBybit",
+      "filePath": "src/engine/market.ts",
+      "lineRange": [
+        35,
+        41
+      ],
+      "summary": "Fetches and normalizes public candles from Bybit.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/market.ts:fromCoinbase",
+      "type": "function",
+      "name": "fromCoinbase",
+      "filePath": "src/engine/market.ts",
+      "lineRange": [
+        44,
+        54
+      ],
+      "summary": "Fetches and normalizes public candles from Coinbase.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/market.ts:fromKraken",
+      "type": "function",
+      "name": "fromKraken",
+      "filePath": "src/engine/market.ts",
+      "lineRange": [
+        57,
+        66
+      ],
+      "summary": "Fetches and normalizes public candles from Kraken.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/market.ts:fetchSymbol",
+      "type": "function",
+      "name": "fetchSymbol",
+      "filePath": "src/engine/market.ts",
+      "lineRange": [
+        75,
+        100
+      ],
+      "summary": "Returns the first valid and fresh exchange feed; stale and future candles cannot be used for fills.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/market.ts:refreshSymbol",
+      "type": "function",
+      "name": "refreshSymbol",
+      "filePath": "src/engine/market.ts",
+      "lineRange": [
+        102,
+        106
+      ],
+      "summary": "Updates the local market cache only after a valid fresh exchange response.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/market.ts:getFeed",
+      "type": "function",
+      "name": "getFeed",
+      "filePath": "src/engine/market.ts",
+      "lineRange": [
+        108,
+        108
+      ],
+      "summary": "Returns cached candles for a configured market.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:test/engine-market.test.ts",
+      "type": "file",
+      "name": "engine-market.test.ts",
+      "filePath": "test/engine-market.test.ts",
+      "summary": "Project code: engine-market.test.ts.",
+      "tags": [
+        "code",
+        "paper-engine"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:test/hosted-paper.test.ts",
+      "type": "file",
+      "name": "hosted-paper.test.ts",
+      "filePath": "test/hosted-paper.test.ts",
+      "summary": "Verifies restart continuity, duplicate-cycle rejection, current-market marks, and authenticated read and cron behavior.",
+      "tags": [
+        "code",
+        "paper-engine"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:test/hosted-paper.test.ts:memoryStore",
+      "type": "function",
+      "name": "memoryStore",
+      "filePath": "test/hosted-paper.test.ts",
+      "lineRange": [
+        12,
+        32
+      ],
+      "summary": "Defines memoryStore in hosted-paper.test.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:test/hosted-paper.test.ts:refreshAt",
+      "type": "function",
+      "name": "refreshAt",
+      "filePath": "test/hosted-paper.test.ts",
+      "lineRange": [
+        34,
+        37
+      ],
+      "summary": "Defines refreshAt in hosted-paper.test.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:test/market.test.ts",
+      "type": "file",
+      "name": "market.test.ts",
+      "filePath": "test/market.test.ts",
+      "summary": "Tests fallback past stale and future quotes and the all-feeds-unavailable result.",
+      "tags": [
+        "code",
+        "paper-engine"
+      ],
+      "complexity": "moderate"
+    },
+    {
       "id": "file:tests/hosting.test.mjs",
       "type": "file",
       "name": "hosting.test.mjs",
       "filePath": "tests/hosting.test.mjs",
-      "summary": "Checks unset/unreachable engine origins, credential-preserving proxy behavior, explicit auth failures, request restrictions and malformed upstream responses.",
+      "summary": "Covers Vercel routing, proxy restrictions and same-origin Supabase engine reads.",
       "tags": [
         "code",
         "monitor"
@@ -3143,8 +3303,8 @@
       "name": "request",
       "filePath": "tests/hosting.test.mjs",
       "lineRange": [
-        12,
-        17
+        15,
+        20
       ],
       "summary": "Provides request for hosting.test.",
       "tags": [
@@ -3152,6 +3312,598 @@
         "code"
       ],
       "complexity": "simple"
+    },
+    {
+      "id": "file:src/engine/ledger.ts",
+      "type": "file",
+      "name": "ledger.ts",
+      "filePath": "src/engine/ledger.ts",
+      "summary": "Daily append-only JSONL paper ledger with a record hash chain and bounded API reads.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/engine/ledger.ts:rollDay",
+      "type": "function",
+      "name": "rollDay",
+      "filePath": "src/engine/ledger.ts",
+      "lineRange": [
+        25,
+        32
+      ],
+      "summary": "Provides rollDay for ledger.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/ledger.ts:hashLedgerPayload",
+      "type": "function",
+      "name": "hashLedgerPayload",
+      "filePath": "src/engine/ledger.ts",
+      "lineRange": [
+        34,
+        36
+      ],
+      "summary": "Computes the digest shared by local records, hosted records and SQL commit validation.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/ledger.ts:recordHash",
+      "type": "function",
+      "name": "recordHash",
+      "filePath": "src/engine/ledger.ts",
+      "lineRange": [
+        38,
+        40
+      ],
+      "summary": "Defines recordHash in ledger.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/ledger.ts:follows",
+      "type": "function",
+      "name": "follows",
+      "filePath": "src/engine/ledger.ts",
+      "lineRange": [
+        63,
+        65
+      ],
+      "summary": "Defines follows in ledger.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/ledger.ts:validateLegacyLedger",
+      "type": "function",
+      "name": "validateLegacyLedger",
+      "filePath": "src/engine/ledger.ts",
+      "lineRange": [
+        68,
+        89
+      ],
+      "summary": "Defines validateLegacyLedger in ledger.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/ledger.ts:ledgerResumeLatestCheckpoint",
+      "type": "function",
+      "name": "ledgerResumeLatestCheckpoint",
+      "filePath": "src/engine/ledger.ts",
+      "lineRange": [
+        91,
+        115
+      ],
+      "summary": "Defines ledgerResumeLatestCheckpoint in ledger.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/ledger.ts:ledgerAppend",
+      "type": "function",
+      "name": "ledgerAppend",
+      "filePath": "src/engine/ledger.ts",
+      "lineRange": [
+        117,
+        126
+      ],
+      "summary": "Appends a timestamped hash-chained event to the daily paper ledger.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/ledger.ts:ledgerTail",
+      "type": "function",
+      "name": "ledgerTail",
+      "filePath": "src/engine/ledger.ts",
+      "lineRange": [
+        128,
+        140
+      ],
+      "summary": "Reads bounded recent ledger events.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/ledger.ts:ledgerAllToday",
+      "type": "function",
+      "name": "ledgerAllToday",
+      "filePath": "src/engine/ledger.ts",
+      "lineRange": [
+        142,
+        144
+      ],
+      "summary": "Reads the current daily audit ledger.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/engine/loop.ts",
+      "type": "file",
+      "name": "loop.ts",
+      "filePath": "src/engine/loop.ts",
+      "summary": "Reusable paper-cycle evaluator with injected feeds, signals and ledger, and a separate local process adapter.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/engine/loop.ts:createPaperEngine",
+      "type": "function",
+      "name": "createPaperEngine",
+      "filePath": "src/engine/loop.ts",
+      "lineRange": [
+        20,
+        188
+      ],
+      "summary": "Creates an isolated paper engine with injected market, signals and ledger adapters.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/loop.ts:createPaperEngine.statFor",
+      "type": "function",
+      "name": "createPaperEngine.statFor",
+      "filePath": "src/engine/loop.ts",
+      "lineRange": [
+        61,
+        65
+      ],
+      "summary": "Defines createPaperEngine.statFor in loop.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/loop.ts:createPaperEngine.checkExits",
+      "type": "function",
+      "name": "createPaperEngine.checkExits",
+      "filePath": "src/engine/loop.ts",
+      "lineRange": [
+        79,
+        96
+      ],
+      "summary": "Defines createPaperEngine.checkExits in loop.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/loop.ts:createPaperEngine.cycle",
+      "type": "function",
+      "name": "createPaperEngine.cycle",
+      "filePath": "src/engine/loop.ts",
+      "lineRange": [
+        98,
+        185
+      ],
+      "summary": "Defines createPaperEngine.cycle in loop.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/loop.ts:monitorSignals",
+      "type": "function",
+      "name": "monitorSignals",
+      "filePath": "src/engine/loop.ts",
+      "lineRange": [
+        190,
+        195
+      ],
+      "summary": "Projects recent whale, pool and gold monitor state into strategy context.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/loop.ts:runEngineCycle",
+      "type": "function",
+      "name": "runEngineCycle",
+      "filePath": "src/engine/loop.ts",
+      "lineRange": [
+        205,
+        220
+      ],
+      "summary": "Runs one local file-ledger cycle while preventing a concurrent local cycle.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/loop.ts:startEngineLoop",
+      "type": "function",
+      "name": "startEngineLoop",
+      "filePath": "src/engine/loop.ts",
+      "lineRange": [
+        222,
+        239
+      ],
+      "summary": "Starts periodic paper-engine cycles when enabled by configuration.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "file:src/engine/risk.ts",
+      "type": "file",
+      "name": "risk.ts",
+      "filePath": "src/engine/risk.ts",
+      "summary": "Hard entry-risk vetoes for kill state, daily loss, confidence, position count, exposure and strategy cooldown.",
+      "tags": [
+        "code",
+        "paper-trading"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "class:src/engine/risk.ts:RiskEngine",
+      "type": "class",
+      "name": "RiskEngine",
+      "filePath": "src/engine/risk.ts",
+      "lineRange": [
+        21,
+        67
+      ],
+      "summary": "Hard entry-risk vetoes for kill state, daily loss, confidence, position count, exposure and strategy cooldown.",
+      "tags": [
+        "paper-trading",
+        "state"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "function:src/engine/risk.ts:RiskEngine.constructor",
+      "type": "function",
+      "name": "RiskEngine.constructor",
+      "filePath": "src/engine/risk.ts",
+      "lineRange": [
+        27,
+        29
+      ],
+      "summary": "Initializes RiskEngine.",
+      "tags": [
+        "paper-trading",
+        "method"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/engine/risk.ts:RiskEngine.checkpoint",
+      "type": "function",
+      "name": "RiskEngine.checkpoint",
+      "filePath": "src/engine/risk.ts",
+      "lineRange": [
+        31,
+        33
+      ],
+      "summary": "Defines RiskEngine.checkpoint in risk.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/risk.ts:RiskEngine.restoreCheckpoint",
+      "type": "function",
+      "name": "RiskEngine.restoreCheckpoint",
+      "filePath": "src/engine/risk.ts",
+      "lineRange": [
+        35,
+        39
+      ],
+      "summary": "Defines RiskEngine.restoreCheckpoint in risk.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/risk.ts:RiskEngine.baselineDay",
+      "type": "function",
+      "name": "RiskEngine.baselineDay",
+      "filePath": "src/engine/risk.ts",
+      "lineRange": [
+        41,
+        41
+      ],
+      "summary": "Defines RiskEngine.baselineDay in risk.ts.",
+      "tags": [
+        "paper-engine",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/engine/risk.ts:RiskEngine.check",
+      "type": "function",
+      "name": "RiskEngine.check",
+      "filePath": "src/engine/risk.ts",
+      "lineRange": [
+        44,
+        59
+      ],
+      "summary": "Implements check for RiskEngine.",
+      "tags": [
+        "paper-trading",
+        "method"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "function:src/engine/risk.ts:RiskEngine.recordClose",
+      "type": "function",
+      "name": "RiskEngine.recordClose",
+      "filePath": "src/engine/risk.ts",
+      "lineRange": [
+        61,
+        66
+      ],
+      "summary": "Implements recordClose for RiskEngine.",
+      "tags": [
+        "paper-trading",
+        "method"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "schema:supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "type": "schema",
+      "name": "20261124215149_hosted_paper_engine.sql",
+      "filePath": "supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "summary": "Creates the private paper-engine state and hash ledger, with atomic service-only RPCs.",
+      "tags": [
+        "data",
+        "paper-engine"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "table:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine.state",
+      "type": "table",
+      "name": "paper_engine.state",
+      "filePath": "supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "lineRange": [
+        4,
+        10
+      ],
+      "summary": "Singleton checkpoint, current minute slot and expected ledger head.",
+      "tags": [
+        "paper-engine",
+        "data"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "table:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine.ledger",
+      "type": "table",
+      "name": "paper_engine.ledger",
+      "filePath": "supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "lineRange": [
+        12,
+        19
+      ],
+      "summary": "Append-only paper ledger rows, keyed by hash-chained sequence.",
+      "tags": [
+        "paper-engine",
+        "data"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_load",
+      "type": "function",
+      "name": "paper_engine_load",
+      "filePath": "supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "lineRange": [
+        24,
+        30
+      ],
+      "summary": "Reads the checkpoint and head required to start a hosted paper cycle.",
+      "tags": [
+        "paper-engine",
+        "data"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_read",
+      "type": "function",
+      "name": "paper_engine_read",
+      "filePath": "supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "lineRange": [
+        32,
+        40
+      ],
+      "summary": "Projects narrow cached dashboard responses for the server-side read handler.",
+      "tags": [
+        "paper-engine",
+        "data"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_commit",
+      "type": "function",
+      "name": "paper_engine_commit",
+      "filePath": "supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "lineRange": [
+        42,
+        81
+      ],
+      "summary": "Locks the singleton row, rejects obsolete cycles and checks every ledger hash before the atomic state update.",
+      "tags": [
+        "paper-engine",
+        "data"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:.env.example",
+      "type": "config",
+      "name": ".env.example",
+      "filePath": ".env.example",
+      "summary": "Template of every runtime environment variable: RPC endpoints, explorer keys, Telegram/webhook alert targets, whale and pool thresholds, Gold RWA settings, API host/port/token/CORS and log level.",
+      "tags": [
+        "config",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:README.md",
+      "type": "document",
+      "name": "README.md",
+      "filePath": "README.md",
+      "summary": "Project overview and the choice between same-deployment Vercel paper data and an external read-only engine.",
+      "tags": [
+        "docs",
+        "monitor"
+      ],
+      "complexity": "complex"
+    },
+    {
+      "id": "config:package.json",
+      "type": "config",
+      "name": "package.json",
+      "filePath": "package.json",
+      "summary": "Node dependencies and commands for runtime, TypeScript checks, deck regressions and strategy research.",
+      "tags": [
+        "config",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "config:vercel.json",
+      "type": "config",
+      "name": "vercel.json",
+      "filePath": "vercel.json",
+      "summary": "Builds the static deck, limits the paper function runtime and rewrites read API paths to a concrete function.",
+      "tags": [
+        "config",
+        "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "document:docs/SYSTEM_DESIGN.md",
+      "type": "document",
+      "name": "SYSTEM_DESIGN.md",
+      "filePath": "docs/SYSTEM_DESIGN.md",
+      "summary": "Paper-engine architecture, strategy contracts, audit loop and risk boundaries.",
+      "tags": [
+        "docs",
+        "monitor"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "file:deck/index.html",
+      "type": "file",
+      "name": "index.html",
+      "filePath": "deck/index.html",
+      "summary": "Accessible zero-build deck structure with portfolio, interactive brain, model, tape, cortex and trace panels plus live status controls.",
+      "tags": [
+        "markup",
+        "deck"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "document:deploy/DEPLOY.md",
+      "type": "document",
+      "name": "DEPLOY.md",
+      "filePath": "deploy/DEPLOY.md",
+      "summary": "Local Raspberry Pi monitor operation and Vercel paper engine release, credentials and smoke checks.",
+      "tags": [
+        "docs",
+        "monitor"
+      ],
+      "complexity": "moderate"
+    },
+    {
+      "id": "config:supabase/schedule-paper-engine.sql",
+      "type": "config",
+      "name": "schedule-paper-engine.sql",
+      "filePath": "supabase/schedule-paper-engine.sql",
+      "summary": "Configures a minute-by-minute authenticated POST to the Vercel paper function, resolving the secret via Vault.",
+      "tags": [
+        "data",
+        "paper-engine"
+      ],
+      "complexity": "moderate"
     }
   ],
   "edges": [
@@ -3221,41 +3973,6 @@
     {
       "source": "file:src/config.ts",
       "target": "function:src/config.ts:str",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/ledger.ts",
-      "target": "function:src/engine/ledger.ts:rollDay",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/ledger.ts",
-      "target": "function:src/engine/ledger.ts:h",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/ledger.ts",
-      "target": "function:src/engine/ledger.ts:ledgerAppend",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/ledger.ts",
-      "target": "function:src/engine/ledger.ts:ledgerTail",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/ledger.ts",
-      "target": "function:src/engine/ledger.ts:ledgerAllToday",
       "type": "contains",
       "weight": 1,
       "direction": "forward"
@@ -3506,237 +4223,6 @@
       "direction": "forward"
     },
     {
-      "source": "file:src/api.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/engine/ledger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/engine/risk.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/engine/state.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/store.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/api.ts",
-      "target": "file:src/wallets.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/ledger.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/filter.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/filter.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/gold_rwa.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/gold_rwa.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/gold_rwa.ts",
-      "target": "file:src/notifier.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/gold_rwa.ts",
-      "target": "file:src/store.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/api.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/engine/loop.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/gold_rwa.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/listener.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/index.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/filter.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/notifier.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/listener.ts",
-      "target": "file:src/wallets.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/notifier.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/notifier.ts",
-      "target": "file:src/filter.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/notifier.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/notifier.ts",
-      "target": "file:src/store.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/store.ts",
-      "target": "file:src/gold_rwa.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/store.ts",
-      "target": "file:src/notifier.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/wallets.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
       "source": "function:src/api.ts:health",
       "target": "function:src/store.ts:getGoldSnapshot",
       "type": "calls",
@@ -3807,20 +4293,6 @@
       "direction": "forward"
     },
     {
-      "source": "function:src/api.ts:handle",
-      "target": "function:src/strategies/registry.ts:loadStrategies",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/api.ts:handle",
-      "target": "function:src/engine/ledger.ts:ledgerTail",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
       "source": "function:src/api.ts:startApi",
       "target": "function:src/api.ts:handle",
       "type": "calls",
@@ -3837,48 +4309,6 @@
     {
       "source": "file:src/api.ts",
       "target": "function:src/api.ts:startApi",
-      "type": "exports",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/ledger.ts:ledgerAppend",
-      "target": "function:src/engine/ledger.ts:rollDay",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/ledger.ts:ledgerAppend",
-      "target": "function:src/engine/ledger.ts:h",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/ledger.ts:ledgerAllToday",
-      "target": "function:src/engine/ledger.ts:ledgerTail",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/ledger.ts",
-      "target": "function:src/engine/ledger.ts:ledgerAppend",
-      "type": "exports",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/ledger.ts",
-      "target": "function:src/engine/ledger.ts:ledgerTail",
-      "type": "exports",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/ledger.ts",
-      "target": "function:src/engine/ledger.ts:ledgerAllToday",
       "type": "exports",
       "weight": 0.8,
       "direction": "forward"
@@ -4311,13 +4741,6 @@
       "direction": "forward"
     },
     {
-      "source": "file:src/api.ts",
-      "target": "file:deck/index.html",
-      "type": "serves",
-      "weight": 0.5,
-      "direction": "forward"
-    },
-    {
       "source": "file:src/engine/decisions.ts",
       "target": "function:src/engine/decisions.ts:makeModel",
       "type": "contains",
@@ -4437,125 +4860,6 @@
       "direction": "forward"
     },
     {
-      "source": "file:src/engine/loop.ts",
-      "target": "function:src/engine/loop.ts:statFor",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "function:src/engine/loop.ts:monitorSignals",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "function:src/engine/loop.ts:checkExits",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "function:src/engine/loop.ts:cycle",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "function:src/engine/loop.ts:startEngineLoop",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/portfolio.ts",
-      "target": "class:src/engine/portfolio.ts:PaperPortfolio",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
-      "target": "function:src/engine/portfolio.ts:PaperPortfolio.constructor",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
-      "target": "function:src/engine/portfolio.ts:PaperPortfolio.canOpen",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
-      "target": "function:src/engine/portfolio.ts:PaperPortfolio.open",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
-      "target": "function:src/engine/portfolio.ts:PaperPortfolio.close",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
-      "target": "function:src/engine/portfolio.ts:PaperPortfolio.equity",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
-      "target": "function:src/engine/portfolio.ts:PaperPortfolio.unrealized",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
-      "target": "function:src/engine/portfolio.ts:PaperPortfolio.key",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/risk.ts",
-      "target": "class:src/engine/risk.ts:RiskEngine",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "class:src/engine/risk.ts:RiskEngine",
-      "target": "function:src/engine/risk.ts:RiskEngine.constructor",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "class:src/engine/risk.ts:RiskEngine",
-      "target": "function:src/engine/risk.ts:RiskEngine.check",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "class:src/engine/risk.ts:RiskEngine",
-      "target": "function:src/engine/risk.ts:RiskEngine.recordClose",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
       "source": "file:src/strategies/library.ts",
       "target": "function:src/strategies/library.ts:buy",
       "type": "contains",
@@ -4567,132 +4871,6 @@
       "target": "function:src/strategies/library.ts:sell",
       "type": "contains",
       "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/decisions.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/decisions.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/indicators.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/ledger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/portfolio.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/risk.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/state.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/store.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/portfolio.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/risk.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/state.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/library.ts",
-      "target": "file:src/engine/indicators.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/library.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
       "direction": "forward"
     },
     {
@@ -4829,97 +5007,6 @@
       "direction": "forward"
     },
     {
-      "source": "function:src/engine/loop.ts:monitorSignals",
-      "target": "function:src/store.ts:listSignals",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/loop.ts:monitorSignals",
-      "target": "function:src/store.ts:getGoldSnapshot",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/loop.ts:checkExits",
-      "target": "function:src/engine/loop.ts:statFor",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/loop.ts:checkExits",
-      "target": "function:src/engine/ledger.ts:ledgerAppend",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/loop.ts:cycle",
-      "target": "function:src/engine/market.ts:refreshSymbol",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/loop.ts:cycle",
-      "target": "function:src/engine/market.ts:getPrice",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/loop.ts:cycle",
-      "target": "function:src/engine/loop.ts:checkExits",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/loop.ts:cycle",
-      "target": "function:src/engine/loop.ts:monitorSignals",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/loop.ts:cycle",
-      "target": "function:src/engine/loop.ts:statFor",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/loop.ts:cycle",
-      "target": "function:src/engine/ledger.ts:ledgerAppend",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/loop.ts",
-      "target": "function:src/engine/loop.ts:startEngineLoop",
-      "type": "exports",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/portfolio.ts",
-      "target": "class:src/engine/portfolio.ts:PaperPortfolio",
-      "type": "exports",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/risk.ts",
-      "target": "class:src/engine/risk.ts:RiskEngine",
-      "type": "exports",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
       "source": "file:src/engine/backtest.ts",
       "target": "function:src/engine/backtest.ts:replayOne",
       "type": "contains",
@@ -4929,55 +5016,6 @@
     {
       "source": "file:src/engine/backtest.ts",
       "target": "function:src/engine/backtest.ts:runBacktest",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "function:src/engine/market.ts:fromBinance",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "function:src/engine/market.ts:fromBybit",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "function:src/engine/market.ts:fromCoinbase",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "function:src/engine/market.ts:fromKraken",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "function:src/engine/market.ts:refreshSymbol",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "function:src/engine/market.ts:getFeed",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "function:src/engine/market.ts:getPrice",
       "type": "contains",
       "weight": 1,
       "direction": "forward"
@@ -4994,153 +5032,6 @@
       "target": "function:src/engine/sweep.ts:runSweep",
       "type": "contains",
       "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/registry.ts",
-      "target": "function:src/strategies/registry.ts:loadStrategies",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/engine/portfolio.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/backtest.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/stress.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/stress.ts",
-      "target": "file:src/engine/backtest.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/stress.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/stress.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/sweep.ts",
-      "target": "file:src/config.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/sweep.ts",
-      "target": "file:src/engine/backtest.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/sweep.ts",
-      "target": "file:src/engine/market.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/sweep.ts",
-      "target": "file:src/strategies/registry.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/registry.ts",
-      "target": "file:src/engine/types.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/registry.ts",
-      "target": "file:src/logger.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/registry.ts",
-      "target": "file:src/strategies/library.ts",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/backtest.ts:runBacktest",
-      "target": "function:src/strategies/registry.ts:loadStrategies",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/backtest.ts:runBacktest",
-      "target": "function:src/engine/market.ts:refreshSymbol",
-      "type": "calls",
-      "weight": 0.8,
       "direction": "forward"
     },
     {
@@ -5165,41 +5056,6 @@
       "direction": "forward"
     },
     {
-      "source": "file:src/engine/market.ts",
-      "target": "function:src/engine/market.ts:refreshSymbol",
-      "type": "exports",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "function:src/engine/market.ts:getFeed",
-      "type": "exports",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/engine/market.ts",
-      "target": "function:src/engine/market.ts:getPrice",
-      "type": "exports",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/stress.ts:runStress",
-      "target": "function:src/strategies/registry.ts:loadStrategies",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/stress.ts:runStress",
-      "target": "function:src/engine/market.ts:refreshSymbol",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
       "source": "function:src/engine/stress.ts:runStress",
       "target": "function:src/engine/backtest.ts:replayOne",
       "type": "calls",
@@ -5215,20 +5071,6 @@
     },
     {
       "source": "function:src/engine/sweep.ts:runSweep",
-      "target": "function:src/strategies/registry.ts:loadStrategies",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/sweep.ts:runSweep",
-      "target": "function:src/engine/market.ts:refreshSymbol",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "function:src/engine/sweep.ts:runSweep",
       "target": "function:src/engine/backtest.ts:replayOne",
       "type": "calls",
       "weight": 0.8,
@@ -5239,27 +5081,6 @@
       "target": "function:src/engine/sweep.ts:runSweep",
       "type": "exports",
       "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/registry.ts",
-      "target": "function:src/strategies/registry.ts:loadStrategies",
-      "type": "exports",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "file:src/strategies/registry.ts",
-      "target": "config:data/strategies.json",
-      "type": "reads_from",
-      "weight": 0.5,
-      "direction": "forward"
-    },
-    {
-      "source": "file:api/[...path].js",
-      "target": "function:api/[...path].js:handler",
-      "type": "contains",
-      "weight": 1,
       "direction": "forward"
     },
     {
@@ -5603,27 +5424,6 @@
       "target": "function:tests/deck.test.mjs:runtime",
       "type": "contains",
       "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:tests/hosting.test.mjs",
-      "target": "function:tests/hosting.test.mjs:request",
-      "type": "contains",
-      "weight": 1,
-      "direction": "forward"
-    },
-    {
-      "source": "file:tests/hosting.test.mjs",
-      "target": "file:api/[...path].js",
-      "type": "imports",
-      "weight": 0.7,
-      "direction": "forward"
-    },
-    {
-      "source": "file:api/[...path].js",
-      "target": "function:api/[...path].js:handler",
-      "type": "exports",
-      "weight": 0.8,
       "direction": "forward"
     },
     {
@@ -6145,27 +5945,6 @@
       "direction": "forward"
     },
     {
-      "source": "function:tests/hosting.test.mjs:request",
-      "target": "function:api/[...path].js:handler",
-      "type": "calls",
-      "weight": 0.8,
-      "direction": "forward"
-    },
-    {
-      "source": "file:deck/index.html",
-      "target": "file:deck/app.js",
-      "type": "depends_on",
-      "weight": 0.5,
-      "direction": "forward"
-    },
-    {
-      "source": "file:deck/index.html",
-      "target": "file:deck/style.css",
-      "type": "depends_on",
-      "weight": 0.5,
-      "direction": "forward"
-    },
-    {
       "source": "file:deck/app.js",
       "target": "file:src/api.ts",
       "type": "reads_from",
@@ -6192,6 +5971,1729 @@
       "type": "triggers",
       "weight": 0.5,
       "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/portfolio.ts",
+      "target": "class:src/engine/portfolio.ts:PaperPortfolio",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/portfolio.ts",
+      "target": "class:src/engine/portfolio.ts:PaperPortfolio",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
+      "target": "function:src/engine/portfolio.ts:PaperPortfolio.constructor",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
+      "target": "function:src/engine/portfolio.ts:PaperPortfolio.checkpoint",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
+      "target": "function:src/engine/portfolio.ts:PaperPortfolio.restoreCheckpoint",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
+      "target": "function:src/engine/portfolio.ts:PaperPortfolio.canOpen",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
+      "target": "function:src/engine/portfolio.ts:PaperPortfolio.open",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
+      "target": "function:src/engine/portfolio.ts:PaperPortfolio.close",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
+      "target": "function:src/engine/portfolio.ts:PaperPortfolio.equity",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
+      "target": "function:src/engine/portfolio.ts:PaperPortfolio.unrealized",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/portfolio.ts:PaperPortfolio",
+      "target": "function:src/engine/portfolio.ts:PaperPortfolio.key",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/strategies/registry.ts",
+      "target": "function:src/strategies/registry.ts:loadStrategies",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/strategies/registry.ts",
+      "target": "function:src/strategies/registry.ts:loadStrategies",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:test/engine-restart.test.ts",
+      "target": "function:test/engine-restart.test.ts:fixture",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:test/engine-restart.test.ts",
+      "target": "function:test/engine-restart.test.ts:runProcess",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:test/engine-restart.test.ts",
+      "target": "function:test/engine-restart.test.ts:runCycle",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:test/engine-restart.test.ts",
+      "target": "function:test/engine-restart.test.ts:checkSnapshotApi",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:test/engine-restart.test.ts",
+      "target": "function:test/engine-restart.test.ts:legacyFork",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:test/engine-risk.test.ts",
+      "target": "function:test/engine-risk.test.ts:runCycle",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:test/engine-restart.test.ts:runCycle",
+      "target": "function:test/engine-restart.test.ts:runProcess",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:test/engine-restart.test.ts:checkSnapshotApi",
+      "target": "function:test/engine-restart.test.ts:runProcess",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:test/engine-restart.test.ts:legacyFork",
+      "target": "function:test/engine-restart.test.ts:fixture",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:api/cron/paper-engine.ts",
+      "target": "function:api/cron/paper-engine.ts:handler",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:api/cron/paper-engine.ts",
+      "target": "function:api/cron/paper-engine.ts:handler",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:api/read.js",
+      "target": "function:api/read.js:handler",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:api/read.js",
+      "target": "function:api/read.js:handler",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted-api.ts",
+      "target": "function:src/engine/hosted-api.ts:reply",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted-api.ts",
+      "target": "function:src/engine/hosted-api.ts:failure",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted-api.ts",
+      "target": "function:src/engine/hosted-api.ts:authorized",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted-api.ts",
+      "target": "function:src/engine/hosted-api.ts:hostedRead",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted-api.ts",
+      "target": "function:src/engine/hosted-api.ts:hostedRead",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted-api.ts",
+      "target": "function:src/engine/hosted-api.ts:hostedCron",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted-api.ts",
+      "target": "function:src/engine/hosted-api.ts:hostedCron",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "function:src/engine/hosted.ts:hostedStrategies",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "function:src/engine/hosted.ts:hostedStrategies",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "function:src/engine/hosted.ts:createHostedStore",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "function:src/engine/hosted.ts:createHostedStore",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "function:src/engine/hosted.ts:rpc",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "function:src/engine/hosted.ts:rpc",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "function:src/engine/hosted.ts:runHostedCycle",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "function:src/engine/hosted.ts:runHostedCycle",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "function:src/engine/hosted.ts:append",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "function:src/engine/hosted.ts:hostedEngineEnabled",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "function:src/engine/hosted.ts:hostedEngineEnabled",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:fetchMarket",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:fromBinance",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:fromBybit",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:fromCoinbase",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:fromKraken",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:fetchSymbol",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:fetchSymbol",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:refreshSymbol",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:refreshSymbol",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:getFeed",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "function:src/engine/market.ts:getFeed",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:test/hosted-paper.test.ts",
+      "target": "function:test/hosted-paper.test.ts:memoryStore",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:test/hosted-paper.test.ts",
+      "target": "function:test/hosted-paper.test.ts:refreshAt",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:tests/hosting.test.mjs",
+      "target": "function:tests/hosting.test.mjs:request",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:api/cron/paper-engine.ts:handler",
+      "target": "function:src/engine/hosted-api.ts:hostedCron",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "config:supabase/schedule-paper-engine.sql",
+      "target": "file:api/cron/paper-engine.ts",
+      "type": "triggers",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:api/read.js:handler",
+      "target": "function:src/engine/hosted-api.ts:hostedRead",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted-api.ts:failure",
+      "target": "function:src/engine/hosted-api.ts:reply",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted-api.ts:hostedRead",
+      "target": "function:src/engine/hosted-api.ts:failure",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted-api.ts:hostedRead",
+      "target": "function:src/engine/hosted-api.ts:authorized",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted-api.ts:hostedRead",
+      "target": "function:src/engine/hosted.ts:createHostedStore",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted-api.ts:hostedRead",
+      "target": "function:src/engine/hosted-api.ts:reply",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted-api.ts:hostedRead",
+      "target": "function:src/engine/hosted.ts:hostedStrategies",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted-api.ts:hostedCron",
+      "target": "function:src/engine/hosted-api.ts:failure",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted-api.ts:hostedCron",
+      "target": "function:src/engine/hosted-api.ts:authorized",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted-api.ts:hostedCron",
+      "target": "function:src/engine/hosted.ts:hostedEngineEnabled",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted-api.ts:hostedCron",
+      "target": "function:src/engine/hosted.ts:createHostedStore",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted-api.ts:hostedCron",
+      "target": "function:src/engine/hosted-api.ts:reply",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted-api.ts:hostedCron",
+      "target": "function:src/engine/hosted.ts:runHostedCycle",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted.ts:hostedStrategies",
+      "target": "function:src/strategies/registry.ts:loadStrategies",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted.ts:createHostedStore",
+      "target": "function:src/engine/hosted.ts:rpc",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted.ts:runHostedCycle",
+      "target": "function:src/engine/hosted.ts:hostedStrategies",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted.ts:append",
+      "target": "function:src/engine/ledger.ts:hashLedgerPayload",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted.ts:runHostedCycle",
+      "target": "function:src/engine/loop.ts:createPaperEngine",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted.ts:runHostedCycle",
+      "target": "function:src/engine/hosted.ts:append",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted.ts:rpc",
+      "target": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_load",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted.ts:rpc",
+      "target": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_read",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/hosted.ts:rpc",
+      "target": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_commit",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/market.ts:fromBinance",
+      "target": "function:src/engine/market.ts:fetchMarket",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/market.ts:fromBybit",
+      "target": "function:src/engine/market.ts:fetchMarket",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/market.ts:fromCoinbase",
+      "target": "function:src/engine/market.ts:fetchMarket",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/market.ts:fromKraken",
+      "target": "function:src/engine/market.ts:fetchMarket",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/market.ts:refreshSymbol",
+      "target": "function:src/engine/market.ts:fetchSymbol",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:tests/hosting.test.mjs:request",
+      "target": "function:api/read.js:handler",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:rollDay",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:hashLedgerPayload",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:hashLedgerPayload",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:recordHash",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:follows",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:validateLegacyLedger",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:ledgerResumeLatestCheckpoint",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:ledgerResumeLatestCheckpoint",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:ledgerAppend",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:ledgerAppend",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:ledgerTail",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:ledgerTail",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:ledgerAllToday",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/ledger.ts",
+      "target": "function:src/engine/ledger.ts:ledgerAllToday",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "function:src/engine/loop.ts:createPaperEngine",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "function:src/engine/loop.ts:createPaperEngine",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/loop.ts:createPaperEngine",
+      "target": "function:src/engine/loop.ts:createPaperEngine.statFor",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "function:src/engine/loop.ts:createPaperEngine.statFor",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/loop.ts:createPaperEngine",
+      "target": "function:src/engine/loop.ts:createPaperEngine.checkExits",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "function:src/engine/loop.ts:createPaperEngine.checkExits",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/loop.ts:createPaperEngine",
+      "target": "function:src/engine/loop.ts:createPaperEngine.cycle",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "function:src/engine/loop.ts:createPaperEngine.cycle",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "function:src/engine/loop.ts:monitorSignals",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "function:src/engine/loop.ts:runEngineCycle",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "function:src/engine/loop.ts:runEngineCycle",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "function:src/engine/loop.ts:startEngineLoop",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "function:src/engine/loop.ts:startEngineLoop",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/risk.ts",
+      "target": "class:src/engine/risk.ts:RiskEngine",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/engine/risk.ts",
+      "target": "class:src/engine/risk.ts:RiskEngine",
+      "type": "exports",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/risk.ts:RiskEngine",
+      "target": "function:src/engine/risk.ts:RiskEngine.constructor",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/risk.ts:RiskEngine",
+      "target": "function:src/engine/risk.ts:RiskEngine.checkpoint",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/risk.ts:RiskEngine",
+      "target": "function:src/engine/risk.ts:RiskEngine.restoreCheckpoint",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/risk.ts:RiskEngine",
+      "target": "function:src/engine/risk.ts:RiskEngine.baselineDay",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/risk.ts:RiskEngine",
+      "target": "function:src/engine/risk.ts:RiskEngine.check",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "class:src/engine/risk.ts:RiskEngine",
+      "target": "function:src/engine/risk.ts:RiskEngine.recordClose",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/ledger.ts:recordHash",
+      "target": "function:src/engine/ledger.ts:hashLedgerPayload",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/ledger.ts:validateLegacyLedger",
+      "target": "function:src/engine/ledger.ts:follows",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/ledger.ts:ledgerResumeLatestCheckpoint",
+      "target": "function:src/engine/ledger.ts:follows",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/ledger.ts:ledgerResumeLatestCheckpoint",
+      "target": "function:src/engine/ledger.ts:validateLegacyLedger",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/ledger.ts:ledgerAppend",
+      "target": "function:src/engine/ledger.ts:rollDay",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/ledger.ts:ledgerAppend",
+      "target": "function:src/engine/ledger.ts:recordHash",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/ledger.ts:ledgerAllToday",
+      "target": "function:src/engine/ledger.ts:ledgerTail",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/loop.ts:createPaperEngine",
+      "target": "function:src/strategies/registry.ts:loadStrategies",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/loop.ts:monitorSignals",
+      "target": "function:src/store.ts:listSignals",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/loop.ts:monitorSignals",
+      "target": "function:src/store.ts:getGoldSnapshot",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/engine/loop.ts:runEngineCycle",
+      "target": "function:src/engine/ledger.ts:ledgerResumeLatestCheckpoint",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "schema:supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "target": "table:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine.state",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "schema:supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "target": "table:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine.ledger",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "schema:supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "target": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_load",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "schema:supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "target": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_read",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "schema:supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "target": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_commit",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_commit",
+      "target": "table:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine.state",
+      "type": "depends_on",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_commit",
+      "target": "table:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine.ledger",
+      "type": "depends_on",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:api/cron/paper-engine.ts",
+      "target": "file:src/engine/hosted-api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:api/read.js",
+      "target": "file:src/engine/hosted-api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/engine/ledger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/engine/risk.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/engine/state.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/store.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/api.ts",
+      "target": "file:src/wallets.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/backtest.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/backtest.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/backtest.ts",
+      "target": "file:src/engine/portfolio.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/backtest.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/backtest.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/decisions.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/decisions.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/hosted-api.ts",
+      "target": "file:src/engine/hosted.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/hosted-api.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/hosted-api.ts",
+      "target": "file:src/engine/state.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/hosted-api.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "config:data/strategies.json",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "file:src/engine/ledger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "file:src/engine/loop.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "file:src/engine/state.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/hosted.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/indicators.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/ledger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/portfolio.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/risk.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/state.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/store.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/market.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/portfolio.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/risk.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/state.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/stress.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/stress.ts",
+      "target": "file:src/engine/backtest.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/stress.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/stress.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/sweep.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/sweep.ts",
+      "target": "file:src/engine/backtest.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/sweep.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/engine/sweep.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/filter.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/filter.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/gold_rwa.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/gold_rwa.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/gold_rwa.ts",
+      "target": "file:src/notifier.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/gold_rwa.ts",
+      "target": "file:src/store.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "file:src/api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "file:src/engine/loop.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "file:src/gold_rwa.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "file:src/listener.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/listener.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/listener.ts",
+      "target": "file:src/filter.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/listener.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/listener.ts",
+      "target": "file:src/notifier.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/listener.ts",
+      "target": "file:src/wallets.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/notifier.ts",
+      "target": "file:src/config.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/notifier.ts",
+      "target": "file:src/filter.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/notifier.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/notifier.ts",
+      "target": "file:src/store.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/store.ts",
+      "target": "file:src/gold_rwa.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/store.ts",
+      "target": "file:src/notifier.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/strategies/library.ts",
+      "target": "file:src/engine/indicators.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/strategies/library.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/strategies/registry.ts",
+      "target": "file:src/engine/types.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/strategies/registry.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/strategies/registry.ts",
+      "target": "file:src/strategies/library.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/wallets.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/engine-market.test.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/engine-restart.test.ts",
+      "target": "file:src/engine/state.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/engine-restart.test.ts",
+      "target": "file:src/strategies/library.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/engine-risk.test.ts",
+      "target": "file:src/strategies/library.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/hosted-paper.test.ts",
+      "target": "file:src/engine/hosted-api.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/hosted-paper.test.ts",
+      "target": "file:src/engine/hosted.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/hosted-paper.test.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/hosted-paper.test.ts",
+      "target": "file:src/strategies/registry.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/market.test.ts",
+      "target": "file:src/engine/market.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:tests/hosting.test.mjs",
+      "target": "file:api/read.js",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7,
+      "recoveredFromImportMap": true
     }
   ],
   "version": "1.0.0",
@@ -6206,12 +7708,13 @@
       "markdown",
       "service",
       "shell",
+      "sql",
       "typescript"
     ],
     "frameworks": [],
     "description": "On-chain Base/Ethereum monitoring and a risk-gated paper-trading engine with an interactive animated live neural HUD deck.",
-    "analyzedAt": "2026-11-24T21:44:51.855302+00:00",
-    "gitCommitHash": "f058390444fa566554c41a8274601f4cdba0b256"
+    "analyzedAt": "2026-11-24T22:19:30.047Z",
+    "gitCommitHash": "ee0d522bd4d26753f2e10dbb4aa1e4419a4394ff"
   },
   "layers": [
     {
@@ -6247,7 +7750,10 @@
         "function:src/wallets.ts:loadWatchlist",
         "function:src/wallets.ts:lookupWallet",
         "function:src/wallets.ts:watchedAddresses",
-        "config:data/watchlist.json"
+        "config:data/watchlist.json",
+        "file:api/read.js",
+        "file:api/cron/paper-engine.ts",
+        "file:src/engine/hosted-api.ts"
       ]
     },
     {
@@ -6291,7 +7797,6 @@
       "nodeIds": [
         "file:src/engine/ledger.ts",
         "function:src/engine/ledger.ts:rollDay",
-        "function:src/engine/ledger.ts:h",
         "function:src/engine/ledger.ts:ledgerAppend",
         "function:src/engine/ledger.ts:ledgerTail",
         "function:src/engine/ledger.ts:ledgerAllToday",
@@ -6315,10 +7820,7 @@
         "function:src/engine/indicators.ts:zscore",
         "function:src/engine/indicators.ts:pctChange",
         "file:src/engine/loop.ts",
-        "function:src/engine/loop.ts:statFor",
         "function:src/engine/loop.ts:monitorSignals",
-        "function:src/engine/loop.ts:checkExits",
-        "function:src/engine/loop.ts:cycle",
         "function:src/engine/loop.ts:startEngineLoop",
         "file:src/engine/portfolio.ts",
         "class:src/engine/portfolio.ts:PaperPortfolio",
@@ -6346,10 +7848,18 @@
         "function:src/engine/market.ts:fromKraken",
         "function:src/engine/market.ts:refreshSymbol",
         "function:src/engine/market.ts:getFeed",
-        "function:src/engine/market.ts:getPrice",
         "file:src/strategies/registry.ts",
         "function:src/strategies/registry.ts:loadStrategies",
-        "config:data/strategies.json"
+        "config:data/strategies.json",
+        "file:src/engine/hosted.ts",
+        "file:test/hosted-paper.test.ts",
+        "file:test/market.test.ts",
+        "schema:supabase/migrations/20261124215149_hosted_paper_engine.sql",
+        "file:test/engine-restart.test.ts",
+        "file:test/engine-risk.test.ts",
+        "file:test/engine-market.test.ts",
+        "table:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine.state",
+        "table:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine.ledger"
       ]
     },
     {
@@ -6465,12 +7975,11 @@
         "document:docs/RPI4_DEPLOYMENT.md",
         "document:docs/SYSTEM_DESIGN.md",
         "config:.agent/work-state.json",
-        "file:api/[...path].js",
-        "function:api/[...path].js:handler",
         "document:deploy/DEPLOY.md",
         "file:deploy/install-service.sh",
         "file:deploy/whale-tracker.service",
-        "file:scripts/build-deck.mjs"
+        "file:scripts/build-deck.mjs",
+        "config:supabase/schedule-paper-engine.sql"
       ]
     }
   ],
@@ -6560,12 +8069,25 @@
     {
       "order": 9,
       "title": "Host the deck",
-      "description": "Follow the isolated Vercel static build and allowlisted proxy; configure an existing HTTPS engine origin or use the clearly labeled read-only demo fallback.",
+      "description": "Follow the authenticated Vercel read API and static deck, its external proxy option, and the labeled demo fallback.",
       "nodeIds": [
         "config:vercel.json",
         "file:scripts/build-deck.mjs",
-        "file:api/[...path].js",
+        "file:api/read.js",
+        "file:src/engine/hosted-api.ts",
         "file:tests/hosting.test.mjs"
+      ]
+    },
+    {
+      "order": 10,
+      "title": "Persist hosted paper cycles",
+      "description": "Follow the production cron through checkpoint restoration and a locked Supabase commit of the ledger and dashboard snapshot.",
+      "nodeIds": [
+        "config:supabase/schedule-paper-engine.sql",
+        "file:api/cron/paper-engine.ts",
+        "function:src/engine/hosted.ts:runHostedCycle",
+        "schema:supabase/migrations/20261124215149_hosted_paper_engine.sql",
+        "function:supabase/migrations/20261124215149_hosted_paper_engine.sql:paper_engine_commit"
       ]
     }
   ]

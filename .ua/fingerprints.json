@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "gitCommitHash": "29abf761b576427c5d76cf387aec00405b99ce23",
-  "generatedAt": "2026-11-24T21:49:17.635Z",
+  "gitCommitHash": "ee0d522bd4d26753f2e10dbb4aa1e4419a4394ff",
+  "generatedAt": "2026-11-24T22:19:30.366Z",
   "files": {
     ".agent/work-state.json": {
       "filePath": ".agent/work-state.json",
@@ -15,7 +15,7 @@
     },
     ".env.example": {
       "filePath": ".env.example",
-      "contentHash": "1e96f8eddba8689a50b26b09f0418207fbaca56fbbe858f956133452c94f1528",
+      "contentHash": "de51a3ca4a696bae0c20cef3ccb52b40b6016f06052c312bba3ec6a5b8361f80",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -35,35 +35,13 @@
     },
     "README.md": {
       "filePath": "README.md",
-      "contentHash": "1dd370ce8abbf8f34d67e42b90f0908dff8dd83b1c4500dcb44c1926a17ec561",
+      "contentHash": "60fe6e966903ec43fb9850f1f0c3f946737f3f4aae3e838228e7a77e80d1a6ac",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
       "totalLines": 326,
       "hasStructuralAnalysis": false
-    },
-    "api/[...path].js": {
-      "filePath": "api/[...path].js",
-      "contentHash": "427bb6390b50cb0ea7e24e65ff78e67be962fd11c1b73093b4cc4e8d81e7016a",
-      "functions": [
-        {
-          "name": "handler",
-          "params": [
-            "req",
-            "res"
-          ],
-          "exported": true,
-          "lineCount": 26
-        }
-      ],
-      "classes": [],
-      "imports": [],
-      "exports": [
-        "handler"
-      ],
-      "totalLines": 30,
-      "hasStructuralAnalysis": true
     },
     "data/backtest-15m.json": {
       "filePath": "data/backtest-15m.json",
@@ -277,7 +255,7 @@
     },
     "deck/app.js": {
       "filePath": "deck/app.js",
-      "contentHash": "a72d32f637170fc03267e098c76344760968fb7d45ba882f2b0dc9a588bab846",
+      "contentHash": "e7a84539123813e7a20b8b7df0a9f742ed72731a8ee6f092f408dec153fc93b3",
       "functions": [
         {
           "name": "$",
@@ -360,13 +338,13 @@
           "name": "loadDemo",
           "params": [],
           "exported": false,
-          "lineCount": 26
+          "lineCount": 27
         },
         {
           "name": "refresh",
           "params": [],
           "exported": false,
-          "lineCount": 53
+          "lineCount": 56
         },
         {
           "name": "selectMarket",
@@ -394,7 +372,7 @@
           "name": "renderStatic",
           "params": [],
           "exported": false,
-          "lineCount": 100
+          "lineCount": 105
         },
         {
           "name": "renderFeed",
@@ -654,12 +632,12 @@
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 1213,
+      "totalLines": 1222,
       "hasStructuralAnalysis": true
     },
     "deck/index.html": {
       "filePath": "deck/index.html",
-      "contentHash": "28e643ad590c76a186d9870bd1fa19e2c0b5715a30b56bd24ec835925564ff5c",
+      "contentHash": "67879c826913b97d06bb74fbd71067b6cac040c0865c2c260e28a2d9a8291449",
       "functions": [],
       "classes": [],
       "imports": [],
@@ -679,12 +657,12 @@
     },
     "deploy/DEPLOY.md": {
       "filePath": "deploy/DEPLOY.md",
-      "contentHash": "43eaafe945c12f536af6d99aa277288ca65cf45d8e3c5ab589cc5ff236a077c4",
+      "contentHash": "4cd4036c1aba5033ab27b0fbe6680f81fe37920eb996069dcd9c48d39bfa23d7",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 79,
+      "totalLines": 122,
       "hasStructuralAnalysis": false
     },
     "deploy/install-service.sh": {
@@ -759,22 +737,22 @@
     },
     "docs/SYSTEM_DESIGN.md": {
       "filePath": "docs/SYSTEM_DESIGN.md",
-      "contentHash": "71177661ea8c25f009ad57d2561f2e42a29fc6f966a8a6bf5a4b3033574150f0",
+      "contentHash": "ec799cb9043f7940d8e19a52b8d872b83d20de0c1fd234b531653b1773831a5f",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 97,
+      "totalLines": 103,
       "hasStructuralAnalysis": false
     },
     "package.json": {
       "filePath": "package.json",
-      "contentHash": "eae1b4ba11fb23b517cc8224a6b8424ce953dec481fef42e8b36cc3f5fdcb47c",
+      "contentHash": "0eaf56d6e89582f682b857c91eec4c5fd9db4ea4a79fda0ded8b21ccf37e0a9c",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 36,
+      "totalLines": 37,
       "hasStructuralAnalysis": false
     },
     "scripts/build-deck.mjs": {
@@ -799,7 +777,7 @@
     },
     "src/api.ts": {
       "filePath": "src/api.ts",
-      "contentHash": "3b71ef1a0a0492cf04aeb03a01209f8af12f2223f3db648d2d14885f37a6b3ff",
+      "contentHash": "6249dd43c12974024fd38272f7014bd8ae6c30a7eb0c23a62a737df9cd518cee",
       "functions": [
         {
           "name": "corsHeaders",
@@ -858,7 +836,7 @@
             "res"
           ],
           "exported": false,
-          "lineCount": 71
+          "lineCount": 74
         },
         {
           "name": "startApi",
@@ -959,7 +937,7 @@
       "exports": [
         "startApi"
       ],
-      "totalLines": 183,
+      "totalLines": 186,
       "hasStructuralAnalysis": true
     },
     "src/config.ts": {
@@ -1286,7 +1264,7 @@
     },
     "src/engine/ledger.ts": {
       "filePath": "src/engine/ledger.ts",
-      "contentHash": "36ae72a65045b28dccc6817d2e192acb5fe801f13b65fa5e47267f63834d445e",
+      "contentHash": "59743252a4d3433dde3e0fec29a4054e264d1c4efeeca53600a1d6da0b1b068e",
       "functions": [
         {
           "name": "rollDay",
@@ -1294,15 +1272,55 @@
             "ts"
           ],
           "exported": false,
-          "lineCount": 15
+          "lineCount": 8
         },
         {
-          "name": "h",
+          "name": "hashLedgerPayload",
           "params": [
-            "s"
+            "prevHash",
+            "seq",
+            "type",
+            "payload"
+          ],
+          "exported": true,
+          "lineCount": 3
+        },
+        {
+          "name": "recordHash",
+          "params": [
+            "prevHash",
+            "seq",
+            "type",
+            "data"
           ],
           "exported": false,
-          "lineCount": 1
+          "lineCount": 3
+        },
+        {
+          "name": "follows",
+          "params": [
+            "newer",
+            "older"
+          ],
+          "returnType": "boolean",
+          "exported": false,
+          "lineCount": 3
+        },
+        {
+          "name": "validateLegacyLedger",
+          "params": [
+            "files"
+          ],
+          "returnType": "LedgerRecord<T> | undefined",
+          "exported": false,
+          "lineCount": 22
+        },
+        {
+          "name": "ledgerResumeLatestCheckpoint",
+          "params": [],
+          "returnType": "LedgerRecord<T> | undefined",
+          "exported": true,
+          "lineCount": 25
         },
         {
           "name": "ledgerAppend",
@@ -1343,6 +1361,7 @@
             "appendFileSync",
             "existsSync",
             "mkdirSync",
+            "readdirSync",
             "readFileSync"
           ]
         },
@@ -1364,60 +1383,48 @@
           "specifiers": [
             "fileURLToPath"
           ]
-        },
-        {
-          "source": "../logger.js",
-          "specifiers": [
-            "logger"
-          ]
         }
       ],
       "exports": [
         "LEDGER_DIR",
+        "hashLedgerPayload",
+        "ledgerResumeLatestCheckpoint",
         "ledgerAppend",
         "ledgerTail",
         "ledgerAllToday"
       ],
-      "totalLines": 73,
+      "totalLines": 145,
       "hasStructuralAnalysis": true
     },
     "src/engine/loop.ts": {
       "filePath": "src/engine/loop.ts",
-      "contentHash": "124daec4e4c07e0c1568df910bd29b03b94f233adf661de90164cafb0bc03624",
+      "contentHash": "344d039a5d287bbbf698b606f18a5c8aaf034dea1671adeaa669cca15d2c48a0",
       "functions": [
         {
-          "name": "statFor",
+          "name": "createPaperEngine",
           "params": [
-            "name"
+            "options"
           ],
-          "exported": false,
-          "lineCount": 5
+          "exported": true,
+          "lineCount": 169
         },
         {
           "name": "monitorSignals",
           "params": [],
           "exported": false,
-          "lineCount": 7
+          "lineCount": 6
         },
         {
-          "name": "checkExits",
-          "params": [
-            "prices"
-          ],
-          "exported": false,
-          "lineCount": 20
-        },
-        {
-          "name": "cycle",
+          "name": "runEngineCycle",
           "params": [],
-          "exported": false,
-          "lineCount": 61
+          "exported": true,
+          "lineCount": 16
         },
         {
           "name": "startEngineLoop",
           "params": [],
           "exported": true,
-          "lineCount": 7
+          "lineCount": 18
         }
       ],
       "classes": [],
@@ -1438,7 +1445,7 @@
           "source": "./market.js",
           "specifiers": [
             "refreshSymbol",
-            "getPrice"
+            "Feed"
           ]
         },
         {
@@ -1456,7 +1463,9 @@
         {
           "source": "./ledger.js",
           "specifiers": [
-            "ledgerAppend"
+            "ledgerAppend",
+            "ledgerResumeLatestCheckpoint",
+            "LedgerRecord"
           ]
         },
         {
@@ -1468,13 +1477,8 @@
         {
           "source": "../store.js",
           "specifiers": [
+            "getGoldSnapshot",
             "listSignals"
-          ]
-        },
-        {
-          "source": "../store.js",
-          "specifiers": [
-            "getGoldSnapshot"
           ]
         },
         {
@@ -1487,22 +1491,33 @@
           "source": "./types.js",
           "specifiers": [
             "DecisionRecord",
+            "Fill",
+            "StrategyContext",
             "TradeIntent"
           ]
         }
       ],
       "exports": [
-        "portfolio",
-        "risk",
+        "createPaperEngine",
+        "{ portfolio, risk }",
+        "runEngineCycle",
         "startEngineLoop"
       ],
-      "totalLines": 134,
+      "totalLines": 240,
       "hasStructuralAnalysis": true
     },
     "src/engine/market.ts": {
       "filePath": "src/engine/market.ts",
-      "contentHash": "f803d5bae398c43c121c74b8298cb2bdf3ad20d0c1a13d174ec02295d9abc881",
+      "contentHash": "180bebc7cd828f5b22645e3891db72aaa8b8eac98040d3ad5b911a05e25b02b3",
       "functions": [
+        {
+          "name": "fetchMarket",
+          "params": [
+            "url"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
         {
           "name": "fromBinance",
           "params": [
@@ -1521,17 +1536,17 @@
           ],
           "returnType": "Promise<Candle[]>",
           "exported": false,
-          "lineCount": 8
+          "lineCount": 7
         },
         {
           "name": "fromCoinbase",
           "params": [
             "symbol",
-            "interval"
+            "gran"
           ],
           "returnType": "Promise<Candle[]>",
           "exported": false,
-          "lineCount": 12
+          "lineCount": 11
         },
         {
           "name": "fromKraken",
@@ -1541,28 +1556,32 @@
           ],
           "returnType": "Promise<Candle[]>",
           "exported": false,
-          "lineCount": 11
+          "lineCount": 10
+        },
+        {
+          "name": "fetchSymbol",
+          "params": [
+            "symbol",
+            "interval",
+            "{ requireRecent = true }"
+          ],
+          "returnType": "Promise<Feed | null>",
+          "exported": true,
+          "lineCount": 26
         },
         {
           "name": "refreshSymbol",
           "params": [
             "symbol",
-            "interval"
+            "interval",
+            "{ requireRecent = false }"
           ],
           "returnType": "Promise<Feed | null>",
           "exported": true,
-          "lineCount": 13
+          "lineCount": 5
         },
         {
           "name": "getFeed",
-          "params": [
-            "symbol"
-          ],
-          "exported": true,
-          "lineCount": 1
-        },
-        {
-          "name": "getPrice",
           "params": [
             "symbol"
           ],
@@ -1586,22 +1605,24 @@
         }
       ],
       "exports": [
+        "fetchSymbol",
         "refreshSymbol",
-        "getFeed",
-        "getPrice"
+        "getFeed"
       ],
-      "totalLines": 69,
+      "totalLines": 109,
       "hasStructuralAnalysis": true
     },
     "src/engine/portfolio.ts": {
       "filePath": "src/engine/portfolio.ts",
-      "contentHash": "3c3a3c8e94993cb5a86b7fcb8f7a42197af3ba4428a0d89306790786a7dbe107",
+      "contentHash": "8e067060cc3fe21fa234cd6da1800bdb185310511e14d440711de0271b6c4738",
       "functions": [],
       "classes": [
         {
           "name": "PaperPortfolio",
           "methods": [
             "constructor",
+            "checkpoint",
+            "restoreCheckpoint",
             "canOpen",
             "open",
             "close",
@@ -1619,7 +1640,7 @@
             "seq"
           ],
           "exported": true,
-          "lineCount": 72
+          "lineCount": 95
         }
       ],
       "imports": [
@@ -1635,18 +1656,21 @@
       "exports": [
         "PaperPortfolio"
       ],
-      "totalLines": 76,
+      "totalLines": 109,
       "hasStructuralAnalysis": true
     },
     "src/engine/risk.ts": {
       "filePath": "src/engine/risk.ts",
-      "contentHash": "adbbcddfabd840c2a9619451362c229b4851b258ea403d82b2d9b16a7c6f4586",
+      "contentHash": "d073626b0990adb85471b7bd706d4fd729fcccf4f9217cb431f607e052d2c06a",
       "functions": [],
       "classes": [
         {
           "name": "RiskEngine",
           "methods": [
             "constructor",
+            "checkpoint",
+            "restoreCheckpoint",
+            "baselineDay",
             "check",
             "recordClose"
           ],
@@ -1657,7 +1681,7 @@
             "killed"
           ],
           "exported": true,
-          "lineCount": 35
+          "lineCount": 47
         }
       ],
       "imports": [
@@ -1692,12 +1716,12 @@
         "KILL_FILE",
         "RiskEngine"
       ],
-      "totalLines": 56,
+      "totalLines": 68,
       "hasStructuralAnalysis": true
     },
     "src/engine/state.ts": {
       "filePath": "src/engine/state.ts",
-      "contentHash": "ce23b71333ba8e7f121bfc6944bf1193bc12a968aeccee3d6b5e52ef8c501009",
+      "contentHash": "7314f63f9ea3c596eef0ce3b3ed4c4151ee8371000da946615f412ca6b0ec36e",
       "functions": [],
       "classes": [],
       "imports": [
@@ -1712,7 +1736,7 @@
       "exports": [
         "engineState"
       ],
-      "totalLines": 22,
+      "totalLines": 23,
       "hasStructuralAnalysis": true
     },
     "src/engine/stress.ts": {
@@ -2504,11 +2528,13 @@
     },
     "src/strategies/registry.ts": {
       "filePath": "src/strategies/registry.ts",
-      "contentHash": "4a4db5435765747f4830e32998358d6de98b81ddbca054c2e1ce23247aadb06f",
+      "contentHash": "a7874153f989af2793692f32278ab9d7e485beeb9693de00175c66b6f4bdeeaf",
       "functions": [
         {
           "name": "loadStrategies",
-          "params": [],
+          "params": [
+            "overrides"
+          ],
           "returnType": "ActiveStrategy[]",
           "exported": true,
           "lineCount": 10
@@ -2558,7 +2584,7 @@
       "exports": [
         "loadStrategies"
       ],
-      "totalLines": 25,
+      "totalLines": 26,
       "hasStructuralAnalysis": true
     },
     "src/wallets.ts": {
@@ -2639,7 +2665,7 @@
     },
     "tests/deck.test.mjs": {
       "filePath": "tests/deck.test.mjs",
-      "contentHash": "0964ed306cda9af4937f34ad58f2d9e0dbe4aa5c5a2f32db0a38fe7e8e9440b5",
+      "contentHash": "bf6440c58a558a944483dcef0d7e43d8ad9c8d5af2106abe09273978f448c2ca",
       "functions": [
         {
           "name": "runtime",
@@ -2676,18 +2702,19 @@
         }
       ],
       "exports": [],
-      "totalLines": 242,
+      "totalLines": 286,
       "hasStructuralAnalysis": true
     },
     "tests/hosting.test.mjs": {
       "filePath": "tests/hosting.test.mjs",
-      "contentHash": "75fe6855a9f82b5fc413d87756abed64ad94a5add6ed40bd8c96e9bdacb7a3e9",
+      "contentHash": "0e9026606ede7146d3db3d95ddb403d38aded5f86255c082ed96cd23e0ca8cd3",
       "functions": [
         {
           "name": "request",
           "params": [
             "url",
-            "authorization"
+            "authorization",
+            "query"
           ],
           "exported": false,
           "lineCount": 6
@@ -2709,14 +2736,14 @@
           ]
         },
         {
-          "source": "../api/[...path].js",
+          "source": "../api/read.js",
           "specifiers": [
             "handler"
           ]
         }
       ],
       "exports": [],
-      "totalLines": 55,
+      "totalLines": 94,
       "hasStructuralAnalysis": true
     },
     "tsconfig.json": {
@@ -2731,13 +2758,627 @@
     },
     "vercel.json": {
       "filePath": "vercel.json",
-      "contentHash": "e33802b9b33a002d0e1044fe7ebb779d77e60ef2e8c1af9eca41f9c1f794e821",
+      "contentHash": "b5df3af35b820a64070a4cd154fadd19ec593a5af5837066c52d81711f881658",
       "functions": [],
       "classes": [],
       "imports": [],
       "exports": [],
-      "totalLines": 11,
+      "totalLines": 18,
       "hasStructuralAnalysis": false
+    },
+    "api/cron/paper-engine.ts": {
+      "filePath": "api/cron/paper-engine.ts",
+      "contentHash": "47f97c1aa7a2150fa0d5dd85d60d2a350b53059c1ec7aadf0008a7bd065935f7",
+      "functions": [
+        {
+          "name": "handler",
+          "params": [
+            "req",
+            "res"
+          ],
+          "exported": true,
+          "lineCount": 7
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:http",
+          "specifiers": [
+            "IncomingMessage",
+            "ServerResponse"
+          ]
+        },
+        {
+          "source": "../../src/engine/hosted-api.js",
+          "specifiers": [
+            "hostedCron"
+          ]
+        }
+      ],
+      "exports": [
+        "handler"
+      ],
+      "totalLines": 11,
+      "hasStructuralAnalysis": true
+    },
+    "api/read.js": {
+      "filePath": "api/read.js",
+      "contentHash": "fdf65a957ba836013b9c293807af65fc620527545d39c2b8fb542f4a7183266d",
+      "functions": [
+        {
+          "name": "handler",
+          "params": [
+            "req",
+            "res"
+          ],
+          "exported": true,
+          "lineCount": 32
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../src/engine/hosted-api.js",
+          "specifiers": [
+            "hostedRead",
+            "hostedReadPaths"
+          ]
+        }
+      ],
+      "exports": [
+        "handler"
+      ],
+      "totalLines": 35,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/hosted-api.ts": {
+      "filePath": "src/engine/hosted-api.ts",
+      "contentHash": "388c748fc0f21613170c1a4197acbcd4d2fe8aba039a4af821050238eec6acc2",
+      "functions": [
+        {
+          "name": "reply",
+          "params": [
+            "status",
+            "body"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "failure",
+          "params": [
+            "status",
+            "error"
+          ],
+          "exported": false,
+          "lineCount": 1
+        },
+        {
+          "name": "authorized",
+          "params": [
+            "given",
+            "secret"
+          ],
+          "exported": false,
+          "lineCount": 6
+        },
+        {
+          "name": "hostedRead",
+          "params": [
+            "url",
+            "method",
+            "authorization"
+          ],
+          "exported": true,
+          "lineCount": 44
+        },
+        {
+          "name": "hostedCron",
+          "params": [
+            "method",
+            "authorization"
+          ],
+          "exported": true,
+          "lineCount": 14
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:crypto",
+          "specifiers": [
+            "timingSafeEqual"
+          ]
+        },
+        {
+          "source": "../logger.js",
+          "specifiers": [
+            "logger"
+          ]
+        },
+        {
+          "source": "./hosted.js",
+          "specifiers": [
+            "createHostedStore",
+            "hostedEngineEnabled",
+            "hostedStrategies",
+            "runHostedCycle"
+          ]
+        },
+        {
+          "source": "./market.js",
+          "specifiers": [
+            "Feed"
+          ]
+        },
+        {
+          "source": "./state.js",
+          "specifiers": [
+            "EngineSnapshot"
+          ]
+        }
+      ],
+      "exports": [
+        "hostedReadPaths",
+        "hostedRead",
+        "hostedCron"
+      ],
+      "totalLines": 80,
+      "hasStructuralAnalysis": true
+    },
+    "src/engine/hosted.ts": {
+      "filePath": "src/engine/hosted.ts",
+      "contentHash": "68a85182a628a688dcc142712891c59ef41dc65aef65a46b6df9301e18351787",
+      "functions": [
+        {
+          "name": "hostedStrategies",
+          "params": [],
+          "exported": true,
+          "lineCount": 1
+        },
+        {
+          "name": "createHostedStore",
+          "params": [
+            "env"
+          ],
+          "exported": true,
+          "lineCount": 29
+        },
+        {
+          "name": "runHostedCycle",
+          "params": [
+            "store",
+            "slot",
+            "refresh",
+            "strategies"
+          ],
+          "exported": true,
+          "lineCount": 42
+        },
+        {
+          "name": "hostedEngineEnabled",
+          "params": [],
+          "exported": true,
+          "lineCount": 1
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "../../data/strategies.json",
+          "specifiers": [
+            "strategyConfig"
+          ]
+        },
+        {
+          "source": "../config.js",
+          "specifiers": [
+            "config"
+          ]
+        },
+        {
+          "source": "../strategies/registry.js",
+          "specifiers": [
+            "loadStrategies"
+          ]
+        },
+        {
+          "source": "./ledger.js",
+          "specifiers": [
+            "hashLedgerPayload",
+            "LedgerRecord"
+          ]
+        },
+        {
+          "source": "./loop.js",
+          "specifiers": [
+            "createPaperEngine",
+            "EngineCheckpoint"
+          ]
+        },
+        {
+          "source": "./market.js",
+          "specifiers": [
+            "fetchSymbol",
+            "Feed"
+          ]
+        },
+        {
+          "source": "./state.js",
+          "specifiers": [
+            "EngineSnapshot"
+          ]
+        },
+        {
+          "source": "./types.js",
+          "specifiers": [
+            "DecisionRecord"
+          ]
+        }
+      ],
+      "exports": [
+        "hostedStrategies",
+        "createHostedStore",
+        "runHostedCycle",
+        "hostedEngineEnabled"
+      ],
+      "totalLines": 104,
+      "hasStructuralAnalysis": true
+    },
+    "supabase/migrations/20261124215149_hosted_paper_engine.sql": {
+      "filePath": "supabase/migrations/20261124215149_hosted_paper_engine.sql",
+      "contentHash": "9433df7c99963919ef464ff0b2934a5c156e03803cb19c80aea7cdf4f4639574",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 88,
+      "hasStructuralAnalysis": false
+    },
+    "supabase/schedule-paper-engine.sql": {
+      "filePath": "supabase/schedule-paper-engine.sql",
+      "contentHash": "4bce081f712972f775fc71f2d7b1b263ed401dc0df538545d16243c21a53a564",
+      "functions": [],
+      "classes": [],
+      "imports": [],
+      "exports": [],
+      "totalLines": 29,
+      "hasStructuralAnalysis": false
+    },
+    "test/engine-market.test.ts": {
+      "filePath": "test/engine-market.test.ts",
+      "contentHash": "c4645c35a98f1d7ede2a912ba10f57288bf6b5e94802e865268d1e65c805824b",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test"
+          ]
+        },
+        {
+          "source": "node:timers/promises",
+          "specifiers": [
+            "setTimeout"
+          ]
+        },
+        {
+          "source": "../src/engine/market.js",
+          "specifiers": [
+            "getFeed",
+            "refreshSymbol"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 92,
+      "hasStructuralAnalysis": true
+    },
+    "test/engine-restart.test.ts": {
+      "filePath": "test/engine-restart.test.ts",
+      "contentHash": "0eef472a27891e9cd0fec3e051e6cef50424449f1126da4f5aa732a63dd0e38a",
+      "functions": [
+        {
+          "name": "fixture",
+          "params": [
+            "t"
+          ],
+          "exported": false,
+          "lineCount": 11
+        },
+        {
+          "name": "runProcess",
+          "params": [
+            "root",
+            "ts",
+            "prices",
+            "symbols",
+            "env",
+            "script"
+          ],
+          "exported": false,
+          "lineCount": 34
+        },
+        {
+          "name": "runCycle",
+          "params": [
+            "...args"
+          ],
+          "returnType": "EngineSnapshot",
+          "exported": false,
+          "lineCount": 5
+        },
+        {
+          "name": "checkSnapshotApi",
+          "params": [
+            "root",
+            "assertions"
+          ],
+          "exported": false,
+          "lineCount": 23
+        },
+        {
+          "name": "legacyFork",
+          "params": [
+            "t",
+            "missingRow"
+          ],
+          "exported": false,
+          "lineCount": 22
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:child_process",
+          "specifiers": [
+            "spawnSync"
+          ]
+        },
+        {
+          "source": "node:crypto",
+          "specifiers": [
+            "createHash"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "copyFileSync",
+            "cpSync",
+            "mkdirSync",
+            "mkdtempSync",
+            "readFileSync",
+            "rmSync",
+            "symlinkSync",
+            "writeFileSync"
+          ]
+        },
+        {
+          "source": "node:os",
+          "specifiers": [
+            "tmpdir"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "join"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test",
+            "TestContext"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath"
+          ]
+        },
+        {
+          "source": "../src/engine/state.js",
+          "specifiers": [
+            "EngineSnapshot"
+          ]
+        },
+        {
+          "source": "../src/strategies/library.js",
+          "specifiers": [
+            "LIBRARY"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 411,
+      "hasStructuralAnalysis": true
+    },
+    "test/engine-risk.test.ts": {
+      "filePath": "test/engine-risk.test.ts",
+      "contentHash": "ae8a6cfb673034bbf2247ae9f9d69f00b506a91e91aed169c25a0a9302ccd504",
+      "functions": [
+        {
+          "name": "runCycle",
+          "params": [
+            "t",
+            "overrides",
+            "{ sizeUsd = 300, price = 110, seedBtc = false }"
+          ],
+          "exported": false,
+          "lineCount": 60
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:fs",
+          "specifiers": [
+            "copyFileSync",
+            "cpSync",
+            "mkdirSync",
+            "mkdtempSync",
+            "rmSync",
+            "symlinkSync",
+            "writeFileSync"
+          ]
+        },
+        {
+          "source": "node:os",
+          "specifiers": [
+            "tmpdir"
+          ]
+        },
+        {
+          "source": "node:path",
+          "specifiers": [
+            "join"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test",
+            "TestContext"
+          ]
+        },
+        {
+          "source": "node:url",
+          "specifiers": [
+            "fileURLToPath",
+            "pathToFileURL"
+          ]
+        },
+        {
+          "source": "../src/strategies/library.js",
+          "specifiers": [
+            "LIBRARY"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 100,
+      "hasStructuralAnalysis": true
+    },
+    "test/hosted-paper.test.ts": {
+      "filePath": "test/hosted-paper.test.ts",
+      "contentHash": "bd6381fa8b93148e2dea7439b834be873e27607c3117a4229d2d418e95d0c693",
+      "functions": [
+        {
+          "name": "memoryStore",
+          "params": [],
+          "exported": false,
+          "lineCount": 21
+        },
+        {
+          "name": "refreshAt",
+          "params": [
+            "price"
+          ],
+          "exported": false,
+          "lineCount": 4
+        }
+      ],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "node:crypto",
+          "specifiers": [
+            "createHash"
+          ]
+        },
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test"
+          ]
+        },
+        {
+          "source": "../src/engine/hosted-api.js",
+          "specifiers": [
+            "hostedCron",
+            "hostedRead"
+          ]
+        },
+        {
+          "source": "../src/engine/hosted.js",
+          "specifiers": [
+            "runHostedCycle"
+          ]
+        },
+        {
+          "source": "../src/engine/market.js",
+          "specifiers": [
+            "Feed"
+          ]
+        },
+        {
+          "source": "../src/strategies/registry.js",
+          "specifiers": [
+            "ActiveStrategy"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 120,
+      "hasStructuralAnalysis": true
+    },
+    "test/market.test.ts": {
+      "filePath": "test/market.test.ts",
+      "contentHash": "224c99036c8e9351f2926d51f89455a7547588a7809fee6d4aaf6072de048e68",
+      "functions": [],
+      "classes": [],
+      "imports": [
+        {
+          "source": "node:test",
+          "specifiers": [
+            "test"
+          ]
+        },
+        {
+          "source": "node:assert/strict",
+          "specifiers": [
+            "assert"
+          ]
+        },
+        {
+          "source": "../src/engine/market.js",
+          "specifiers": [
+            "fetchSymbol"
+          ]
+        }
+      ],
+      "exports": [],
+      "totalLines": 24,
+      "hasStructuralAnalysis": true
     }
   }
 }
