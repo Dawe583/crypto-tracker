@@ -5,7 +5,7 @@ import vm from 'node:vm';
 
 // Run the browser runtime without bootstrap/network or a graphics environment.
 const source = readFileSync(new URL('../deck/app.js', import.meta.url), 'utf8').split('updateMotion();\nwindow.STATE')[0];
-function runtime(fetch = async () => ({ ok: true, json: async () => ({}) })) {
+function runtime(fetch = async () => ({ ok: true, json: async () => ({}) }), hosted = false) {
   const elements = new Map();
   const element = () => ({ textContent: '', innerHTML: '', children: [], dataset: {},
     style: {},
@@ -16,7 +16,7 @@ function runtime(fetch = async () => ({ ok: true, json: async () => ({}) })) {
   const context = vm.createContext({
     console, fetch, document: { hidden: true, body, createElement: element, addEventListener() {}, querySelectorAll: () => [],
       getElementById: (id) => { if (!elements.has(id)) elements.set(id, element()); return elements.get(id); }, querySelector: element,
-    }, window: { addEventListener() {} }, sessionStorage: { getItem: () => null, setItem() {} },
+    }, window: { DECK_DEMO_FALLBACK: hosted, addEventListener() {} }, sessionStorage: { getItem: () => null, setItem() {} },
     matchMedia: () => ({ matches: false, addEventListener() {} }), IntersectionObserver: class { observe() {} },
     requestAnimationFrame() {}, setInterval() {}, prompt: () => null,
   });
@@ -206,11 +206,15 @@ test('hosted fallback is labeled, cannot stop an engine, and fully clears before
 });
 
 test('hosted mode never hides an authorization failure behind demo data', async () => {
-  const app = runtime(async () => ({ ok: false, status: 401 }));
-  app.context.window.DECK_DEMO_FALLBACK = true;
+  const app = runtime(async () => ({ ok: false, status: 401 }), true);
+  const stop = app.elements.get('kill');
+  assert.equal(stop.disabled, true);
+  assert.equal(stop.textContent, 'Hosted · read only');
   await app.run('refresh()');
   assert.equal(app.run('demoMode'), false);
   assert.equal(app.run('STATE.snap'), null);
+  assert.equal(stop.disabled, true);
+  assert.equal(stop.textContent, 'Hosted · read only');
 });
 
 test('hosted controls cannot send stop requests even when live state is available', async () => {

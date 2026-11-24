@@ -218,7 +218,7 @@ function renderStatic() {
     $('bigPriceSub').textContent = STATE.halted ? 'Last received market data may be stale' : 'Waiting for market data';
     $('wireMsg').textContent = STATE.halted ? 'ENGINE HALTED · ledger unavailable · repair the ledger and restart the engine' : 'ENGINE CONNECTED · waiting for first snapshot · checking every 12 seconds';
     $('kill').disabled = true;
-    $('kill').textContent = STATE.halted ? 'Engine halted' : 'Awaiting engine';
+    $('kill').textContent = window.DECK_DEMO_FALLBACK ? 'Hosted · read only' : STATE.halted ? 'Engine halted' : 'Awaiting engine';
     delete $('marketRail').dataset.symbols;
     $('symTabs').replaceChildren();
     $('rotLegend').textContent = '';
@@ -1150,6 +1150,10 @@ setInterval(() => {
   $('syncLabel').textContent = lastSync ? `SYNC ${ago(lastSync)} AGO` : 'SYNC —';
 }, 1000);
 
+if (window.DECK_DEMO_FALLBACK) {
+  $('kill').disabled = true;
+  $('kill').textContent = 'Hosted · read only';
+}
 $('kill').onclick = async () => {
   if (demoMode || window.DECK_DEMO_FALLBACK || STATE.halted) return;
   if (!confirm('Stop the paper engine? New entries stay blocked until the server kill file is removed.')) return;
