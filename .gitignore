@@ -28,9 +28,7 @@ Thumbs.db
 # Trading engine runtime artifacts
 data/ledger/
 data/KILL
-data/backtest-*.json
-data/stress-*.json
-data/sweep-*.json
+data/replay/
 supabase/.temp/
 supabase/.branches/
 

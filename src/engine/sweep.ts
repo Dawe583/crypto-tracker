@@ -1,6 +1,6 @@
 // Parameter sweep: grid-search strategy params over cached candles, ranked by pnl - 0.5*maxDd.
-// `npm run sweep [strategy|all] [interval]` — writes data/sweep-<strategy>-<interval>.json.
-import { writeFileSync } from 'node:fs';
+// `npm run sweep [strategy|all] [interval]` — writes a report under data/replay.
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { loadStrategies } from '../strategies/registry.js';
 import { completedCandles, intervalMs, refreshSymbol } from './market.js';
 import { replayOne } from './backtest.js';
@@ -62,7 +62,8 @@ export async function runSweep(stratName: string, symbols: string[] = config.eng
     rows.push({ params: merged, pnlUsd: +pnl.toFixed(2), maxDdUsd: +dd.toFixed(2), trades, score: +(pnl - 0.5 * dd).toFixed(2) });
   }
   rows.sort((a, b) => b.score - a.score);
-  const file = `data/sweep-${stratName}-${interval}.json`;
+  mkdirSync('data/replay', { recursive: true });
+  const file = `data/replay/sweep-${stratName}-${interval}.json`;
   writeFileSync(file, JSON.stringify({ at: new Date().toISOString(), strategy: stratName, interval, symbols, results: rows.slice(0, 20) }, null, 2));
   return rows;
 }

@@ -1,6 +1,6 @@
 // Cost sensitivity: replay top strategies across fee x slippage grid.
-// `npm run stress [interval]` — writes data/stress-<interval>.json + prints matrix.
-import { writeFileSync } from 'node:fs';
+// `npm run stress [interval]` — writes a report under data/replay and prints a matrix.
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { loadStrategies } from '../strategies/registry.js';
 import { completedCandles, intervalMs, refreshSymbol } from './market.js';
 import { replayOne } from './backtest.js';
@@ -30,7 +30,8 @@ export async function runStress(symbols: string[] = config.engine.symbols, inter
         }
         rows.push({ strategy: st.strategy.name, feePct: fee, slipBps: slip, pnlUsd: +pnl.toFixed(2), trades });
       }
-  const file = `data/stress-${interval}.json`;
+  mkdirSync('data/replay', { recursive: true });
+  const file = `data/replay/stress-${interval}.json`;
   writeFileSync(file, JSON.stringify({ at: new Date().toISOString(), interval, symbols, results: rows }, null, 2));
   return rows;
 }
