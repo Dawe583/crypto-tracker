@@ -7,8 +7,7 @@ import { PaperPortfolio } from './portfolio.js';
 import { RiskEngine } from './risk.js';
 import { ledgerAppend, ledgerResumeLatestCheckpoint, type LedgerRecord } from './ledger.js';
 import { loadStrategies } from '../strategies/registry.js';
-import { listSignals } from '../store.js';
-import { getGoldSnapshot } from '../store.js';
+import { getGoldSnapshot, listSignals } from '../store.js';
 import { engineState } from './state.js';
 import { watchedAddresses } from '../wallets.js';
 import type { DecisionRecord, Fill, TradeIntent } from './types.js';
@@ -88,7 +87,10 @@ function monitorSignals() {
   });
   const gold = getGoldSnapshot();
   const goldSpread: Record<string, number> = {};
-  for (const q of gold.quotes) goldSpread[`${q.symbol}USD`] = q.deviationPct;
+  for (const q of gold.quotes) {
+    const symbol = `${q.symbol}USD`;
+    if (!q.stale && (q.chain === 'base' || goldSpread[symbol] === undefined)) goldSpread[symbol] = q.deviationPct;
+  }
   return { whaleBuys: Math.min(whales.length, 50), newPools: listSignals('new_pool', 50).length, goldSpread };
 }
 

@@ -3,6 +3,7 @@ import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { logger } from './logger.js';
 import type { GoldQuote } from './gold_rwa.js';
 import type { WhaleSignal } from './notifier.js';
+import { config } from './config.js';
 
 const MAX_SIGNALS = 200;
 const signals: WhaleSignal[] = [];
@@ -16,7 +17,7 @@ export const startedAt = new Date().toISOString();
 export interface GoldSnapshot {
   attemptedAt: string | null;
   updatedAt: string | null;
-  quotes: GoldQuote[];
+  quotes: (GoldQuote & { updatedAt: string; stale: boolean })[];
 }
 
 let gold: GoldSnapshot = { attemptedAt: null, updatedAt: null, quotes: [] };
@@ -70,14 +71,25 @@ export function countSignals(): Record<WhaleSignal['kind'], number> {
 }
 
 export function setGoldSnapshot(quotes: GoldQuote[]): void {
-  const now = new Date().toISOString();
+  const now = new Date(Date.now()).toISOString();
+  const byAsset = new Map(gold.quotes.map((q) => [`${q.chain}:${q.symbol}`, { ...q, stale: true }]));
+  for (const q of quotes) {
+    byAsset.set(`${q.chain}:${q.symbol}`, { ...q, updatedAt: now, stale: false });
+  }
   gold = {
     attemptedAt: now,
     updatedAt: quotes.length > 0 ? now : gold.updatedAt,
-    quotes: quotes.length > 0 ? quotes : gold.quotes,
+    quotes: [...byAsset.values()],
   };
 }
 
 export function getGoldSnapshot(): GoldSnapshot {
-  return gold;
+  const now = Date.now();
+  return {
+    ...gold,
+    quotes: gold.quotes.map((q) => {
+      const ageMs = now - Date.parse(q.updatedAt);
+      return { ...q, stale: q.stale || ageMs < 0 || ageMs > config.gold.pollMs * 3 };
+    }),
+  };
 }
