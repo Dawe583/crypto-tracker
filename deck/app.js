@@ -122,8 +122,8 @@ async function refresh() {
   STATE.strats = strats || STATE.strats;
   STATE.decisions = decisions || STATE.decisions;
   if (candles?.candles?.length) STATE.candles[symbol] = candles.candles;
-  STATE.whales = whales?.count ?? 0;
-  STATE.pools = pools?.count ?? 0;
+  STATE.whales = whales?.available === false ? null : whales?.count ?? 0;
+  STATE.pools = pools?.available === false ? null : pools?.count ?? 0;
   STATE.gold = gold?.assets || [];
   lastSync = Date.now();
   document.body.classList.toggle('data-stale', STATE.halted);
@@ -295,9 +295,10 @@ function renderStatic() {
     `<span><i style="background:${STRAT_COLORS[i % STRAT_COLORS.length]}"></i>${s.name}${s.enabled ? '' : ' (off)'}</span>`).join('');
 
   const last = STATE.decisions[0];
-  $('wireMsg').textContent = last
-    ? `LIVE WIRE — ${last.strategy} ${last.action} ${last.symbol} @${(last.confidence * 100) | 0}% · whale signals ${STATE.whales} · new pools ${STATE.pools}`
-    : `LIVE WIRE — ${s.killed ? 'engine stopped' : 'scanning for signals'}`;
+  const wire = last
+    ? `${last.strategy} ${last.action} ${last.symbol} @${(last.confidence * 100) | 0}%`
+    : s.killed ? 'engine stopped' : 'scanning for signals';
+  $('wireMsg').textContent = `LIVE WIRE — ${wire} · whale signals ${STATE.whales ?? 'unavailable'} · new pools ${STATE.pools ?? 'unavailable'}`;
   if (demoMode) $('wireMsg').textContent = 'SIMULATED DEMO · generated prices, portfolio and decisions · no live engine connected';
 }
 

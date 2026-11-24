@@ -65,6 +65,19 @@ test('hidden and paused frames do not advance visual time', () => {
   assert.equal(app.run('visualTime'), 40);
 });
 
+test('connected deck distinguishes unavailable monitors from zero activity', async () => {
+  const app = runtime(async (path) => ({ ok: true, json: async () => {
+    if (path.startsWith('/api/whales')) return { count: 0, available: false };
+    if (path.startsWith('/api/pools')) return { count: 0 };
+    if (path.includes('/snapshot')) return { positions: [], equityCurve: [] };
+    if (path.includes('/strategies') || path.includes('/decisions')) return [];
+    return {};
+  } }));
+  await app.run('refresh()');
+  assert.equal(app.elements.get('connection').textContent, 'CONNECTED');
+  assert.match(app.elements.get('wireMsg').textContent, /whale signals unavailable · new pools 0/);
+});
+
 test('slow redraw never invokes offscreen chart or book work', () => {
   const app = runtime();
   app.run('document.hidden = false; drawNavChart = drawWeights = drawRotation = drawPricer = drawMembrane = drawTape = drawBook = () => { throw new Error("offscreen drawing"); };');
