@@ -64,7 +64,7 @@ export async function hostedRead(url: URL, method?: string, authorization?: stri
 }
 
 export async function hostedCron(method?: string, authorization?: string) {
-  if (method !== 'GET') return failure(405, 'Method not allowed');
+  if (method !== 'POST') return failure(405, 'Method not allowed');
   if (!authorized(authorization, process.env.CRON_SECRET)) return failure(401, 'Cron access denied');
   if (process.env.CRON_SECRET === process.env.API_TOKEN) return failure(503, 'Cron requires a separate secret');
   if (!hostedEngineEnabled()) return failure(503, 'Production paper cron is disabled');

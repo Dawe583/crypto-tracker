@@ -89,13 +89,13 @@ test('only a distinct cron secret may write, and the deck routes are GET-only', 
   assert.equal((await hostedRead(new URL('/api/engine/kill', url), 'POST', 'Bearer read-test')).status, 404);
   assert.equal((await hostedRead(url, 'POST', 'Bearer read-test')).status, 405);
   assert.equal((await hostedRead(url, 'GET', 'Bearer cron-test')).status, 401);
-  assert.equal((await hostedCron('GET', 'Bearer read-test')).status, 401);
-  assert.equal((await hostedCron('GET', 'Bearer cron-test')).status, 503);
-  assert.equal((await hostedCron('POST', 'Bearer cron-test')).status, 405);
+  assert.equal((await hostedCron('POST', 'Bearer read-test')).status, 401);
+  assert.equal((await hostedCron('POST', 'Bearer cron-test')).status, 503);
+  assert.equal((await hostedCron('GET', 'Bearer cron-test')).status, 405);
   assert.equal((await hostedRead(new URL('/api/engine/candles?symbol=bad%2Fsymbol', url), 'GET', 'Bearer read-test')).status, 400);
   process.env.VERCEL_ENV = 'production';
   process.env.CRON_SECRET = 'read-test';
-  assert.equal((await hostedCron('GET', 'Bearer read-test')).status, 503);
+  assert.equal((await hostedCron('POST', 'Bearer read-test')).status, 503);
 });
 
 test('the snapshot requires a fresh cycle and does not require an Origin header', async (t) => {

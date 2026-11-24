@@ -14,7 +14,7 @@ end;
 $setup$;
 
 select cron.schedule('paper-engine-vercel', '* * * * *', $job$
-  select net.http_get(
+  select net.http_post(
     url := endpoint.decrypted_secret,
     headers := jsonb_build_object('Authorization', 'Bearer ' || token.decrypted_secret),
     timeout_milliseconds := 65000
