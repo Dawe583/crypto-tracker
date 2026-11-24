@@ -111,6 +111,7 @@ function selectMarket(symbol) {
   refresh();
 }
 
+const marketQuote = (symbol) => symbol.match(/(USDT|USD)$/)?.[0] || '';
 function renderMarkets() {
   const prices = STATE.snap?.prices || {};
   const symbols = Object.keys(prices);
@@ -120,8 +121,9 @@ function renderMarkets() {
       const button = document.createElement('button');
       button.className = 'market-quote';
       button.dataset.symbol = symbol;
-      button.innerHTML = '<b></b><small>USDT</small><strong></strong><span class="quote-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span>';
-      button.querySelector('b').textContent = symbol.replace('USDT', '');
+      button.innerHTML = '<b></b><small></small><strong></strong><span class="quote-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span>';
+      button.querySelector('b').textContent = symbol.replace(/USDT$|USD$/, '');
+      button.querySelector('small').textContent = marketQuote(symbol);
       button.onclick = () => selectMarket(symbol);
       return button;
     }));
