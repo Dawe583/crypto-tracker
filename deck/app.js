@@ -6,25 +6,59 @@ const fmt$ = (n, d = 0) => (n == null ? '—' : `$${Number(n).toLocaleString(und
 const cls = (n) => (n >= 0 ? 'pos' : 'neg');
 const ago = (ts) => { const s = (Date.now() - ts) / 1000; return s < 60 ? `${s | 0}s` : s < 3600 ? `${(s / 60) | 0}m` : `${(s / 3600) | 0}h`; };
 
-let TOKEN = sessionStorage.getItem('apiToken') || '';
-const api = async (path, opts = {}) => {
-  const r = await fetch(path, { ...opts, headers: TOKEN ? { authorization: `Bearer ${TOKEN}` } : {} });
-  if (r.status === 401 && !TOKEN) {
-    TOKEN = prompt('API token (if configured)') || '';
-    sessionStorage.setItem('apiToken', TOKEN);
-    return api(path, opts);
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+let motionPaused = sessionStorage.getItem('motionPaused') === 'true';
+const isStill = () => motionPaused || reducedMotion.matches;
+let visualTime = 0, lastSync = 0, refreshVersion = 0;
+function updateMotion() {
+  document.body.classList.toggle('motion-paused', isStill());
+  $('motionToggle').textContent = reducedMotion.matches ? 'Reduced motion' : motionPaused ? 'Resume motion' : 'Pause motion';
+  $('motionToggle').setAttribute('aria-pressed', String(isStill()));
+  $('motionToggle').disabled = reducedMotion.matches;
+  drawSlow();
+}
+
+function setText(id, value) {
+  const el = $(id);
+  if (el.textContent === String(value)) return;
+  if (el.textContent !== '—' && !isStill()) {
+    el.classList.remove('value-tick');
+    void el.offsetWidth;
+    el.classList.add('value-tick');
   }
-  return r.ok ? r.json() : null;
+  el.textContent = value;
+}
+
+const utc = (ts) => new Date(ts).toISOString().slice(11, 19);
+
+let TOKEN = sessionStorage.getItem('apiToken') || '';
+let tokenRequest;
+const api = async (path, opts = {}, retried = false) => {
+  const r = await fetch(path, { ...opts, headers: TOKEN ? { authorization: `Bearer ${TOKEN}` } : {} });
+  if (r.status === 401 && !retried) {
+    tokenRequest ??= Promise.resolve().then(() => {
+      const token = prompt('Enter the configured API token to connect this deck.');
+      if (token) { TOKEN = token; sessionStorage.setItem('apiToken', TOKEN); }
+      return token;
+    });
+    if (await tokenRequest) return api(path, opts, true);
+  }
+  if (!r.ok) throw new Error(r.status === 401 ? 'API token required · reload to reconnect' : `API unavailable (${r.status})`);
+  return r.json();
 };
 
 const ctx2d = (id) => {
   const c = $(id);
-  const dpr = devicePixelRatio || 1;
+  const dpr = Math.min(devicePixelRatio || 1, 2);
   const w = c.clientWidth || c.parentElement.clientWidth - 20;
   const h = c.clientHeight || c.height;
-  c.width = w * dpr; c.height = h * dpr;
+  if (c.width !== Math.round(w * dpr) || c.height !== Math.round(h * dpr)) {
+    c.width = Math.round(w * dpr); c.height = Math.round(h * dpr);
+  }
   const x = c.getContext('2d');
-  x.scale(dpr, dpr);
+  x.setTransform(dpr, 0, 0, dpr, 0, 0);
+  x.globalAlpha = 1; x.shadowBlur = 0; x.lineWidth = 1;
+  x.textAlign = 'left'; x.lineCap = 'butt'; x.font = '10px monospace'; x.setLineDash([]);
   return { x, w, h };
 };
 
@@ -32,44 +66,118 @@ const STATE = { snap: null, strats: [], decisions: [], candles: {}, sym: 'BTCUSD
 
 // ---------- data ----------
 async function refresh() {
+  const version = ++refreshVersion;
+  const symbol = STATE.sym;
+  try {
   const [snap, strats, decisions, candles, whales, pools, gold] = await Promise.all([
     api('/api/engine/snapshot'),
     api('/api/engine/strategies'),
     api('/api/engine/decisions?limit=120'),
-    api(`/api/engine/candles?symbol=${STATE.sym}`),
+    api(`/api/engine/candles?symbol=${symbol}`),
     api('/api/whales?limit=30'),
     api('/api/pools?limit=30'),
     api('/api/gold'),
   ]);
+  if (version !== refreshVersion) return;
   if (snap && !snap.empty) STATE.snap = snap;
   STATE.strats = strats || STATE.strats;
   STATE.decisions = decisions || STATE.decisions;
-  if (candles?.candles?.length) STATE.candles[STATE.sym] = candles.candles;
+  if (candles?.candles?.length) STATE.candles[symbol] = candles.candles;
   STATE.whales = whales?.count ?? 0;
   STATE.pools = pools?.count ?? 0;
   STATE.gold = gold?.assets || [];
+  lastSync = Date.now();
+  document.body.classList.remove('data-stale');
+  $('connection').textContent = snap?.empty ? 'WARMING UP' : snap?.killed ? 'STOPPED' : 'CONNECTED';
+  $('lastSync').textContent = `LAST SYNC ${utc(lastSync)} UTC`;
+  const progress = document.querySelector('.sync-progress');
+  progress.getAnimations().forEach((a) => { a.currentTime = 0; });
   renderStatic();
+  drawSlow();
+  } catch (err) {
+    if (version !== refreshVersion) return;
+    document.body.classList.add('data-stale');
+    $('connection').textContent = 'RECONNECTING';
+    $('wireMsg').textContent = `${err.message} · retrying every 12 seconds · ${lastSync ? 'showing last received data' : 'waiting for engine'}`;
+  }
+}
+
+function selectMarket(symbol) {
+  if (STATE.sym === symbol) return;
+  STATE.sym = symbol;
+  mcPaths.length = 0;
+  renderStatic(); drawSlow();
+  refresh();
+}
+
+function renderMarkets() {
+  const prices = STATE.snap?.prices || {};
+  const symbols = Object.keys(prices);
+  if ($('marketRail').dataset.symbols !== symbols.join(',')) {
+    $('marketRail').dataset.symbols = symbols.join(',');
+    $('marketRail').replaceChildren(...symbols.map((symbol) => {
+      const button = document.createElement('button');
+      button.className = 'market-quote';
+      button.dataset.symbol = symbol;
+      button.innerHTML = '<b></b><small>USDT</small><strong></strong><span class="quote-wave" aria-hidden="true"><i></i><i></i><i></i><i></i></span>';
+      button.querySelector('b').textContent = symbol.replace('USDT', '');
+      button.onclick = () => selectMarket(symbol);
+      return button;
+    }));
+    $('symTabs').replaceChildren(...symbols.map((symbol) => {
+      const button = document.createElement('button');
+      button.textContent = symbol;
+      button.dataset.symbol = symbol;
+      button.onclick = () => selectMarket(symbol);
+      return button;
+    }));
+  }
+  document.querySelectorAll('[data-symbol]').forEach((button) => {
+    const symbol = button.dataset.symbol;
+    button.classList.toggle('on', symbol === STATE.sym);
+    button.setAttribute('aria-pressed', String(symbol === STATE.sym));
+    if (button.classList.contains('market-quote')) {
+      const value = fmt$(prices[symbol], prices[symbol] < 10 ? 2 : 0);
+      const strong = button.querySelector('strong');
+      if (strong.textContent !== value && strong.textContent && !isStill()) {
+        strong.animate([{ background: '#57dcff30' }, { background: 'transparent' }], { duration: 700 });
+      }
+      strong.textContent = value;
+      button.setAttribute('aria-label', `${symbol}, ${value}, select market`);
+    }
+  });
 }
 
 // ---------- static-ish DOM (per refresh) ----------
 function renderStatic() {
   const s = STATE.snap;
-  if (!s) return;
+  if (!s) {
+    $('running').textContent = 'WARMING UP';
+    $('bigDelta').textContent = 'Waiting for the first portfolio snapshot';
+    $('bigPriceSub').textContent = 'Waiting for market data';
+    $('wireMsg').textContent = 'ENGINE CONNECTED · waiting for first snapshot · checking every 12 seconds';
+    $('kill').disabled = true;
+    $('kill').textContent = 'Awaiting engine';
+    const waiting = '<div class="empty-state">Waiting for the first engine snapshot…</div>';
+    for (const id of ['marketRail', 'cortexList', 'indChips', 'modelRows', 'kellyBox', 'thoughts', 'trace', 'orderBook']) $(id).innerHTML = waiting;
+    return;
+  }
   const start = s.equityUsd - s.realizedUsd - s.unrealizedUsd || 10000;
   const dayPnl = s.realizedUsd + s.unrealizedUsd;
   const stats = Object.values(s.stats || {});
   const trades = stats.reduce((a, v) => a + v.trades, 0);
   const wins = stats.reduce((a, v) => a + v.wins, 0);
-  $('sNav').textContent = fmt$(s.equityUsd);
-  $('sNav').className = cls(dayPnl);
-  $('sPnl').textContent = fmt$(dayPnl, 2);
-  $('sPnl').className = cls(dayPnl);
+  setText('sNav', fmt$(s.equityUsd));
+  $('sNav').classList.toggle('pos', dayPnl >= 0); $('sNav').classList.toggle('neg', dayPnl < 0);
+  setText('sPnl', fmt$(dayPnl, 2));
+  $('sPnl').classList.toggle('pos', dayPnl >= 0); $('sPnl').classList.toggle('neg', dayPnl < 0);
   $('sWin').textContent = trades ? `${((wins / trades) * 100).toFixed(0)}%` : '—';
-  $('sOpen').textContent = s.positions.length;
-  $('bigNav').textContent = fmt$(s.equityUsd);
+  setText('sOpen', s.positions.length);
+  setText('bigNav', fmt$(s.equityUsd));
   $('bigNav').classList.toggle('up', dayPnl >= 0);
   $('bigDelta').innerHTML = `<span class="${cls(dayPnl)}">${dayPnl >= 0 ? '▲' : '▼'} ${fmt$(Math.abs(dayPnl), 2)} session</span> · cash ${fmt$(s.cashUsd)}`;
-  $('running').textContent = 'RUNNING';
+  $('running').textContent = s.killed ? 'STOPPED' : 'RUNNING';
+  $('running').className = `right ${s.killed ? 'neg' : 'pos'}`;
   $('stTickets').textContent = trades;
   $('stWin').textContent = trades ? `${((wins / trades) * 100).toFixed(0)}%` : '—';
   $('stEdge').textContent = trades ? fmt$(s.realizedUsd / trades, 2) : '—';
@@ -79,7 +187,8 @@ function renderStatic() {
   $('stDD').textContent = fmt$(dd, 2);
   $('openTickets').textContent = `${s.positions.length} open`;
   $('kill').classList.toggle('killed', !!s.killed);
-  $('kill').textContent = s.killed ? '⚡ KILLED' : '⚡ ENGINE';
+  $('kill').textContent = s.killed ? 'Engine stopped' : 'Stop engine';
+  $('kill').disabled = !!s.killed;
   $('tapeSym').textContent = STATE.sym;
 
   const cd = STATE.candles[STATE.sym];
@@ -88,34 +197,38 @@ function renderStatic() {
     $('tapeChg').innerHTML = `<span class="${cls(chg)}">${chg >= 0 ? '▲' : '▼'} ${chg.toFixed(2)}%</span>`;
     const lp = cd[cd.length - 1].c;
     const bp = $('bigPrice');
-    bp.textContent = fmt$(lp, 2);
-    bp.className = chg >= 0 ? 'up' : 'dn';
+    setText('bigPrice', fmt$(lp, 2));
+    bp.classList.toggle('up', chg >= 0); bp.classList.toggle('dn', chg < 0);
     $('bigPriceSub').innerHTML = `<span class="${cls(chg)}">${chg >= 0 ? '▲' : '▼'} ${Math.abs(chg).toFixed(2)}%</span>`;
     const fair = vwapN(cd);
     const dpm = STATE.decisions.filter((d) => Date.now() - d.ts < 60_000).length;
     $('wireMsg').textContent = `SIX AGENTS LIVE · ${dpm} DECISIONS/MIN` +
       (fair ? ` · MODEL FAIR ${fmt$(fair, 0)} VS MARKET ${fmt$(lp, 0)} · EDGE ${((fair - lp) / fair * 100).toFixed(2)}%` : '') +
       ` · OPEN ${s.positions.length} TICKETS · ${s.killed ? 'ENGINE KILLED' : 'ENGINE ONLINE'}`;
+  } else {
+    $('bigPrice').textContent = '—';
+    $('bigPriceSub').textContent = 'Loading market…';
+    $('tapeChg').textContent = '';
+    $('orderBook').replaceChildren();
   }
-  $('symTabs').innerHTML = Object.keys(s.prices || {}).map((sym) =>
-    `<button class="${sym === STATE.sym ? 'on' : ''}" onclick="STATE.sym='${sym}';refresh()">${sym}</button>`).join('');
+  renderMarkets();
 
   $('cortexList').innerHTML = s.positions.map((p) => {
     const pc = ((p.markPrice - p.entryPrice) / p.entryPrice) * 100;
     return `<div class="crow"><span>${p.strategy}·${p.symbol.replace('USDT', '')}</span>
       <span class="${cls(pc)}">${pc.toFixed(2)}%</span><span>${fmt$(p.unrealizedUsd, 2)}</span></div>`;
-  }).join('') || '<div class="dim">no open tickets</div>';
+  }).join('') || '<div class="empty-state">No open tickets. Waiting for an entry.</div>';
 
   renderIndicators(s);
 
-  $('thoughts').innerHTML = (STATE.decisions || []).slice(0, 40).map((d) =>
-    `<div><span class="t">${new Date(d.ts).toTimeString().slice(0, 8)}</span>
+  renderFeed('thoughts', 40, (d) =>
+    `<span class="t">${utc(d.ts)}</span>
      <b style="color:${stageColor(d)}">${d.strategy}</b> ${d.action.toUpperCase()} ${d.symbol.replace('USDT', '')}
-     <span class="dim">${(d.confidence * 100) | 0}%</span>${d.vetoed ? ` <span class="amb">VETO ${d.vetoed}</span>` : ''}</div>`).join('');
+     <span class="dim">${(d.confidence * 100) | 0}%</span>${d.vetoed ? ` <span class="amb">VETO ${d.vetoed}</span>` : ''}`);
 
-  $('trace').innerHTML = (STATE.decisions || []).slice(0, 50).map((d) =>
-    `<div><span class="tm">${new Date(d.ts).toTimeString().slice(0, 8)}</span>
-     <span style="color:${stageColor(d)}">■</span> ${d.strategy} → ${d.action}${d.vetoed ? ' (veto)' : ''} — ${d.reason}</div>`).join('');
+  renderFeed('trace', 50, (d) =>
+    `<span class="tm">${utc(d.ts)}</span>
+     <span style="color:${stageColor(d)}">■</span> ${d.strategy} → ${d.action}${d.vetoed ? ' (veto)' : ''} — ${d.reason}`);
 
   $('rotLegend').innerHTML = STATE.strats.map((s, i) =>
     `<span><i style="background:${STRAT_COLORS[i % STRAT_COLORS.length]}"></i>${s.name}${s.enabled ? '' : ' (off)'}</span>`).join('');
@@ -123,7 +236,34 @@ function renderStatic() {
   const last = STATE.decisions[0];
   $('wireMsg').textContent = last
     ? `LIVE WIRE — ${last.strategy} ${last.action} ${last.symbol} @${(last.confidence * 100) | 0}% · whale signals ${STATE.whales} · new pools ${STATE.pools}`
-    : 'LIVE WIRE — engine online · scanning';
+    : `LIVE WIRE — ${s.killed ? 'engine stopped' : 'scanning for signals'}`;
+}
+
+function renderFeed(id, limit, template) {
+  const container = $(id);
+  const rows = STATE.decisions.slice(0, limit);
+  if (!rows.length) {
+    container.innerHTML = '<div class="empty-state">Listening for the next engine decision…</div>';
+    return;
+  }
+  const existing = new Map([...container.children].map((el) => [el.dataset.key, el]));
+  const scroll = container.scrollTop;
+  const children = rows.map((decision) => {
+    const key = JSON.stringify(decision);
+    if (existing.has(key)) return existing.get(key);
+    const row = document.createElement('div');
+    row.dataset.key = key;
+    row.innerHTML = template(decision);
+    if (!isStill()) {
+      row.className = 'feed-arrival';
+      row.addEventListener('animationend', () => row.classList.remove('feed-arrival'), { once: true });
+    }
+    return row;
+  });
+  if (children.some((el, i) => el !== container.children[i]) || children.length !== container.children.length) {
+    container.replaceChildren(...children);
+    container.scrollTop = scroll;
+  }
 }
 
 const STRAT_COLORS = ['#00e8a0', '#2fd8ff', '#ff4ff0', '#ffc23d', '#8f6bff', '#ff7a2f', '#ff3860', '#6bff8f', '#4f8fff', '#e8e84f', '#ff8fd0', '#4fffe8'];
@@ -170,7 +310,7 @@ function drawTape() {
   const px = (i) => (i / cs.length) * w;
   const py = (v) => h - 4 - ((v - lo) / span) * (h - 30);
   // liquidity heat: faint density blobs behind candles (visual depth field)
-  const t = performance.now() / 1000;
+  const t = visualTime / 1000;
   for (let i = 0; i < 14; i++) {
     const bx = ((i * 37 + (t * 8) % w) % w);
     const by = h * (.25 + .5 * Math.abs(Math.sin(i * 2.7 + t * .2)));
@@ -233,7 +373,7 @@ function drawTape() {
   x.fillText(fmt$(last.c, 2), w - 90, py(last.c) - 4);
 }
 
-let bookT = 0;
+let bookT = 0, bookLevels = null, bookSymbol = '';
 function drawBook(now) {
   if (now - bookT < 700) return;
   bookT = now;
@@ -249,12 +389,26 @@ function drawBook(now) {
       return { price: p + step * (dir === 'ask' ? i + 1 : -(i + 1)), size, cum };
     });
   };
-  const asks = mk('ask').reverse(), bids = mk('bid');
+  if (!isStill() || !bookLevels || bookSymbol !== STATE.sym) {
+    bookLevels = { asks: mk('ask').reverse(), bids: mk('bid') };
+    bookSymbol = STATE.sym;
+  }
+  const { asks, bids } = bookLevels;
+  asks.forEach((level, i) => { level.price = p + step * (asks.length - i); });
+  bids.forEach((level, i) => { level.price = p - step * (i + 1); });
   const maxCum = Math.max(asks[0].cum, bids[bids.length - 1].cum);
-  $('orderBook').innerHTML = `<div class="hdr"><span>PRICE</span><span>SIZE</span></div>` +
-    asks.map((l) => `<div class="lvl ask"><span>${l.price.toFixed(2)}</span><span>${l.size.toFixed(1)}</span><i style="width:${(l.cum / maxCum) * 100}%"></i></div>`).join('') +
-    `<div class="mid">${fmt$(p, 2)}</div>` +
-    bids.map((l) => `<div class="lvl bid"><span>${l.price.toFixed(2)}</span><span>${l.size.toFixed(1)}</span><i style="width:${(l.cum / maxCum) * 100}%"></i></div>`).join('');
+  if ($('orderBook').querySelectorAll('.lvl').length !== 18) {
+    $('orderBook').innerHTML = '<div class="hdr"><span>DEPTH SIM</span><span>SIZE</span></div>' +
+      ['ask', 'bid'].map((side) => `${side === 'bid' ? '<div class="mid"></div>' : ''}` +
+        Array.from({ length: 9 }, () => `<div class="lvl ${side}"><span></span><span></span><i></i></div>`).join('')).join('');
+  }
+  [...asks, ...bids].forEach((level, i) => {
+    const row = $('orderBook').querySelectorAll('.lvl')[i];
+    row.children[0].textContent = level.price.toFixed(2);
+    row.children[1].textContent = level.size.toFixed(1);
+    row.children[2].style.transform = `scaleX(${level.cum / maxCum})`;
+  });
+  $('orderBook').querySelector('.mid').textContent = fmt$(p, 2);
 }
 
 // ---------- brain: interactive 3D system graph ----------
@@ -266,7 +420,7 @@ const AGENTS = [
   { name: 'EDGE', color: '#ff4ff0', desc: 'strategies' },
   { name: 'CLOSER', color: '#ff3860', desc: 'exits' },
 ];
-const NODES = [];   // 0-5 agents, 6 core, 7-18 strategies, 19-21 symbols, 22+ dust
+const NODES = [];
 const SEGS = [];    // 3D dendrite segments: {a,b,w,c}
 const EDGES = [];   // long axon links for sparks
 const sparks = [];
@@ -306,22 +460,22 @@ function growTree(root, dir, len, depth, color) {
     growTree(p, _norm(-p[0], -p[1], -p[2]), .14, 3, a.color);   // axon toward core
   });
   NODES.push({ t: 'core', label: 'BOOK', color: '#f2f6ff', r: 26, p: [0, 0, 0] });
-  const SN = 12;
+  const SN = 19;
   for (let i = 0; i < SN; i++) {          // strategies embedded between trees
     const y = 1 - (i / (SN - 1)) * 2, rr = Math.sqrt(1 - y * y), th = i * 2.39996;
-    NODES.push({ t: 'strat', idx: i, color: STRAT_COLORS[i], r: 4, p: [Math.cos(th) * rr * _r(.9, 1.05), y * .85, Math.sin(th) * rr * _r(.9, 1.05)] });
+    NODES.push({ t: 'strat', idx: i, color: STRAT_COLORS[i % STRAT_COLORS.length], r: 4, p: [Math.cos(th) * rr * _r(.9, 1.05), y * .85, Math.sin(th) * rr * _r(.9, 1.05)] });
   }
-  ['BTC', 'ETH', 'SOL'].forEach((s, j) => {
-    const th = (j / 3) * Math.PI * 2 + .8;
+  ['BTC', 'ETH', 'SOL', 'DOGE', 'AVAX', 'LINK'].forEach((s, j) => {
+    const th = (j / 6) * Math.PI * 2 + .8;
     NODES.push({ t: 'sym', label: s, color: '#ffc23d', r: 6, p: [Math.cos(th) * 1.3, _r(-.1, .35), Math.sin(th) * 1.3] });
   });
   for (let i = 0; i < 90; i++) {          // ambient dust
     const y = 1 - 2 * Math.random(), rr = Math.sqrt(Math.max(0, 1 - y * y)), th = Math.random() * Math.PI * 2, rad = _r(.8, 1.6);
     NODES.push({ t: 'dust', r: .6 + Math.random() * 1.1, p: [Math.cos(th) * rr * rad, y * rad, Math.sin(th) * rr * rad] });
   }
-  const ai = (k) => 7 + k, si = (j) => 19 + j;
+  const ai = (k) => 7 + k, si = (j) => 7 + SN + j;
   for (let i = 0; i < 6; i++) { EDGES.push([i, 6]); EDGES.push([i, (i + 1) % 6]); }
-  for (let j = 0; j < 3; j++) for (let k = 0; k < 4; k++) EDGES.push([si(j), ai(j * 4 + k)]);
+  for (let k = 0; k < SN; k++) EDGES.push([si(k % 6), ai(k)]);
   for (let i = 0; i < 26; i++) {          // ambient 2D dendrite wash behind
     const pts = [];
     let x0 = _r(.05, .95), y0 = _r(.1, .9), ang = _r(0, Math.PI * 2);
@@ -342,11 +496,28 @@ window.addEventListener('pointermove', (e) => {
   rot.vy = e.movementX * .006; rot.vx = e.movementY * .006;
   rot.y += rot.vy; rot.x += rot.vx;
 });
-window.addEventListener('pointerup', () => { rot.drag = false; });
+const endDrag = () => { rot.drag = false; if (isStill()) rot.vx = rot.vy = 0; };
+window.addEventListener('pointerup', endDrag);
+brainEl.addEventListener('pointercancel', endDrag);
+brainEl.addEventListener('lostpointercapture', endDrag);
 brainEl.addEventListener('wheel', (e) => {
   e.preventDefault();
   rot.zoom = Math.min(2.4, Math.max(.5, rot.zoom - e.deltaY * .0012));
 }, { passive: false });
+function resetBrain() { Object.assign(rot, { x: -.3, y: 0, vx: 0, vy: .005, zoom: 1 }); drawBrain(visualTime); }
+$('resetBrain').onclick = resetBrain;
+brainEl.addEventListener('keydown', (e) => {
+  if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', '+', '=', '-', '0'].includes(e.key)) return;
+  e.preventDefault();
+  if (e.key === '0') return resetBrain();
+  if (e.key === 'ArrowLeft') rot.y -= .12;
+  if (e.key === 'ArrowRight') rot.y += .12;
+  if (e.key === 'ArrowUp') rot.x -= .12;
+  if (e.key === 'ArrowDown') rot.x += .12;
+  if (e.key === '+' || e.key === '=') rot.zoom = Math.min(2.4, rot.zoom + .1);
+  if (e.key === '-') rot.zoom = Math.max(.5, rot.zoom - .1);
+  drawBrain(visualTime);
+});
 
 function drawBrain(now) {
   const { x, w, h } = ctx2d('brain');
@@ -361,10 +532,21 @@ function drawBrain(now) {
     x.stroke();
   }
   x.globalAlpha = 1;
-  if (!rot.drag) { rot.y += rot.vy; rot.x += rot.vx; rot.vy = .005 + (rot.vy - .005) * .93; rot.vx *= .93; }
+  if (!rot.drag && !isStill()) { rot.y += rot.vy; rot.x += rot.vx; rot.vy = .003 + (rot.vy - .003) * .93; rot.vx *= .93; }
   rot.x = Math.max(-1.3, Math.min(1.3, rot.x));
   const cy_ = Math.cos(rot.y), sy_ = Math.sin(rot.y), cx_ = Math.cos(rot.x), sx_ = Math.sin(rot.x);
-  const R = Math.min(w, h) * .40 * rot.zoom, CX = w / 2, CY = h / 2 - 10, D = 3;
+  const R = Math.min(w, h) * .29 * rot.zoom, CX = w / 2, CY = h / 2 - 10, D = 3;
+  // Orbital reference frame stays separate from the live decision data.
+  for (let ring = 0; ring < 3; ring++) {
+    x.save(); x.translate(CX, CY); x.rotate((ring - 1) * .5);
+    x.strokeStyle = ring === 1 ? '#57dcff30' : '#8f6bff25';
+    x.lineWidth = .7; x.setLineDash(ring === 1 ? [2, 10] : []);
+    x.lineDashOffset = -t * 8;
+    x.beginPath(); x.ellipse(0, 0, R * (1.5 + ring * .1), R * (.6 + ring * .3), 0, 0, Math.PI * 2); x.stroke();
+    x.setLineDash([]); x.strokeStyle = '#57dcff88';
+    x.beginPath(); x.ellipse(0, 0, R * (1.5 + ring * .1), R * (.6 + ring * .3), 0, t * .2 + ring * 2, t * .2 + ring * 2 + .2); x.stroke();
+    x.restore();
+  }
   const proj = (p) => {
     const x1 = p[0] * cy_ + p[2] * sy_, z1 = -p[0] * sy_ + p[2] * cy_;
     const y1 = p[1] * cx_ - z1 * sx_, z2 = p[1] * sx_ + z1 * cx_;
@@ -372,7 +554,7 @@ function drawBrain(now) {
     return { X: CX + x1 * s * R, Y: CY + y1 * s * R, s, z: z2 };
   };
   const P = NODES.map((n) => ({ n, ...proj(n.p) }));
-  const recent = STATE.decisions.filter((d) => now - d.ts < 60_000).length;
+  const recent = STATE.decisions.filter((d) => Date.now() - d.ts < 60_000).length;
   // dendrite segments, depth-shaded, round caps
   x.lineCap = 'round';
   for (const sg of SEGS) {
@@ -397,7 +579,7 @@ function drawBrain(now) {
   }
   x.globalAlpha = 1;
   // sparks travel dendrite paths
-  if (Math.random() < .14 + recent * .05 && sparks.length < 60) {
+  if (!isStill() && Math.random() < .14 + recent * .05 && sparks.length < 60) {
     if (Math.random() < .7 && SEGS.length) {
       const sg = SEGS[(Math.random() * SEGS.length) | 0];
       sparks.push({ seg: sg, p: 0, c: sg.c });
@@ -407,7 +589,7 @@ function drawBrain(now) {
     }
   }
   for (let i = sparks.length - 1; i >= 0; i--) {
-    const s = sparks[i]; s.p += .03;
+    const s = sparks[i]; if (!isStill()) s.p += .03;
     if (s.p >= 1) { sparks.splice(i, 1); continue; }
     let q;
     if (s.seg) {
@@ -447,10 +629,12 @@ function drawBrain(now) {
       bg.addColorStop(0, '#ffffff'); bg.addColorStop(1, n.color);
       x.fillStyle = bg;
       x.beginPath(); x.arc(nd.X, nd.Y, sz, 0, 7); x.fill();
-      // the "V" eyes
-      x.fillStyle = 'rgba(2,4,10,.85)';
-      x.beginPath(); x.ellipse(nd.X - sz * .22, nd.Y, sz * .1, sz * .32, 0, 0, 7); x.fill();
-      x.beginPath(); x.ellipse(nd.X + sz * .22, nd.Y, sz * .1, sz * .32, 0, 0, 7); x.fill();
+      x.fillStyle = '#091422';
+      x.beginPath(); x.arc(nd.X, nd.Y, sz * .72, 0, Math.PI * 2); x.fill();
+      x.strokeStyle = n.color; x.lineWidth = 1;
+      x.beginPath(); x.arc(nd.X, nd.Y, sz * 1.35, t * .4, t * .4 + Math.PI * 1.5); x.stroke();
+      x.fillStyle = n.color;
+      x.beginPath(); x.arc(nd.X, nd.Y, sz * .22, 0, Math.PI * 2); x.fill();
     } else {
       x.fillStyle = n.color;
       x.beginPath(); x.arc(nd.X, nd.Y, Math.max(1, sz), 0, 7); x.fill();
@@ -468,9 +652,8 @@ function drawBrain(now) {
   x.fillStyle = g2; x.beginPath(); x.arc(c.X, c.Y, 60 * pulse * c.s, 0, 7); x.fill();
   x.fillStyle = '#e8f4ff'; x.font = '10px monospace'; x.textAlign = 'center';
   x.fillText(`NAV ${fmt$(STATE.snap?.equityUsd || 0, 0)}`, c.X, c.Y + 40 * c.s);
-  $('brainMeta').textContent = `${NODES.length - 90} neurons · ${SEGS.length + EDGES.length} synapses · ${recent} spikes/min`;
-  $('pipeline').innerHTML = AGENTS.map((a) =>
-    `<div class="pipe-node" style="color:${a.color}"><b>${a.name}</b><span>${a.desc}</span></div>`).join('');
+  const meta = `${AGENTS.length} AGENTS / ${STATE.strats.length} STRATEGIES / ${recent} DECISIONS/MIN`;
+  if ($('brainMeta').textContent !== meta) $('brainMeta').textContent = meta;
 }
 
 // ---------- cortex: layered input net ----------
@@ -532,7 +715,7 @@ function drawCalcium(now) {
     const cd = (STATE.candles[sym] || []).slice(-30);
     if (cd.length < 2) return;
     const lo = Math.min(...cd.map((c) => c.l)), hi = Math.max(...cd.map((c) => c.h));
-    const y0 = 14 + r * 26;
+    const y0 = 14 + r * ((h - 24) / syms.length);
     const chg = ((cd[cd.length - 1].c - cd[0].c) / cd[0].c) * 100;
     x.strokeStyle = chg >= 0 ? '#00e8a0' : '#ff3860'; x.lineWidth = 1; x.beginPath();
     cd.forEach((c, i) => {
@@ -576,7 +759,7 @@ function drawRotation() {
   const strats = STATE.strats;
   if (!strats.length) return;
   const ow = Math.min(w * .34, 190), ox = ow / 2 + 6, oy = h / 2;
-  const t = performance.now() / 1000;
+  const t = visualTime / 1000;
   for (let ring = 1; ring <= 3; ring++) {           // orbit rings
     x.strokeStyle = '#16203a'; x.globalAlpha = .9;
     x.beginPath(); x.ellipse(ox, oy, ow * .45 * ring / 3, h * .42 * ring / 3, .4, 0, 7); x.stroke();
@@ -672,7 +855,13 @@ function chip(name, val, tone) {
 function renderIndicators(s) {
   const cs = STATE.candles[STATE.sym] || [];
   const cl = cs.map((c) => c.c);
-  if (cl.length < 30) return;
+  if (cl.length < 30) {
+    $('indChips').innerHTML = '<div class="empty-state">Collecting market indicators…</div>';
+    $('modelRows').innerHTML = '<div class="empty-state">Waiting for market candles…</div>';
+    $('kellyBox').innerHTML = '<div class="empty-state">Waiting for market candles…</div>';
+    $('tapeRsi').textContent = '';
+    return;
+  }
   const last = cl[cl.length - 1];
   const rsi = rsiN(cl), pb = bollPctB(cl), z = zsc(cl), atr = atrP(cs);
   const macd = emaN(cl, 12) - emaN(cl, 26);
@@ -781,7 +970,7 @@ function drawPricer(now) {
   const p0 = cd[cd.length - 1].c;
   const rets = cd.slice(-60).map((c, i, a) => (i ? (c.c - a[i - 1].c) / a[i - 1].c : 0)).slice(1);
   const vol = Math.sqrt(rets.reduce((a, r) => a + r * r, 0) / rets.length) || .001;
-  if (!mcPaths.length || now - (mcPaths.t || 0) > 5000) {
+  if (!mcPaths.length || (!isStill() && now - (mcPaths.t || 0) > 5000)) {
     mcPaths.length = 0; mcPaths.t = now;
     for (let i = 0; i < 60; i++) {
       let v = p0; const path = [v];
@@ -817,33 +1006,92 @@ function drawPricer(now) {
 }
 
 // ---------- frame loop ----------
-let tapeT = 0;
+const visibleCanvases = new Set();
+const visibility = new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    entry.target.classList.toggle('offscreen', !entry.isIntersecting);
+    if (entry.target.tagName !== 'CANVAS') continue;
+    if (entry.isIntersecting) {
+      visibleCanvases.add(entry.target.id);
+      redrawCanvas(entry.target.id);
+    }
+    else visibleCanvases.delete(entry.target.id);
+  }
+}, { rootMargin: '40px' });
+document.querySelectorAll('canvas, .panel, .market-rail, .topbar, .wire').forEach((el) => visibility.observe(el));
+const drawVisible = (id, draw, now) => { if (visibleCanvases.has(id)) draw(now); };
+let tapeT = 0, lastFrame = 0, slowT = 0, stillT = 0;
 function frame(now) {
-  drawBrain(now);
-  drawCortex(now);
-  drawCalcium(now);
-  drawBook(now);
-  if (now - tapeT > 250) { tapeT = now; drawTape(); }
   requestAnimationFrame(frame);
+  if (document.hidden) { lastFrame = now; return; }
+  const delta = Math.min(now - lastFrame, 70);
+  if (delta < 32) return;
+  lastFrame = now;
+  if (!isStill()) visualTime += delta;
+  // Frozen canvases still accept direct interaction and fresh data.
+  if (isStill() && !rot.drag && now - stillT < 1000) return;
+  stillT = now;
+  drawVisible('brain', drawBrain, visualTime);
+  drawVisible('cortex', drawCortex, visualTime);
+  drawVisible('calcium', drawCalcium, visualTime);
+  if (!isStill() || !$('orderBook').children.length) {
+    if (visibleCanvases.has('tapeChart')) drawBook(visualTime);
+  }
+  if (now - tapeT > 200) { tapeT = now; drawVisible('tapeChart', drawTape); }
+  if (now - slowT > 100) { slowT = now; drawVisible('rotation', drawRotation); }
 }
 
 function drawSlow() {
-  drawNavChart(); drawWeights(); drawRotation(); drawPricer(performance.now()); drawMembrane();
+  if (document.hidden) return;
+  for (const id of visibleCanvases) redrawCanvas(id);
+}
+
+function redrawCanvas(id) {
+  if (document.hidden) return;
+  const draw = { navChart: drawNavChart, weights: drawWeights, rotation: drawRotation, pricer: drawPricer,
+    membrane: drawMembrane, tapeChart: drawTape, brain: drawBrain, cortex: drawCortex, calcium: drawCalcium }[id];
+  draw?.(visualTime);
+  if (id === 'tapeChart') { bookT = -Infinity; drawBook(visualTime); }
 }
 
 setInterval(() => {
   const d = new Date();
   $('sClock').textContent = d.toISOString().slice(11, 19);
+  $('syncLabel').textContent = lastSync ? `SYNC ${ago(lastSync)} AGO` : 'SYNC —';
 }, 1000);
 
 $('kill').onclick = async () => {
-  if (!confirm('Kill the engine? Blocks all new entries until data/KILL is removed.')) return;
-  const r = await api('/api/engine/kill', { method: 'POST' });
-  if (r?.killed) refresh();
+  if (!confirm('Stop the paper engine? New entries stay blocked until the server kill file is removed.')) return;
+  $('kill').disabled = true;
+  $('kill').textContent = 'Stopping…';
+  try {
+    const r = await api('/api/engine/kill', { method: 'POST' });
+    if (r?.killed) await refresh();
+  } catch (err) {
+    alert(`Engine stop failed: ${err.message}`);
+  } finally {
+    $('kill').disabled = !!STATE.snap?.killed;
+    $('kill').textContent = STATE.snap?.killed ? 'Engine stopped' : 'Stop engine';
+  }
 };
 
+$('motionToggle').onclick = () => {
+  motionPaused = !motionPaused;
+  sessionStorage.setItem('motionPaused', String(motionPaused));
+  updateMotion();
+};
+reducedMotion.addEventListener('change', updateMotion);
+document.addEventListener('visibilitychange', () => document.body.classList.toggle('page-hidden', document.hidden));
+window.addEventListener('resize', drawSlow);
+$('pipeline').innerHTML = AGENTS.map((a, i) =>
+  `<div class="pipe-node" style="color:${a.color};--i:${i}"><b>${a.name}</b><span>${a.desc}</span></div>`).join('');
+document.querySelectorAll('canvas:not(#brain)').forEach((canvas) => {
+  canvas.setAttribute('role', 'img');
+  canvas.setAttribute('aria-label', ({ navChart: 'Portfolio equity history', tapeChart: 'Selected market candlesticks and VWAP bands', membrane: 'Price execution band', weights: 'Strategy profit weights', rotation: 'Strategy activity and profit', cortex: 'Illustrative sensory network', calcium: 'Illustrative momentum scatter', pricer: 'Illustrative simulated price paths, not a forecast' })[canvas.id]);
+});
+updateMotion();
 window.STATE = STATE;
 refresh();
-setInterval(refresh, 12_000);
-setInterval(drawSlow, 3_000);
+setInterval(() => { if (!document.hidden) refresh(); }, 12_000);
+setInterval(() => { if (!isStill()) drawSlow(); }, 3_000);
 requestAnimationFrame(frame);
