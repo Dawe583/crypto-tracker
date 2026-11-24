@@ -32,8 +32,10 @@ function runProcess(root: string, ts: number, prices: Record<string, number>, sy
     const realFetch = globalThis.fetch;
     globalThis.fetch = async (url) => {
       const price = prices[new URL(url).searchParams.get('symbol')];
-      const candles = Array.from({ length: 40 }, (_, i) =>
-        i === 39 ? [i * 60_000, 100, price + 1, 99, price, 1000] : [i * 60_000, 100, 101, 99, 100, 100]);
+      const candles = Array.from({ length: 40 }, (_, i) => {
+        const t = Date.now() - (39 - i) * 60_000;
+        return i === 39 ? [t, 100, price + 1, 99, price, 1000] : [t, 100, 101, 99, 100, 100];
+      });
       return Response.json(candles);
     };
     const { runEngineCycle } = await import('./src/engine/loop.ts');

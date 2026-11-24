@@ -47,8 +47,10 @@ async function runCycle(
     const { hostname, searchParams } = new URL(url);
     assert.equal(hostname, 'api.binance.com');
     const lastPrice = seedBtc && searchParams.get('symbol') === 'BTCUSDT' ? 99 : price;
-    const candles = Array.from({ length: 70 }, (_, i) =>
-      i === 69 ? [i * 60_000, 100, lastPrice + 1, 99, lastPrice, 1000] : [i * 60_000, 100, 101, 99, 100, 100]);
+    const candles = Array.from({ length: 70 }, (_, i) => {
+      const ts = Date.now() - (69 - i) * 60_000;
+      return i === 69 ? [ts, 100, lastPrice + 1, 99, lastPrice, 1000] : [ts, 100, 101, 99, 100, 100];
+    });
     return Response.json(candles);
   });
 
