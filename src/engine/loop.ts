@@ -27,7 +27,6 @@ const strategies = loadStrategies();
 const equityCurve: { ts: number; equityUsd: number }[] = [];
 const perStrategy = new Map<string, { pnl: number; trades: number; wins: number }>();
 let recovered = false;
-let ledgerFailed = false;
 
 function checkpointState() {
   return { portfolio: portfolio.checkpoint(), risk: risk.checkpoint(), stats: [...perStrategy] };
@@ -58,7 +57,7 @@ function append(type: LedgerRecord['type'], data: unknown) {
   try {
     ledgerAppend(type, data);
   } catch (err) {
-    ledgerFailed = true;
+    engineState.halted = true;
     throw err;
   }
 }
@@ -103,19 +102,19 @@ function checkExits(prices: Map<string, number>) {
 }
 
 export async function runEngineCycle() {
-  if (ledgerFailed) throw new Error('paper ledger unavailable; restart required');
+  if (engineState.halted) throw new Error('paper ledger unavailable; restart required');
   if (!recovered) {
     try {
       recoverPortfolio();
     } catch (err) {
-      ledgerFailed = true;
+      engineState.halted = true;
       throw err;
     }
   }
   const symbols = config.engine.symbols;
   const marketSymbols = [...new Set([...symbols, ...Array.from(portfolio.positions.values(), (p) => p.symbol)])];
   await Promise.all(marketSymbols.map((s) => refreshSymbol(s, config.engine.interval)));
-  if (ledgerFailed) return;
+  if (engineState.halted) return;
   const prices = new Map(marketSymbols.map((s) => [s, getPrice(s) ?? 0]).filter(([, p]) => (p as number) > 0) as [string, number][]);
 
   checkExits(prices);

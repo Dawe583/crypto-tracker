@@ -83,6 +83,8 @@ Append-only JSONL; each record `{seq, ts, type, prevHash, hash, data}`. Each fil
 
 Older fills lack the state needed for exact recovery. If the latest fill predates checkpoints, the engine starts a new paper portfolio and leaves the old ledger intact, including any legacy fork from a clock rollback. An incomplete or invalid ledger tail stops paper trading until the ledger is repaired and the service restarted; it isn't silently discarded.
 
+`GET /api/engine/snapshot` includes `halted` even before the first successful cycle. It is set on ledger recovery or append failure, separately from the `killed` switch.
+
 ## Trading deck (`/deck` on the API port)
 
 Self-contained dark dashboard (no build step, works offline on the Pi — plain HTML/JS/canvas):

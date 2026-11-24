@@ -21,13 +21,15 @@ function fixture(t: TestContext) {
   return root;
 }
 
-function runProcess(root: string, ts: number, prices: Record<string, number>, symbols = 'BTCUSDT,ETHUSDT', env?: Record<string, string>) {
+function runProcess(root: string, ts: number, prices: Record<string, number>, symbols = 'BTCUSDT,ETHUSDT', env?: Record<string, string>,
+  script = 'await runEngineCycle(); console.log(JSON.stringify(engineState.snapshot));') {
   return spawnSync(process.execPath, ['--import', 'tsx', '--input-type=module', '--eval', `
     globalThis.Date = new Proxy(Date, {
       construct: (RealDate, args) => new RealDate(...(args.length ? args : [${ts}])),
     });
     Date.now = () => ${ts};
     const prices = ${JSON.stringify(prices)};
+    const realFetch = globalThis.fetch;
     globalThis.fetch = async (url) => {
       const price = prices[new URL(url).searchParams.get('symbol')];
       const candles = Array.from({ length: 40 }, (_, i) =>
@@ -36,8 +38,7 @@ function runProcess(root: string, ts: number, prices: Record<string, number>, sy
     };
     const { runEngineCycle } = await import('./src/engine/loop.ts');
     const { engineState } = await import('./src/engine/state.ts');
-    await runEngineCycle();
-    console.log(JSON.stringify(engineState.snapshot));
+    ${script}
   `], {
     cwd: root,
     encoding: 'utf8',
@@ -59,6 +60,58 @@ function runCycle(...args: Parameters<typeof runProcess>): EngineSnapshot {
 
 const today = Date.UTC(2026, 10, 24, 23, 58);
 const tomorrow = today + 3 * 60_000;
+
+function checkSnapshotApi(root: string, assertions: string) {
+  const result = runProcess(root, today, { BTCUSDT: 101.12 }, 'BTCUSDT', {
+    API_ENABLED: 'true', API_HOST: '127.0.0.1', API_PORT: '0', API_TOKEN: '',
+  }, `
+    import assert from 'node:assert/strict';
+    import { once } from 'node:events';
+    import { mkdirSync, rmSync } from 'node:fs';
+    const { startApi } = await import('./src/api.ts');
+    const server = startApi();
+    await once(server, 'listening');
+    const snapshot = async () => {
+      const response = await realFetch('http://127.0.0.1:' + server.address().port + '/api/engine/snapshot');
+      assert.equal(response.status, 200);
+      return response.json();
+    };
+    try {
+      ${assertions}
+    } finally {
+      server.close();
+    }
+  `);
+  assert.equal(result.status, 0, result.stderr);
+}
+
+test('snapshot API reports a ledger recovery halt before the first cycle', (t) => {
+  const root = fixture(t);
+  const directory = join(root, 'data', 'ledger');
+  mkdirSync(directory);
+  writeFileSync(join(directory, '2026-11-24.jsonl'), '{"seq":');
+  checkSnapshotApi(root, `
+    assert.deepEqual(await snapshot(), { empty: true, halted: false });
+    await assert.rejects(runEngineCycle(), /incomplete paper ledger/);
+    assert.deepEqual(await snapshot(), { empty: true, halted: true });
+  `);
+});
+
+test('snapshot API reports a ledger append halt alongside the last good snapshot', (t) => {
+  checkSnapshotApi(fixture(t), `
+    await runEngineCycle();
+    const healthy = await snapshot();
+    assert.equal(healthy.halted, false);
+    assert.equal(healthy.killed, false);
+    assert.equal(healthy.positions.length, 1);
+    const file = './data/ledger/2026-11-24.jsonl';
+    rmSync(file);
+    mkdirSync(file);
+    await assert.rejects(runEngineCycle(), /EISDIR/);
+    assert.deepEqual(await snapshot(), { ...healthy, halted: true });
+    await assert.rejects(runEngineCycle(), /restart required/);
+  `);
+});
 
 test('restores positions with their original exits and accounting across a UTC rollover', (t) => {
   const root = fixture(t);
