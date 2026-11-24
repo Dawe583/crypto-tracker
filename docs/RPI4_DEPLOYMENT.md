@@ -9,6 +9,8 @@ All alerts go through src/notifier.ts, which logs, sends Telegram or webhook, an
 
 If the daemon cannot read the saved signal history at startup, it leaves the file untouched and records new alerts in memory only. Restore read access, or move a corrupt file aside, then restart the daemon to resume saving.
 
+Past whale alerts remain visible in the API after a watchlist edit. Paper trading only uses buys from wallets still watched on that chain and within the existing four-hour window.
+
 ## 1. Prerequisites on the Pi
 
 Raspberry Pi OS 64-bit, Node.js 20 or 22, git.

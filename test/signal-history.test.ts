@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test, type TestContext } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { LIBRARY } from '../src/strategies/library.js';
 
 function fixture(t: TestContext) {
   const root = mkdtempSync(join(tmpdir(), 'crypto-tracker-signals-'));
@@ -16,7 +17,7 @@ function fixture(t: TestContext) {
   return root;
 }
 
-function run(root: string, script: string) {
+function run(root: string, script: string, env: Record<string, string> = {}) {
   const result = spawnSync(process.execPath, ['--import', 'tsx', '--input-type=module', '--eval', `
     import assert from 'node:assert/strict';
     import { once } from 'node:events';
@@ -43,7 +44,7 @@ function run(root: string, script: string) {
     cwd: root,
     encoding: 'utf8',
     timeout: 10_000,
-    env: { ...process.env, LOG_LEVEL: 'silent', API_ENABLED: 'true', API_HOST: '127.0.0.1', API_PORT: '0', API_TOKEN: '' },
+    env: { ...process.env, LOG_LEVEL: 'silent', API_ENABLED: 'true', API_HOST: '127.0.0.1', API_PORT: '0', API_TOKEN: '', ...env },
   });
   assert.equal(result.status, 0, result.stderr || result.error?.message);
 }
@@ -120,4 +121,38 @@ test('keeps the last snapshot and live alerts when the history file cannot be wr
     store.initSignalHistory();
     assert.deepEqual((await request('/api/whales')).signals.map((s) => s.token.symbol), ['TOKEN-1']);
   `);
+});
+
+test('restored whales only drive paper entries if the wallet is still watched on that chain', (t) => {
+  const root = fixture(t);
+  const removed = '0x0000000000000000000000000000000000000010';
+  const watched = '0x0000000000000000000000000000000000000020';
+  const watchlist = join(root, 'data', 'watchlist.json');
+  writeFileSync(watchlist, JSON.stringify([{ address: removed, chains: ['base'] }, { address: watched, chains: ['base', 'ethereum'] }]));
+  run(root, `
+    store.initSignalHistory();
+    store.recordSignal({ ...signal(1), whale: { wallet: '${removed}' } });
+    store.recordSignal({ ...signal(2), whale: { wallet: '${watched}' } });
+  `);
+  writeFileSync(watchlist, JSON.stringify([{ address: watched, chains: ['ethereum'] }]));
+  writeFileSync(join(root, 'data', 'strategies.json'), JSON.stringify(Object.fromEntries(
+    LIBRARY.map(({ name }) => [name, { enabled: name === 'whale_follow' }]),
+  )));
+  run(root, `
+    store.initSignalHistory();
+    assert.equal((await request('/api/whales')).count, 2);
+    const { runEngineCycle } = await import('./src/engine/loop.ts');
+    const { engineState } = await import('./src/engine/state.ts');
+    globalThis.fetch = async () => Response.json(
+      Array.from({ length: 40 }, (_, i) => [Date.now() - (39 - i) * 60_000, 100, 101, 99, 100, 100]),
+    );
+    await runEngineCycle();
+    assert.equal(engineState.snapshot.positions.length, 0);
+    store.recordSignal({ ...signal(3), chain: 'ethereum', whale: { wallet: '${watched}' } });
+    await runEngineCycle();
+    assert.deepEqual(engineState.snapshot.positions.map((p) => p.strategy), ['whale_follow']);
+  `, {
+    ENGINE_SYMBOLS: 'BTCUSDT', ENGINE_INTERVAL: '1m', ENGINE_START_USD: '10000', ENGINE_MAX_POSITION_USD: '500',
+    ENGINE_MAX_TOTAL_USD: '1000', ENGINE_MAX_OPEN_POSITIONS: '8', ENGINE_MIN_CONFIDENCE: '0.5', ENGINE_FEE_PCT: '0.1',
+  });
 });

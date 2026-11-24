@@ -10,6 +10,7 @@ import { loadStrategies } from '../strategies/registry.js';
 import { listSignals } from '../store.js';
 import { getGoldSnapshot } from '../store.js';
 import { engineState } from './state.js';
+import { watchedAddresses } from '../wallets.js';
 import type { DecisionRecord, Fill, TradeIntent } from './types.js';
 
 export const portfolio = new PaperPortfolio(config.engine.startUsd);
@@ -24,6 +25,10 @@ export const risk = new RiskEngine({
 });
 
 const strategies = loadStrategies();
+const watchedWallets = {
+  base: new Set(watchedAddresses('base').map((address) => address.toLowerCase())),
+  ethereum: new Set(watchedAddresses('ethereum').map((address) => address.toLowerCase())),
+};
 const equityCurve: { ts: number; equityUsd: number }[] = [];
 const perStrategy = new Map<string, { pnl: number; trades: number; wins: number }>();
 let recovered = false;
@@ -75,11 +80,16 @@ function recordFill(fill: Fill) {
 }
 
 function monitorSignals() {
-  const whales = listSignals('whale_buy', 50).filter((s) => Date.now() - Date.parse(s.createdAt) < 4 * 3600_000);
+  const now = Date.now();
+  const whales = listSignals('whale_buy', Infinity).filter((s) => {
+    const wallet = s.whale?.wallet;
+    const age = now - Date.parse(s.createdAt);
+    return typeof wallet === 'string' && watchedWallets[s.chain].has(wallet.toLowerCase()) && age >= 0 && age < 4 * 3600_000;
+  });
   const gold = getGoldSnapshot();
   const goldSpread: Record<string, number> = {};
   for (const q of gold.quotes) goldSpread[`${q.symbol}USD`] = q.deviationPct;
-  return { whaleBuys: whales.length, newPools: listSignals('new_pool', 50).length, goldSpread };
+  return { whaleBuys: Math.min(whales.length, 50), newPools: listSignals('new_pool', 50).length, goldSpread };
 }
 
 function checkExits(prices: Map<string, number>) {
