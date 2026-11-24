@@ -5,7 +5,11 @@ The tracker runs as one Node.js process (src/index.ts) that starts three parts t
 - src/gold_rwa.ts: PAXG and XAUt DEX price vs spot gold, polled every GOLD_POLL_MS
 - src/api.ts: JSON API on API_PORT (default 8787) that reads the in-memory store in src/store.ts
 
-All alerts go through src/notifier.ts, which logs, sends Telegram or webhook, and records the signal for the API. The API store resets on restart. Gold alert levels persist in data/gold_state.json.
+All alerts go through src/notifier.ts, which logs, sends Telegram or webhook, and records the signal for the API. The daemon restores its latest 200 alerts from `data/signal_state.json` without sending them again. Gold quotes reset on restart; gold alert levels persist in `data/gold_state.json`.
+
+If the daemon cannot read the saved signal history at startup, it leaves the file untouched and records new alerts in memory only. Restore read access, or move a corrupt file aside, then restart the daemon to resume saving.
+
+Past whale alerts remain visible in the API after a watchlist edit. Paper trading only uses buys from wallets still watched on that chain and within the existing four-hour window.
 
 ## 1. Prerequisites on the Pi
 
@@ -60,7 +64,7 @@ GET /api/gold: last poll time (`attemptedAt`), last successful refresh of any as
 GET /api/whales?limit=50: latest whale buy signals, newest first (limit 1 to 200).
 GET /api/pools?limit=50: latest new-pool signals with safety verdict, reasons, contractVerified, liquidityUsd, marketCapUsd, links.
 
-Responses are JSON with Cache-Control: no-store. Only GET and OPTIONS are supported. Gold refreshes every GOLD_POLL_MS (default 60 seconds), so poll no faster than that. Whales and pools poll every 30 to 60 seconds. Signals only exist since the last restart.
+Responses are JSON with Cache-Control: no-store. Only GET and OPTIONS are supported. Gold refreshes every GOLD_POLL_MS (default 60 seconds), so poll no faster than that. Whales and pools poll every 30 to 60 seconds.
 
 Check each gold asset's `stale` flag even when the response-level flag is false. A cached quote stays visible if the latest poll missed it or its last successful refresh was more than three poll intervals ago. Its `updatedAt` is the tracker's refresh time, not an exchange timestamp.
 

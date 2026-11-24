@@ -10,6 +10,7 @@ import { ledgerAppend, ledgerResumeLatestCheckpoint, type LedgerRecord } from '.
 import { loadStrategies } from '../strategies/registry.js';
 import { getGoldSnapshot, listSignals } from '../store.js';
 import { engineState } from './state.js';
+import { watchedAddresses } from '../wallets.js';
 import type { DecisionRecord, Fill, StrategyContext, TradeIntent } from './types.js';
 
 export type EngineCheckpoint = {
@@ -225,15 +226,25 @@ export function createPaperEngine(options: {
   return { portfolio, risk, cycle, restore, checkpoint: checkpointState };
 }
 
+const watchedWallets = {
+  base: new Set(watchedAddresses('base').map((address) => address.toLowerCase())),
+  ethereum: new Set(watchedAddresses('ethereum').map((address) => address.toLowerCase())),
+};
+
 function monitorSignals() {
-  const whales = listSignals('whale_buy', 50).filter((s) => Date.now() - Date.parse(s.createdAt) < 4 * 3600_000);
+  const now = Date.now();
+  const whales = listSignals('whale_buy', Infinity).filter((s) => {
+    const wallet = s.whale?.wallet;
+    const age = now - Date.parse(s.createdAt);
+    return typeof wallet === 'string' && watchedWallets[s.chain].has(wallet.toLowerCase()) && age >= 0 && age < 4 * 3600_000;
+  });
   const gold = getGoldSnapshot();
   const goldSpread: Record<string, number> = {};
   for (const q of gold.quotes) {
     const symbol = `${q.symbol}USD`;
     if (!q.stale && (q.chain === 'base' || goldSpread[symbol] === undefined)) goldSpread[symbol] = q.deviationPct;
   }
-  return { whaleBuys: whales.length, newPools: listSignals('new_pool', 50).length, goldSpread };
+  return { whaleBuys: Math.min(whales.length, 50), newPools: listSignals('new_pool', 50).length, goldSpread };
 }
 
 const strategies = loadStrategies();

@@ -501,7 +501,7 @@
       "type": "file",
       "name": "index.ts",
       "filePath": "src/index.ts",
-      "summary": "Starts on-chain listeners, gold monitoring, the HTTP API and paper engine with process-level error/shutdown handling.",
+      "summary": "Restores recent signal history before starting on-chain listeners, gold monitoring, the HTTP API and paper engine.",
       "tags": [
         "code",
         "monitor"
@@ -693,10 +693,42 @@
       "type": "file",
       "name": "store.ts",
       "filePath": "src/store.ts",
-      "summary": "In-memory ring buffer of the last 200 signals plus the latest Gold RWA snapshot, read by the HTTP API; resets on restart.",
+      "summary": "Keeps the latest 200 signals in a buffer backed by a local snapshot and the latest Gold RWA quotes in memory.",
       "tags": [
         "code",
         "monitor"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/store.ts:isSavedSignal",
+      "type": "function",
+      "name": "isSavedSignal",
+      "filePath": "src/store.ts",
+      "lineRange": [
+        25,
+        32
+      ],
+      "summary": "Checks the required fields of a saved tracker signal.",
+      "tags": [
+        "runtime",
+        "code"
+      ],
+      "complexity": "simple"
+    },
+    {
+      "id": "function:src/store.ts:initSignalHistory",
+      "type": "function",
+      "name": "initSignalHistory",
+      "filePath": "src/store.ts",
+      "lineRange": [
+        34,
+        48
+      ],
+      "summary": "Restores saved signals before startup and enables saving only if the snapshot is valid or absent.",
+      "tags": [
+        "runtime",
+        "code"
       ],
       "complexity": "simple"
     },
@@ -706,10 +738,10 @@
       "name": "recordSignal",
       "filePath": "src/store.ts",
       "lineRange": [
-        20,
-        23
+        50,
+        61
       ],
-      "summary": "Prepends a signal to the bounded buffer, trimming it to 200 entries.",
+      "summary": "Prepends a signal, caps the buffer at 200, and atomically saves it when persistence is enabled.",
       "tags": [
         "runtime",
         "code"
@@ -722,8 +754,8 @@
       "name": "listSignals",
       "filePath": "src/store.ts",
       "lineRange": [
-        25,
-        27
+        63,
+        65
       ],
       "summary": "Returns the newest signals of one kind up to a limit.",
       "tags": [
@@ -738,8 +770,8 @@
       "name": "countSignals",
       "filePath": "src/store.ts",
       "lineRange": [
-        29,
-        33
+        67,
+        71
       ],
       "summary": "Counts buffered signals per kind.",
       "tags": [
@@ -754,8 +786,8 @@
       "name": "setGoldSnapshot",
       "filePath": "src/store.ts",
       "lineRange": [
-        35,
-        46
+        73,
+        84
       ],
       "summary": "Merges quotes by chain and symbol and immediately marks missed assets stale.",
       "tags": [
@@ -770,8 +802,8 @@
       "name": "getGoldSnapshot",
       "filePath": "src/store.ts",
       "lineRange": [
-        48,
-        57
+        86,
+        95
       ],
       "summary": "Returns gold quotes with staleness recalculated from each asset’s last update.",
       "tags": [
@@ -3421,8 +3453,8 @@
       "name": "createPaperEngine",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        22,
-        226
+        23,
+        227
       ],
       "summary": "Creates an isolated paper engine with injected market, signals and ledger adapters.",
       "tags": [
@@ -3437,8 +3469,8 @@
       "name": "createPaperEngine.checkExits",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        84,
-        103
+        85,
+        104
       ],
       "summary": "Updates trailing peaks, applies exit rules and records simulated closing fills.",
       "tags": [
@@ -3453,8 +3485,8 @@
       "name": "createPaperEngine.cycle",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        105,
-        223
+        106,
+        224
       ],
       "summary": "Loads market feeds, runs exits before evaluating strategy signals and checkpoints paper state.",
       "tags": [
@@ -3469,10 +3501,10 @@
       "name": "monitorSignals",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        228,
-        237
+        234,
+        248
       ],
-      "summary": "Collects local whale/pool signals and fresh gold spreads, preferring Base when both chains supply a quote.",
+      "summary": "Collects recent whale buys from wallets still watched on their chain, pool alerts, and fresh gold spreads.",
       "tags": [
         "runtime",
         "code"
@@ -3485,8 +3517,8 @@
       "name": "runEngineCycle",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        248,
-        263
+        259,
+        274
       ],
       "summary": "Runs one local file-ledger cycle while preventing a concurrent local cycle.",
       "tags": [
@@ -3501,8 +3533,8 @@
       "name": "startEngineLoop",
       "filePath": "src/engine/loop.ts",
       "lineRange": [
-        265,
-        282
+        276,
+        293
       ],
       "summary": "Starts periodic paper-engine cycles when enabled by configuration.",
       "tags": [
@@ -3878,6 +3910,18 @@
         "test"
       ],
       "complexity": "simple"
+    },
+    {
+      "id": "file:test/signal-history.test.ts",
+      "type": "file",
+      "name": "signal-history.test.ts",
+      "filePath": "test/signal-history.test.ts",
+      "summary": "Tests signal retention through daemon startup, read and write failures, live webhook delivery, and paper entry eligibility after watchlist edits.",
+      "tags": [
+        "code",
+        "test"
+      ],
+      "complexity": "moderate"
     },
     {
       "id": "function:src/engine/backtest.ts:readBinanceCandles",
@@ -4339,6 +4383,41 @@
       "source": "file:src/notifier.ts",
       "target": "function:src/notifier.ts:dispatch",
       "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/store.ts",
+      "target": "function:src/store.ts:isSavedSignal",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/store.ts",
+      "target": "function:src/store.ts:initSignalHistory",
+      "type": "contains",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/store.ts",
+      "target": "function:src/store.ts:initSignalHistory",
+      "type": "exports",
+      "weight": 0.8,
+      "direction": "forward"
+    },
+    {
+      "source": "file:src/index.ts",
+      "target": "function:src/store.ts:initSignalHistory",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
+      "source": "function:src/store.ts:initSignalHistory",
+      "target": "function:src/store.ts:isSavedSignal",
+      "type": "calls",
       "weight": 1,
       "direction": "forward"
     },
@@ -7434,6 +7513,13 @@
       "recoveredFromImportMap": true
     },
     {
+      "source": "file:src/index.ts",
+      "target": "file:src/store.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
       "source": "file:src/listener.ts",
       "target": "file:src/config.ts",
       "type": "imports",
@@ -7512,6 +7598,13 @@
       "direction": "forward",
       "weight": 0.7,
       "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:src/store.ts",
+      "target": "file:src/logger.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
     },
     {
       "source": "file:src/store.ts",
@@ -7704,6 +7797,20 @@
       "recoveredFromImportMap": true
     },
     {
+      "source": "file:src/engine/loop.ts",
+      "target": "file:src/wallets.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:src/engine/loop.ts",
+      "target": "function:src/wallets.ts:watchedAddresses",
+      "type": "calls",
+      "weight": 1,
+      "direction": "forward"
+    },
+    {
       "source": "file:test/hosted-paper.test.ts",
       "target": "file:src/config.ts",
       "type": "imports",
@@ -7766,6 +7873,48 @@
       "direction": "forward",
       "weight": 0.7,
       "recoveredFromImportMap": true
+    },
+    {
+      "source": "file:test/signal-history.test.ts",
+      "target": "file:src/strategies/library.ts",
+      "type": "imports",
+      "direction": "forward",
+      "weight": 0.7
+    },
+    {
+      "source": "file:test/signal-history.test.ts",
+      "target": "file:src/store.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:test/signal-history.test.ts",
+      "target": "file:src/api.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:test/signal-history.test.ts",
+      "target": "file:src/index.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:test/signal-history.test.ts",
+      "target": "file:src/notifier.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 1
+    },
+    {
+      "source": "file:test/signal-history.test.ts",
+      "target": "file:src/engine/loop.ts",
+      "type": "depends_on",
+      "direction": "forward",
+      "weight": 1
     },
     {
       "source": "file:src/engine/backtest.ts",
@@ -8317,6 +8466,8 @@
         "function:src/notifier.ts:renderText",
         "function:src/notifier.ts:dispatch",
         "file:src/store.ts",
+        "function:src/store.ts:isSavedSignal",
+        "function:src/store.ts:initSignalHistory",
         "function:src/store.ts:recordSignal",
         "function:src/store.ts:listSignals",
         "function:src/store.ts:countSignals",
@@ -8330,7 +8481,8 @@
         "file:api/read.js",
         "file:api/cron/paper-engine.ts",
         "file:src/engine/hosted-api.ts",
-        "file:test/gold-rwa.test.ts"
+        "file:test/gold-rwa.test.ts",
+        "file:test/signal-history.test.ts"
       ]
     },
     {
