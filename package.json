@@ -15,7 +15,7 @@
     "backtest": "tsx src/engine/backtest.ts",
     "typecheck": "tsc --noEmit",
     "test:deck": "node --test tests/deck.test.mjs",
-    "test:hosting": "tsx --test tests/hosting.test.mjs",
+    "test:hosting": "tsx --test tests/hosting.test.mjs tests/market.test.mjs",
     "build:deck": "node scripts/build-deck.mjs",
     "build": "tsc -p tsconfig.json",
     "sweep": "tsx src/engine/sweep.ts",

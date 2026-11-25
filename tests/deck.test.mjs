@@ -14,7 +14,7 @@ function runtime(fetch = async () => ({ ok: true, json: async () => ({}) }), hos
   });
   const body = element();
   const context = vm.createContext({
-    console, fetch, document: { hidden: true, body, createElement: element, addEventListener() {}, querySelectorAll: () => [],
+    console, fetch, AbortSignal, document: { hidden: true, body, createElement: element, addEventListener() {}, querySelectorAll: () => [],
       getElementById: (id) => { if (!elements.has(id)) elements.set(id, element()); return elements.get(id); }, querySelector: element,
     }, window: { DECK_DEMO_FALLBACK: hosted, addEventListener() {} }, sessionStorage: { getItem: () => null, setItem() {} },
     matchMedia: () => ({ matches: false, addEventListener() {} }), IntersectionObserver: class { observe() {} },
@@ -115,7 +115,8 @@ test('successful polls label cached candles by market fetch time and clear the w
       : path.includes('strategies') || path.includes('decisions') ? [] : {} }));
   app.run('loadDemo(); demoMode = false');
   snapshot = app.run('STATE.snap');
-  candles = app.run('STATE.candles.BTCUSDT');
+  candles = [{ t: Date.now() - 60_000, o: 100, h: 102, l: 99, c: 101, v: 20 },
+    { t: Date.now(), o: 101, h: 103, l: 100, c: 102, v: 22 }];
   await app.run('refresh()');
   assert.match(app.elements.get('bigPriceSub').innerHTML, /CACHED.*last market fetch/);
   assert.match(app.elements.get('wireMsg').textContent, /CACHED QUOTES/);
@@ -134,8 +135,8 @@ test('successful polls label cached candles by market fetch time and clear the w
   assert.match(app.elements.get('bigPriceSub').innerHTML, /FETCH TIME UNKNOWN/);
   assert.equal(app.run('STATE.marketAt.BTCUSDT'), btcFetch);
   app.run('demoMode = true; loadDemo(); renderStatic()');
-  assert.match(app.elements.get('bigPriceSub').innerHTML, /GENERATED DATA/);
-  assert.doesNotMatch(app.elements.get('bigPriceSub').innerHTML, /CACHED|last market fetch/);
+  assert.equal(app.elements.get('bigPrice').textContent, '—');
+  assert.equal(app.run('Object.keys(STATE.candles).length'), 0);
 });
 
 test('agent focus toggles off and ignores names not present in the graph', () => {
@@ -194,7 +195,7 @@ test('hosted fallback is labeled, cannot stop an engine, and fully clears before
   assert.equal(app.run('demoMode'), true);
   assert.equal(app.elements.get('demoBanner').hidden, false);
   assert.equal(app.elements.get('connection').textContent, 'DEMO');
-  assert.equal(app.run('STATE.candles.BTCUSDT.length'), 120);
+  assert.equal(app.run('Object.keys(STATE.candles).length'), 0);
   app.context.confirm = () => { throw new Error('Demo must not open stop confirmation'); };
   await app.elements.get('kill').onclick();
   offline = false;
@@ -203,6 +204,57 @@ test('hosted fallback is labeled, cannot stop an engine, and fully clears before
   assert.equal(app.run('STATE.snap'), null);
   assert.equal(app.run('Object.keys(STATE.candles).length'), 0);
   assert.equal(app.elements.get('demoBanner').hidden, true);
+});
+
+test('public exchange prices replace generated markets while the portfolio stays demo', async () => {
+  const candles = [{ t: Date.now() - 60_000, o: 75000, h: 75100, l: 74900, c: 75000, v: 10 },
+    { t: Date.now(), o: 75000, h: 75200, l: 74900, c: 75123.45, v: 12 }];
+  let calls = 0;
+  const app = runtime(async (path) => {
+    if (path !== '/api/market') return { ok: false, status: 503 };
+    calls++;
+    return { ok: true, json: async () => ({ markets: { BTCUSDT: {
+      price: 75123.45, candles, source: 'coinbase', quote: 'USD', lastFetch: Date.now(),
+    } } }) };
+  }, true);
+  await app.run('refresh()');
+  assert.equal(app.run('demoMode'), true);
+  assert.equal(app.run('marketPrices().BTCUSDT'), 75123.45);
+  assert.equal(app.run('STATE.snap.prices.BTCUSDT'), undefined);
+  assert.equal(app.run('STATE.candles.BTCUSDT.at(-1).c'), 75123.45);
+  assert.match(app.elements.get('demoBanner').textContent, /LIVE MARKET DATA.*DEMO PORTFOLIO & TRADES/);
+  assert.match(app.elements.get('bigPriceSub').innerHTML, /COINBASE · USD · 1m/);
+  assert.equal(app.elements.get('tapeSym').textContent, 'BTCUSD');
+  assert.equal(app.elements.get('kill').disabled, true);
+  await app.run('refresh()');
+  assert.equal(calls, 1, 'repeated engine failures must not hammer the market endpoint');
+  assert.equal(app.run('STATE.candles.BTCUSDT.at(-1).c'), 75123.45);
+});
+
+test('market outages retain last real prices as cached, never regenerate candles', async () => {
+  let offline = false;
+  const app = runtime(async (path) => path === '/api/market' && !offline ? {
+    ok: true, json: async () => ({ markets: { BTCUSDT: {
+      price: 42000, source: 'kraken', quote: 'USD', lastFetch: Date.now(),
+      candles: [{ t: Date.now() - 60_000, c: 41900 }, { t: Date.now(), c: 42000 }],
+    } } }),
+  } : { ok: false, status: 503 }, true);
+  await app.run('refresh()');
+  offline = true;
+  await app.run('marketRequestedAt = 0; refreshPublicMarkets()');
+  assert.equal(app.run('marketPrices().BTCUSDT'), 42000);
+  assert.match(app.elements.get('demoBanner').textContent, /CACHED MARKET DATA/);
+  assert.match(app.elements.get('bigPriceSub').innerHTML, /CACHED.*KRAKEN/);
+  offline = false;
+  await app.run('marketRequestedAt = 0; refreshPublicMarkets()');
+  assert.match(app.elements.get('demoBanner').textContent, /LIVE MARKET DATA/);
+  assert.doesNotMatch(app.elements.get('bigPriceSub').innerHTML, /CACHED/);
+
+  const empty = runtime(async () => ({ ok: false, status: 503 }), true);
+  await empty.run('refresh()');
+  assert.equal(empty.elements.get('bigPrice').textContent, '—');
+  assert.equal(empty.run('Object.keys(STATE.candles).length'), 0);
+  assert.match(empty.elements.get('demoBanner').textContent, /MARKET DATA UNAVAILABLE/);
 });
 
 test('hosted mode never hides an authorization failure behind demo data', async () => {

@@ -8,7 +8,9 @@ New paper entries use a [Hummingbot-derived MACD/Bollinger strategy](docs/PAPER_
 
 Set `ENGINE_API_ORIGIN` only if deliberately using an external HTTPS engine instead. The proxy forwards only the browser's API bearer token and never adds server credentials or follows upstream redirects. Both modes are read-only: `/api/engine/kill` is unavailable, even with a token.
 
-If no fresh paper snapshot is available, **the hosted page uses clearly labeled, generated DEMO data**. Its stop control remains disabled, and it retries the API every 12 seconds. Authentication errors are not hidden by switching to demo. Returning to live data clears generated candles and portfolio state first. Local `npm start` does not use demo data.
+If the paper engine is unavailable, **the hosted page keeps a clearly labeled DEMO portfolio and trades, but fetches real public market prices and one-minute candles separately**. Read-only `/api/market` reuses the engine's validated exchange fallback without keys or Supabase; the deck refreshes it approximately every 30 seconds, with a shared 20-second CDN cache. Exchange source, USD/USDT denomination, fetch time and cached/unavailable states are shown; a market outage never generates replacement prices.
+
+The stop control remains disabled, and the deck retries the engine API every 12 seconds. Authentication errors are not hidden by switching to demo. Returning to engine data clears demo portfolio and chart state first. Local `npm start` does not use demo data.
 
 Validate hosting with `npm run test:hosting` and `npm run build:deck`; deck behavior with `npm run test:deck`.
 
