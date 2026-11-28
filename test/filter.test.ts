@@ -48,3 +48,17 @@ test('market lookup ignores deeper pairs where the token is only the quote asset
   assert.equal(market?.pairAddress, 'right');
 });
 
+test('market lookup rejects non-finite and non-positive upstream prices', async (t) => {
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (async () => Response.json({
+    pairs: [
+      { chainId: 'base', baseToken: { address: token }, priceUsd: 'Infinity', liquidity: { usd: 900000 }, pairAddress: 'infinite', dexId: 'dex' },
+      { chainId: 'base', baseToken: { address: token }, priceUsd: '-5', liquidity: { usd: 800000 }, pairAddress: 'negative', dexId: 'dex' },
+      { chainId: 'base', baseToken: { address: token }, priceUsd: '0', liquidity: { usd: 700000 }, pairAddress: 'zero', dexId: 'dex' },
+    ],
+  })) as typeof fetch;
+  t.after(() => { globalThis.fetch = realFetch; });
+
+  assert.equal(await getMarket('base', token), null);
+});
+

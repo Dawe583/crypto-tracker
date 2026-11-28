@@ -38,7 +38,7 @@ export async function getMarket(chain: ChainKey, token: Address): Promise<Market
     if (!r.ok) return null;
     const j: any = await r.json();
     const tokenAddress = token.toLowerCase();
-    const pairs = (j.pairs ?? []).filter((p: any) => p.chainId === CHAINS[chain].dexscreenerSlug && p.priceUsd && p.baseToken?.address?.toLowerCase() === tokenAddress);
+    const pairs = (j.pairs ?? []).filter((p: any) => p.chainId === CHAINS[chain].dexscreenerSlug && p.priceUsd && p.baseToken?.address?.toLowerCase() === tokenAddress && Number.isFinite(Number(p.priceUsd)) && Number(p.priceUsd) > 0);
     if (!pairs.length) return null;
     pairs.sort((a: any, b: any) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0));
     const p = pairs[0];
