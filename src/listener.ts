@@ -1,5 +1,5 @@
 // Event listener: factory PoolCreated/PairCreated events, watched-wallet Transfer logs (whale buys).
-import { parseAbiItem, getAddress, formatUnits, BaseError, HttpRequestError, RpcRequestError, type Address, type Log, type PublicClient } from 'viem';
+import { parseAbiItem, parseEventLogs, getAddress, formatUnits, BaseError, HttpRequestError, RpcRequestError, type Address, type Log, type PublicClient } from 'viem';
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { CHAINS, QUOTE_TOKENS, config } from './config.js';
@@ -121,8 +121,27 @@ async function onWatchedTransfer(chain: ChainKey, logs: Log[]) {
       const token = getAddress(log.address);
       // Quote-token inflows are often sale proceeds, not a token buy; they carry no long signal.
       if (isQuoteToken(chain, token)) continue;
-      const [meta, market] = await Promise.all([tokenMeta(client, token), getMarket(chain, token)]);
+      const hash = log.transactionHash;
+      const [meta, market, receipt, transaction] = await Promise.all([
+        tokenMeta(client, token),
+        getMarket(chain, token),
+        hash ? client.getTransactionReceipt({ hash }).catch(() => null) : Promise.resolve(null),
+        hash ? client.getTransaction({ hash }).catch(() => null) : Promise.resolve(null),
+      ]);
       if (!market) continue;
+      let transfers: Array<{ address: string; args: { from?: string } }> | null = null;
+      if (receipt) {
+        try {
+          transfers = parseEventLogs({ abi: [EV.transfer], logs: receipt.logs, strict: false })
+            .map((event) => ({ address: event.address, args: { from: (event.args as { from?: string }).from } }));
+        } catch {
+          transfers = null;
+        }
+      }
+      // A received token is only directional buy evidence when the wallet paid native
+      // currency or a quote asset in the same transaction. If receipt lookup fails,
+      // keep the historical fail-open behavior rather than dropping the signal.
+      if (receipt && transaction && transfers && !walletPaidForTransfer(chain, to, transfers, transaction.value)) continue;
       const buyUsd = transferBuyUsd(log.args.value as bigint, meta.decimals, market.priceUsd);
       if (buyUsd === null || buyUsd < config.whaleMinUsd) continue;
       const safety = await evaluateToken({ chain, token, client });
@@ -151,6 +170,17 @@ async function onWatchedTransfer(chain: ChainKey, logs: Log[]) {
 
 export function isQuoteToken(chain: ChainKey, token: Address): boolean {
   return QUOTE_TOKENS[CHAINS[chain].id].some((quote) => quote.toLowerCase() === token.toLowerCase());
+}
+
+export function walletPaidForTransfer(
+  chain: ChainKey,
+  wallet: Address,
+  transfers: Array<{ address: string; args: { from?: string } }>,
+  nativeValue: bigint,
+): boolean {
+  if (nativeValue > 0n) return true;
+  const source = wallet.toLowerCase();
+  return transfers.some((log) => log.args.from?.toLowerCase() === source && isQuoteToken(chain, getAddress(log.address)));
 }
 
 export function nonQuoteToken(chain: ChainKey, token0: Address, token1: Address): Address | null {

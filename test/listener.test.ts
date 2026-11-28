@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseAbiItem, type Log, type PublicClient } from 'viem';
-import { isQuoteToken, nonQuoteToken, transferBuyUsd, watchLogs, watcherCursor } from '../src/listener.js';
+import { isQuoteToken, nonQuoteToken, transferBuyUsd, walletPaidForTransfer, watchLogs, watcherCursor } from '../src/listener.js';
 
 const transfer = parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)');
 const to = ['0x0000000000000000000000000000000000000001'] as const;
@@ -151,4 +151,14 @@ test('quote assets are not treated as directional whale buys', () => {
   assert.equal(isQuoteToken('base', '0x4200000000000000000000000000000000000006'), true);
   assert.equal(isQuoteToken('ethereum', '0xdAC17F958D2ee523a2206206994597C13D831ec7'), true);
   assert.equal(isQuoteToken('base', '0x000000000000000000000000000000000000dEaD'), false);
+});
+
+test('token inflows require native or quote-asset payment evidence', () => {
+  const wallet = '0x0000000000000000000000000000000000000001';
+  const usdc = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+  const token = '0x000000000000000000000000000000000000dEaD';
+  assert.equal(walletPaidForTransfer('base', wallet, [], 1n), true);
+  assert.equal(walletPaidForTransfer('base', wallet, [{ address: usdc, args: { from: wallet } }], 0n), true);
+  assert.equal(walletPaidForTransfer('base', wallet, [{ address: usdc, args: { from: token } }], 0n), false);
+  assert.equal(walletPaidForTransfer('base', wallet, [{ address: token, args: { from: wallet } }], 0n), false);
 });
