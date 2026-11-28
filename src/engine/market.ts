@@ -92,9 +92,9 @@ export function closedStrategyBars(feed: Feed, interval: string, count: number):
 }
 
 export function validClosedBars(feed: Feed, interval: string, minCount = DEFAULT_CLOSED_BARS): Candle[] {
-  const completed = completedCandles(feed, interval);
+  const completed = completedCandles(feed, interval).slice(-CANDLE_LIMIT);
   if (completed.length < minCount) return [];
-  return closedStrategyBars(feed, interval, completed.length);
+  return closedStrategyBars({ ...feed, candles: completed }, interval, completed.length);
 }
 
 export async function fetchSymbol(symbol: string, interval: string, { requireRecent = true, closedBars = 0 } = {}): Promise<Feed | null> {
