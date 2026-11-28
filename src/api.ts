@@ -10,7 +10,7 @@ import { createServer, type IncomingMessage, type Server, type ServerResponse } 
 import { timingSafeEqual } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { logger } from './logger.js';
@@ -22,8 +22,8 @@ import { loadStrategies } from './strategies/registry.js';
 import { KILL_FILE } from './engine/risk.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const DECK_DIR = join(here, '..', 'deck');
-const MIME: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json' };
+const DECK_DIR = resolve(here, '..', 'deck');
+const MIME: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2' };
 
 const API_VERSION = '1';
 const DEFAULT_CORS_ORIGINS = ['https://openterminal-ashen.vercel.app'];
@@ -122,10 +122,12 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
   // Trading deck static files: /deck and /deck/* from ./deck
   if (url.pathname === '/deck' || url.pathname.startsWith('/deck/')) {
     const rel = url.pathname === '/deck' || url.pathname === '/deck/' ? 'index.html' : url.pathname.slice('/deck/'.length);
-    const file = join(DECK_DIR, rel.split('?')[0]);
-    if (!file.startsWith(DECK_DIR) || !existsSync(file)) return send(res, 404, { error: 'not found' }, cors);
+    const file = resolve(DECK_DIR, rel.split('?')[0]);
+    if (!file.startsWith(DECK_DIR + sep) || !existsSync(file)) return send(res, 404, { error: 'not found' }, cors);
     const ext = file.slice(file.lastIndexOf('.'));
-    res.writeHead(200, { 'content-type': `${MIME[ext] ?? 'application/octet-stream'}; charset=utf-8`, 'cache-control': 'no-store', ...cors });
+    const type = MIME[ext] ?? 'application/octet-stream';
+    const text = type.startsWith('text/') || type === 'application/json';
+    res.writeHead(200, { 'content-type': `${type}${text ? '; charset=utf-8' : ''}`, 'cache-control': 'no-store', ...cors });
     return res.end(await readFile(file));
   }
 

@@ -11,6 +11,7 @@ function fixture(t: TestContext) {
   const root = mkdtempSync(join(tmpdir(), 'crypto-tracker-signals-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   cpSync(new URL('../src', import.meta.url), join(root, 'src'), { recursive: true });
+  cpSync(new URL('../deck', import.meta.url), join(root, 'deck'), { recursive: true });
   copyFileSync(new URL('../package.json', import.meta.url), join(root, 'package.json'));
   symlinkSync(fileURLToPath(new URL('../node_modules', import.meta.url)), join(root, 'node_modules'), 'junction');
   mkdirSync(join(root, 'data'));
@@ -212,6 +213,9 @@ test('API bearer auth uses exact constant-time matching and localhost is the def
         method: 'POST', headers: { authorization: 'Bearer secret-token' },
       });
       assert.equal(kill.status, 200);
+      const font = await fetch('http://127.0.0.1:' + server.address().port + '/deck/space-grotesk-latin.woff2');
+      assert.equal(font.status, 200);
+      assert.equal(font.headers.get('content-type'), 'font/woff2');
     } finally {
       server.close();
     }
