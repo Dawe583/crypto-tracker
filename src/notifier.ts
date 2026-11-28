@@ -48,7 +48,17 @@ export function renderText(s: WhaleSignal): string {
 
 export async function dispatch(s: WhaleSignal): Promise<void> {
   const text = renderText(s);
-  const telegramText = text.length > TELEGRAM_LIMIT ? `${text.slice(0, TELEGRAM_LIMIT - 1)}…` : text;
+  let telegramText = text;
+  if (text.length > TELEGRAM_LIMIT) {
+    let end = 0;
+    let units = 0;
+    for (const ch of text) {
+      if (units + ch.length > TELEGRAM_LIMIT - 1) break;
+      units += ch.length;
+      end += ch.length;
+    }
+    telegramText = `${text.slice(0, end)}…`;
+  }
   recordSignal(s);
   logger.info({ signal: s.kind, token: s.token.symbol, chain: s.chain }, 'signal');
   console.log(`\n${text}\n`);
