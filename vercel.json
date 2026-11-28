@@ -3,7 +3,7 @@
   "buildCommand": "npm run build:deck",
   "outputDirectory": "public",
   "functions": {
-    "api/market.js": { "maxDuration": 30 },
+    "api/market.ts": { "maxDuration": 30 },
     "api/cron/paper-engine.ts": { "maxDuration": 60 }
   },
   "rewrites": [

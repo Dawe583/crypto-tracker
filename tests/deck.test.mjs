@@ -257,6 +257,36 @@ test('market outages retain last real prices as cached, never regenerate candles
   assert.match(empty.elements.get('demoBanner').textContent, /MARKET DATA UNAVAILABLE/);
 });
 
+test('unavailable demo markets clear the prior market directional bias', () => {
+  const app = runtime();
+  app.run(`demoMode = true;
+    STATE.publicMarkets.BTCUSDT = { price: 100, quote: 'USD', source: 'coinbase', lastFetch: Date.now(), failed: false,
+      candles: Array.from({ length: 35 }, (_, i) => ({ t: Date.now() - (34 - i) * 60_000, o: 95 + i, h: 96 + i, l: 94 + i, c: 95 + i, v: 10 })) };
+    loadDemo(); renderStatic()`);
+  assert.match(app.elements.get('biasTxt').textContent, /up.*dn/);
+  app.run('STATE.sym = "ADAUSDT"; renderStatic()');
+  assert.equal(app.elements.get('biasTxt').textContent, '—');
+  assert.equal(app.elements.get('biasUp').style.width, '0%');
+  assert.equal(app.elements.get('biasDn').style.width, '0%');
+});
+
+test('partial public market responses mark only omitted quotes as cached', async () => {
+  let partial = false;
+  const candles = [{ t: Date.now() - 60_000, c: 99 }, { t: Date.now(), c: 100 }];
+  const feed = (price) => ({ price, quote: 'USDT', source: 'binance', lastFetch: Date.now(), candles });
+  const app = runtime(async (path) => path === '/api/market' ? {
+    ok: true, json: async () => ({ markets: partial ? { BTCUSDT: feed(100) } : { BTCUSDT: feed(100), ADAUSDT: feed(1) } }),
+  } : { ok: false, status: 503 }, true);
+  await app.run('refresh()');
+  assert.equal(app.run('publicMarketCached("BTCUSDT")'), false);
+  assert.equal(app.run('publicMarketCached("ADAUSDT")'), false);
+  partial = true;
+  await app.run('marketRequestedAt = 0; refreshPublicMarkets()');
+  assert.equal(app.run('publicMarketCached("BTCUSDT")'), false);
+  assert.equal(app.run('publicMarketCached("ADAUSDT")'), true);
+  assert.equal(app.run('STATE.publicMarkets.ADAUSDT.failed'), true);
+});
+
 test('hosted mode never hides an authorization failure behind demo data', async () => {
   const app = runtime(async () => ({ ok: false, status: 401 }), true);
   const stop = app.elements.get('kill');

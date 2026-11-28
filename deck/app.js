@@ -73,6 +73,11 @@ let marketRequest = null, marketRequestedAt = 0, marketFailed = false;
 const marketPrices = () => demoMode
   ? Object.fromEntries(MARKET_SYMBOLS.map((symbol) => [symbol, STATE.publicMarkets[symbol]?.price ?? null]))
   : STATE.snap?.prices || {};
+const publicMarketCached = (symbol) => {
+  if (!demoMode) return false;
+  const feed = STATE.publicMarkets[symbol];
+  return !!feed?.price && (marketFailed || feed.failed || Date.now() - (feed.lastFetch ?? 0) > 90_000);
+};
 
 async function refreshPublicMarkets() {
   if (marketRequest) return marketRequest;
@@ -221,15 +226,20 @@ function renderMarkets() {
     button.setAttribute('aria-pressed', String(symbol === STATE.sym));
     const displaySymbol = symbol.replace(/USDT$|USD$/, '') + marketQuote(symbol);
     if (button.classList.contains('market-quote')) {
-      button.querySelector('small').textContent = marketQuote(symbol);
-      button.title = demoMode ? `${STATE.publicMarkets[symbol]?.source || 'Waiting for market'} · ${marketQuote(symbol)}` : symbol;
+      const feed = STATE.publicMarkets[symbol];
+      const cached = publicMarketCached(symbol);
+      button.classList.toggle('stale', cached);
+      button.querySelector('small').textContent = `${marketQuote(symbol)}${cached ? ' · cached' : ''}`;
+      button.title = demoMode
+        ? `${feed?.source || 'Waiting for market'} · ${marketQuote(symbol)}${cached && feed?.lastFetch ? ` · cached ${ago(feed.lastFetch)} ago` : ''}`
+        : symbol;
       const value = fmt$(prices[symbol], prices[symbol] < 1 ? 4 : 2);
       const strong = button.querySelector('strong');
       if (strong.textContent !== value && strong.textContent && !isStill()) {
         strong.animate([{ background: '#57dcff30' }, { background: 'transparent' }], { duration: 700 });
       }
       strong.textContent = value;
-      button.setAttribute('aria-label', `${displaySymbol}, ${value}, select market`);
+      button.setAttribute('aria-label', `${displaySymbol}, ${value}${cached ? ', cached market data' : ''}, select market`);
     } else button.textContent = displaySymbol;
   });
 }
@@ -291,7 +301,7 @@ function renderStatic() {
   const fetchedAt = STATE.marketAt[STATE.sym];
   const publicFeed = STATE.publicMarkets[STATE.sym];
   const cached = demoMode
-    ? !!publicFeed && (marketFailed || publicFeed.failed || Date.now() - fetchedAt > 90_000)
+    ? publicMarketCached(STATE.sym)
     : fetchedAt > 0 && Date.now() - fetchedAt > 5 * 60_000;
   if (demoMode) $('demoBanner').textContent = `${publicFeed ? cached ? 'CACHED MARKET DATA' : 'LIVE MARKET DATA' : marketFailed ? 'MARKET DATA UNAVAILABLE' : 'WAITING FOR MARKET DATA'} · DEMO PORTFOLIO & TRADES · READ ONLY`;
   if (cd?.length > 1) {
@@ -985,6 +995,9 @@ function renderIndicators(s) {
     $('modelRows').innerHTML = '<div class="empty-state">Waiting for market candles…</div>';
     $('kellyBox').innerHTML = '<div class="empty-state">Waiting for market candles…</div>';
     $('tapeRsi').textContent = '';
+    $('biasUp').style.width = '0%';
+    $('biasDn').style.width = '0%';
+    $('biasTxt').textContent = '—';
     return;
   }
   const last = cl[cl.length - 1];
