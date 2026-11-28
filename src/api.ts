@@ -184,7 +184,7 @@ export function startApi(): Server | null {
   });
   server.on('error', (err) => logger.error({ err: String(err) }, 'api server error'));
   if (!config.api.token && !['127.0.0.1', 'localhost', '::1'].includes(config.api.host)) {
-    logger.warn({ host: config.api.host }, 'API is network reachable without API_TOKEN; signals are public and the engine kill endpoint is unauthenticated');
+    logger.warn({ host: config.api.host }, 'API is network reachable without API_TOKEN; signal data is public and the engine kill endpoint is disabled');
   }
   server.listen(config.api.port, config.api.host, () => {
     logger.info({ host: config.api.host, port: config.api.port, auth: Boolean(config.api.token) }, 'API listening');
