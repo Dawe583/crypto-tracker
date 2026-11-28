@@ -41,10 +41,7 @@ crypto-tracker signals ───────┤
                      store + api.ts       /api/engine/* + /deck static UI
 ```
 
-Decision engine (`engine/decisions.ts`) is a pluggable interface, exactly like jev-trader's `Model`:
-
-- `code` (default): strategies evaluate deterministically in-process. Zero external calls, works offline on the Pi.
-- `jev` / `llm` adapter slot: sends compact market state + typed questions to a decision model (TypeSafe Jev via `TYPESAFE_AI_API_KEY`, or any OpenAI-compatible endpoint). Falls back to `code` when unconfigured — the system is fully useful without any paid AI key.
+Decision execution is deterministic code: strategies evaluate in-process, zero external decision calls, and the hard risk layer can veto every intent. No external AI decision adapter is wired today; adding one later must still pass through the same typed-intent and risk-check path rather than bypassing it.
 
 ## Strategy library (`data/strategies.json` → `src/strategies/`)
 

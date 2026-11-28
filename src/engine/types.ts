@@ -10,7 +10,7 @@ export interface Candle {
 
 export type Side = 'buy' | 'sell';
 
-// A narrow typed call, produced by a strategy (or later by a decision model).
+// A narrow typed call, produced by a deterministic strategy.
 // Everything downstream — sizing, risk, fill — is code.
 export interface TradeIntent {
   strategy: string;
