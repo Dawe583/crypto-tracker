@@ -105,6 +105,12 @@ async function onNewPool(chain: ChainKey, dex: string, kind: 'v2' | 'v3' | 'aero
   await dispatch(signal);
 }
 
+
+export function transferBuyUsd(value: bigint, decimals: number, priceUsd: number): number | null {
+  const buyUsd = Number(formatUnits(value, decimals)) * priceUsd;
+  return Number.isFinite(buyUsd) ? buyUsd : null;
+}
+
 async function onWatchedTransfer(chain: ChainKey, logs: Log[]) {
   const client = makeClient(chain);
   for (const log of logs as any[]) {
@@ -115,9 +121,8 @@ async function onWatchedTransfer(chain: ChainKey, logs: Log[]) {
       const token = getAddress(log.address);
       const [meta, market] = await Promise.all([tokenMeta(client, token), getMarket(chain, token)]);
       if (!market) continue;
-      const amount = Number(formatUnits(log.args.value as bigint, meta.decimals));
-      const buyUsd = amount * market.priceUsd;
-      if (buyUsd < config.whaleMinUsd) continue;
+      const buyUsd = transferBuyUsd(log.args.value as bigint, meta.decimals, market.priceUsd);
+      if (buyUsd === null || buyUsd < config.whaleMinUsd) continue;
       const safety = await evaluateToken({ chain, token, client });
       const signal: WhaleSignal = {
         kind: 'whale_buy',
