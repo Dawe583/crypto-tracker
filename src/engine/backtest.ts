@@ -61,7 +61,7 @@ export function replayOne(strategy: Strategy, params: Record<string, number>, sy
         signals: { whaleBuys: 0, newPools: 0, goldSpread: {} }, params });
       for (const it of intents) {
         if (it.side === 'sell') { sell(it.reason); continue; }
-        if (exit && position?.trailing) continue;
+        if (exit) continue;
         const equity = pf.equity(marks);
         const exposure = (pf.positions.get(key)?.qty ?? 0) * price;
         const cap = Math.min(config.engine.maxPositionUsd, config.engine.maxTotalUsd - exposure);

@@ -87,6 +87,16 @@ test('replay buys at next open, charges both sides on a gap stop and includes th
 
 
 
+test('replay does not re-enter a protective stop on the same bar', () => {
+  const fixture: Strategy = { name: 'stop-replay', description: '', defaults: {}, closedBars: 1, evaluate: () => [{
+    strategy: 'stop-replay', symbol, side: 'buy', reason: 'always re-enter', confidence: 1, sizeUsd: 100, stopLossPct: 4,
+  }] };
+  const candles = [bar(0, 100), bar(1, 100), bar(2, 95), bar(3, 90), bar(4, 85)];
+  const row = replayOne(fixture, {}, symbol, candles, 0.1, 0, minute);
+  assert.equal(row.trades, 2);
+  assert.equal(row.unrealizedUsd, 0);
+});
+
 test('archive reports for different symbols and windows do not overwrite each other', async (t) => {
   const root = mkdtempSync(join(tmpdir(), 'crypto-tracker-replay-'));
   const cwd = process.cwd();
