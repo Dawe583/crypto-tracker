@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { test } from 'node:test';
 import { config } from '../src/config.js';
-import { hostedCron, hostedRead } from '../src/engine/hosted-api.js';
+import { hostedCron, hostedRead, resetHostedCandleCacheForTests } from '../src/engine/hosted-api.js';
 import { runHostedCycle } from '../src/engine/hosted.js';
 import type { Feed } from '../src/engine/market.js';
 import type { ActiveStrategy } from '../src/strategies/registry.js';
@@ -60,16 +60,10 @@ test('hosted cycles restore positions and keep one ledger chain across invocatio
 });
 
 
-test('hosted deck state stores only the candle window used by the dashboard', async () => {
+test('hosted deck state excludes cacheable public candles', async () => {
   const { store, writes } = memoryStore();
-  const refresh = async (): Promise<Feed> => ({
-    source: 'coinbase', price: 100, lastFetch: Date.now(),
-    candles: Array.from({ length: 180 }, (_, t) => ({ t, o: 100, h: 100, l: 100, c: 100, v: 1 })),
-  });
-  assert.equal(await runHostedCycle(store, 1, refresh, []), true);
-  const candles = writes[0].p_deck.candles.BTCUSDT.candles;
-  assert.equal(candles.length, 120);
-  assert.equal(candles[0].t, 60);
+  assert.equal(await runHostedCycle(store, 1, refreshAt(100), []), true);
+  assert.equal('candles' in writes[0].p_deck, false);
 });
 
 test('duplicate and stale cron slots cannot post a second cycle', async () => {
@@ -171,6 +165,28 @@ test('only a distinct cron secret may write, and the deck routes are GET-only', 
   process.env.VERCEL_ENV = 'production';
   process.env.CRON_SECRET = 'read-test';
   assert.equal((await hostedCron('POST', 'Bearer read-test')).status, 503);
+});
+
+
+test('hosted candles are fetched once and served outside the paper state payload', async (t) => {
+  resetHostedCandleCacheForTests();
+  t.after(resetHostedCandleCacheForTests);
+  const prev = { ...process.env };
+  Object.assign(process.env, { SUPABASE_URL: 'https://storage.invalid', SUPABASE_SECRET_KEY: 'secret-test', API_TOKEN: 'read-test' });
+  t.after(() => { process.env = prev; });
+  const now = Math.floor(Date.now() / 60_000) * 60_000;
+  let fetches = 0;
+  t.mock.method(globalThis, 'fetch', async () => {
+    fetches += 1;
+    return Response.json(Array.from({ length: 130 }, (_, i) => [now - (129 - i) * 60_000, '100', '101', '99', '100', '1', 0, '0', 0, '0', '0', '0']));
+  });
+  const url = new URL('https://deck.invalid/api/engine/candles?symbol=BTCUSDT');
+  const first = await hostedRead(url, 'GET', 'Bearer read-test');
+  const second = await hostedRead(url, 'GET', 'Bearer read-test');
+  assert.equal(first.status, 200);
+  assert.equal(first.body.candles.length, 120);
+  assert.equal(second.body.candles.length, 120);
+  assert.equal(fetches, 1);
 });
 
 test('the snapshot requires a fresh cycle and does not require an Origin header', async (t) => {

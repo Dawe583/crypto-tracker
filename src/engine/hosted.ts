@@ -7,8 +7,6 @@ import { fetchSymbol, type Feed } from './market.js';
 import type { EngineSnapshot } from './state.js';
 import type { DecisionRecord } from './types.js';
 
-const HOSTED_CANDLE_WINDOW = 120;
-
 type PersistedRecord = Omit<LedgerRecord, 'data'> & { payload: string };
 type DeckState = { snapshot: EngineSnapshot; decisions: DecisionRecord[] };
 type Head = {
@@ -23,7 +21,7 @@ type Commit = {
   p_seq: number;
   p_hash: string;
   p_checkpoint: EngineCheckpoint;
-  p_deck: DeckState & { candles: Record<string, Feed> };
+  p_deck: DeckState;
   p_records: PersistedRecord[];
 };
 
@@ -100,7 +98,6 @@ export async function runHostedCycle(
     p_deck: {
       snapshot: state.snapshot,
       decisions: state.decisions,
-      candles: Object.fromEntries([...feeds].map(([symbol, feed]) => [symbol, { ...feed, candles: feed.candles.slice(-HOSTED_CANDLE_WINDOW) }])),
     },
     p_records: records,
   });
