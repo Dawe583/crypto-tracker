@@ -177,7 +177,7 @@ See [docs/RPI4_DEPLOYMENT.md](docs/RPI4_DEPLOYMENT.md) for the full Raspberry Pi
 
 ## HTTP JSON API
 
-The tracker process serves a read-only JSON API from `src/api.ts`, backed by the in-memory data in `src/store.ts`. It is enabled by default and listens on port 8787. Set `API_HOST=127.0.0.1` for local-only access, or `0.0.0.0` (the default in `.env.example`) for LAN access.
+The tracker process serves a small JSON API from `src/api.ts`, backed by the in-memory data in `src/store.ts`. Monitor and paper-engine reads are read-only; the only state-changing route is the authenticated local engine kill control. It is enabled by default and listens on port 8787. `API_HOST` defaults to local-only `127.0.0.1`; set `0.0.0.0` only with a strong `API_TOKEN` for LAN access.
 
 | Method | Path | Returns |
 |---|---|---|
@@ -185,6 +185,12 @@ The tracker process serves a read-only JSON API from `src/api.ts`, backed by the
 | GET | `/api/gold` | Latest PAXG and XAUt DEX prices compared with the spot gold reference. |
 | GET | `/api/whales` | Recent watched-wallet buy activity. |
 | GET | `/api/pools` | Recently detected new pools and their filter results. |
+| GET | `/api/engine/snapshot` | Current paper portfolio, positions, prices, and equity curve. |
+| GET | `/api/engine/strategies` | Strategy library entries, parameters, and enabled state. |
+| GET | `/api/engine/decisions` | Recent paper-engine decisions and risk vetoes. |
+| GET | `/api/engine/ledger` | Recent hash-chained paper-engine ledger records. |
+| GET | `/api/engine/candles` | Cached public candles for one engine symbol. |
+| POST | `/api/engine/kill` | Writes `data/KILL`, blocking new paper entries. Requires `API_TOKEN`; disabled when it is empty. |
 
 Gold quotes are cached per asset and chain. Each quote has its own `updatedAt` (when the tracker refreshed it) and `stale` flag. A quote is stale if the latest poll missed it or it is older than three poll intervals. The response-level `updatedAt` is the last successful refresh of any asset; `stale` means that no asset has a fresh quote. Stale quotes are kept for display but never used by the paper engine's gold-spread strategy.
 
@@ -195,7 +201,7 @@ curl http://<pi-address>:8787/api/health
 ```
 
 Access control:
-- If `API_TOKEN` is set, protect the API with it. Generate a value with `openssl rand -hex 32`. The exact header or query scheme is defined in `src/api.ts`.
+- If `API_TOKEN` is set, protected routes require `Authorization: Bearer <token>`. Generate a value with `openssl rand -hex 32`; the local engine kill control is disabled while the token is empty.
 - Set `API_TOKEN` whenever the Pi is reachable beyond localhost.
 - Browser access is allowed from `openterminal-ashen.vercel.app` and localhost by default. Add more origins with `API_CORS_ORIGINS`.
 - To disable the API, set `API_ENABLED=false` and restart the service.
@@ -225,6 +231,18 @@ All settings come from `.env`. The template is `.env.example`.
 | `GOLD_MAJOR_PCT` | No | `1.5` | Spread (%) that triggers a major gold alert. |
 | `BASE_PAXG_ADDRESS` | No | (empty) | Optional Base PAXG address. Verify on Basescan first. |
 | `BASE_XAUT_ADDRESS` | No | (empty) | Optional Base XAUt address. Verify on Basescan first. |
+| `ENGINE_ENABLED` | No | `true` | Enables the local paper-trading engine. Simulated only; it never places real orders. |
+| `ENGINE_START_USD` | No | `10000` | Starting simulated cash. |
+| `ENGINE_SYMBOLS` | No | `BTCUSDT,ETHUSDT,SOLUSDT,DOGEUSDT,AVAXUSDT,LINKUSDT` | Comma-separated uppercase alphanumeric markets. Invalid entries are ignored; if none remain, the engine fails closed. |
+| `ENGINE_INTERVAL` | No | `1m` | Candle interval used by the engine. |
+| `ENGINE_POLL_MS` | No | `30000` | Engine evaluation interval in milliseconds. |
+| `ENGINE_FEE_PCT` | No | `0.1` | Simulated fee per fill side. |
+| `ENGINE_MAX_POSITION_USD` | No | `500` | Maximum simulated position size. |
+| `ENGINE_MAX_TOTAL_USD` | No | `3000` | Maximum total simulated exposure. |
+| `ENGINE_MAX_OPEN_POSITIONS` | No | `8` | Maximum simultaneous positions; must be a positive integer. |
+| `ENGINE_DAILY_LOSS_PCT` | No | `5` | Daily loss breaker percentage. |
+| `ENGINE_MIN_CONFIDENCE` | No | `0.5` | Minimum strategy confidence, from 0 through 1. |
+| `ENGINE_COOLDOWN_MIN` | No | `60` | Strategy cooldown after repeated losses, in minutes. |
 | `LOG_LEVEL` | No | `info` | `fatal`, `error`, `warn`, `info`, `debug`, or `trace`. |
 
 HTTP API settings:
@@ -232,7 +250,7 @@ HTTP API settings:
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `API_ENABLED` | No | `true` | Set to `false` to turn off the HTTP JSON API. |
-| `API_HOST` | No | `0.0.0.0` | Bind address. `0.0.0.0` allows LAN access. `127.0.0.1` allows local access only. |
+| `API_HOST` | No | `127.0.0.1` | Bind address. `0.0.0.0` allows LAN access and must be paired with a strong `API_TOKEN`. |
 | `API_PORT` | No | `8787` | Port for the HTTP JSON API. |
 | `API_TOKEN` | Recommended | (empty) | Access token for the API. Generate with `openssl rand -hex 32`. Required if the Pi is reachable beyond localhost. |
 | `API_CORS_ORIGINS` | No | (empty) | Extra browser origins for CORS, comma-separated. `openterminal-ashen.vercel.app` and localhost are built in. |
@@ -276,7 +294,11 @@ Runtime files such as `data/gold_state.json` and `data/signal_state.json` are gi
 | `npm start` | Run the listener, the gold monitor, and the HTTP API (production entry point). |
 | `npm run listen` | On-chain listener only. |
 | `npm run gold` | One Gold RWA scan, printed as JSON. Useful for testing. |
+| `npm test` | Node regression tests. |
+| `npm run backtest` | Replay strategies over public or archived candles. |
+| `npm run sweep` / `npm run stress` | Parameter and robustness research runs. |
 | `npm run typecheck` | TypeScript type check, no output. |
+| `npm run build:deck` / `npm run test:deck` / `npm run test:hosting` | Build and validate the hosted deck. |
 | `npm run build` | Compile to `dist/`. Not required, because `npm start` runs the source through tsx. |
 
 ## Alerts

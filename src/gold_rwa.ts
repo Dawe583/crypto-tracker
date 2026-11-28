@@ -4,16 +4,29 @@ import { CHAINS, config } from './config.js';
 import { logger } from './logger.js';
 import { dispatch, type WhaleSignal } from './notifier.js';
 import { setGoldSnapshot } from './store.js';
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, renameSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+export function optionalGoldAddress(raw: string, label: string): Address | null {
+  if (!raw) return null;
+  try {
+    return getAddress(raw);
+  } catch {
+    logger.warn({ label }, 'invalid configured gold token address; asset disabled');
+    return null;
+  }
+}
+
+const basePaxg = optionalGoldAddress(config.gold.basePaxg, 'BASE_PAXG_ADDRESS');
+const baseXaut = optionalGoldAddress(config.gold.baseXaut, 'BASE_XAUT_ADDRESS');
 
 // Each token represents one troy ounce of gold (PAXG and XAUt are 1 token = 1 fine troy oz).
 export const GOLD_ASSETS: Array<{ symbol: string; chain: 'base' | 'ethereum'; address: Address; issuer: string }> = [
   { symbol: 'PAXG', chain: 'ethereum', address: getAddress('0x45804880De22913dAFE09f4980848ECE6EcbAf78'), issuer: 'Paxos' },
   { symbol: 'XAUT', chain: 'ethereum', address: getAddress('0x68749665FF8D2d112Fa859AA293F07A622782F38'), issuer: 'Tether' },
-  ...(config.gold.basePaxg ? [{ symbol: 'PAXG', chain: 'base' as const, address: getAddress(config.gold.basePaxg), issuer: 'Paxos' }] : []),
-  ...(config.gold.baseXaut ? [{ symbol: 'XAUT', chain: 'base' as const, address: getAddress(config.gold.baseXaut), issuer: 'Tether' }] : []),
+  ...(basePaxg ? [{ symbol: 'PAXG', chain: 'base' as const, address: basePaxg, issuer: 'Paxos' }] : []),
+  ...(baseXaut ? [{ symbol: 'XAUT', chain: 'base' as const, address: baseXaut, issuer: 'Tether' }] : []),
 ];
 
 export interface GoldQuote {
@@ -131,7 +144,9 @@ function loadState(): Record<string, string> {
 }
 function saveState(s: Record<string, string>) {
   mkdirSync(dirname(STATE_PATH), { recursive: true });
-  writeFileSync(STATE_PATH, JSON.stringify(s, null, 2));
+  const temp = `${STATE_PATH}.tmp`;
+  writeFileSync(temp, JSON.stringify(s), { mode: 0o600 });
+  renameSync(temp, STATE_PATH);
 }
 
 export async function runGoldCycle(): Promise<GoldQuote[]> {
@@ -139,6 +154,7 @@ export async function runGoldCycle(): Promise<GoldQuote[]> {
   setGoldSnapshot(quotes);
   if (!quotes.length) return quotes;
   const state = loadState();
+  let changed = false;
   for (const q of quotes) {
     const key = `${q.chain}:${q.symbol}`;
     const prev = state[key] ?? 'none';
@@ -157,10 +173,11 @@ export async function runGoldCycle(): Promise<GoldQuote[]> {
       };
       await dispatch(signal);
     }
+    changed ||= state[key] !== q.level;
     state[key] = q.level;
     logger.info({ asset: key, dex: q.dexPriceUsd, spot: q.spotUsd, devPct: Number(q.deviationPct.toFixed(3)), level: q.level }, 'gold scan');
   }
-  saveState(state);
+  if (changed) saveState(state);
   return quotes;
 }
 

@@ -11,6 +11,7 @@ function fixture(t: TestContext) {
   const root = mkdtempSync(join(tmpdir(), 'crypto-tracker-signals-'));
   t.after(() => rmSync(root, { recursive: true, force: true }));
   cpSync(new URL('../src', import.meta.url), join(root, 'src'), { recursive: true });
+  cpSync(new URL('../deck', import.meta.url), join(root, 'deck'), { recursive: true });
   copyFileSync(new URL('../package.json', import.meta.url), join(root, 'package.json'));
   symlinkSync(fileURLToPath(new URL('../node_modules', import.meta.url)), join(root, 'node_modules'), 'junction');
   mkdirSync(join(root, 'data'));
@@ -185,4 +186,78 @@ test('restored whales only drive paper entries if the wallet is still watched on
     ${engine}
     assert.deepEqual(engineState.snapshot.positions.map((p) => p.strategy), ['whale_follow']);
   `, env);
+});
+
+test('API bearer auth uses exact constant-time matching and localhost is the default host', (t) => {
+  const root = fixture(t);
+  run(root, `
+    const { config } = await import('./src/config.ts');
+    assert.equal(config.api.host, '127.0.0.1');
+    const server = startApi();
+    await once(server, 'listening');
+    try {
+      const url = 'http://127.0.0.1:' + server.address().port + '/api/whales';
+      const missing = await fetch(url);
+      assert.equal(missing.status, 401);
+      const wrongLength = await fetch(url, { headers: { authorization: 'Bearer secret-token-x' } });
+      assert.equal(wrongLength.status, 401);
+      const wrongSameLength = await fetch(url, { headers: { authorization: 'Bearer secret-tokem' } });
+      assert.equal(wrongSameLength.status, 401);
+      const correct = await fetch(url, { headers: { authorization: 'Bearer secret-token' } });
+      assert.equal(correct.status, 200);
+      const preflight = await fetch('http://127.0.0.1:' + server.address().port + '/api/engine/kill', {
+        method: 'OPTIONS', headers: { origin: 'http://127.0.0.1:8787' },
+      });
+      assert.match(preflight.headers.get('access-control-allow-methods'), /POST/);
+      const kill = await fetch('http://127.0.0.1:' + server.address().port + '/api/engine/kill', {
+        method: 'POST', headers: { authorization: 'Bearer secret-token' },
+      });
+      assert.equal(kill.status, 200);
+      const font = await fetch('http://127.0.0.1:' + server.address().port + '/deck/space-grotesk-latin.woff2');
+      assert.equal(font.status, 200);
+      assert.equal(font.headers.get('content-type'), 'font/woff2');
+      assert.match(font.headers.get('content-security-policy'), /script-src 'self'/);
+      assert.equal(font.headers.get('x-content-type-options'), 'nosniff');
+    } finally {
+      server.close();
+    }
+  `, { API_TOKEN: 'secret-token' });
+});
+
+test('malformed watchlists disable wallet watching instead of crashing startup', (t) => {
+  const root = fixture(t);
+  writeFileSync(join(root, 'data', 'watchlist.json'), '{broken');
+  run(root, `
+    const { WATCHLIST } = await import('./src/wallets.ts');
+    assert.deepEqual(WATCHLIST, []);
+  `);
+  writeFileSync(join(root, 'data', 'watchlist.json'), JSON.stringify([
+    { address: '0x0000000000000000000000000000000000000001', label: 'bad-chain', chains: ['solana'] },
+    { address: '0x0000000000000000000000000000000000000002', label: 'good', category: 'unexpected', chains: ['base', 'solana'] },
+  ]));
+  run(root, `
+    const { WATCHLIST, watchedAddresses } = await import('./src/wallets.ts');
+    assert.equal(WATCHLIST.length, 1);
+    assert.equal(WATCHLIST[0].label, 'good');
+    assert.equal(WATCHLIST[0].category, 'other');
+    assert.deepEqual(watchedAddresses('base'), ['0x0000000000000000000000000000000000000002']);
+    assert.deepEqual(watchedAddresses('ethereum'), []);
+  `);
+});
+
+test('engine kill is disabled rather than unauthenticated when API_TOKEN is unset', (t) => {
+  const root = fixture(t);
+  run(root, `
+    const server = startApi();
+    await once(server, 'listening');
+    try {
+      assert.equal(server.requestTimeout, 10000);
+      assert.equal(server.headersTimeout, 10000);
+      assert.equal(server.keepAliveTimeout, 5000);
+      const kill = await fetch('http://127.0.0.1:' + server.address().port + '/api/engine/kill', { method: 'POST' });
+      assert.equal(kill.status, 403);
+    } finally {
+      server.close();
+    }
+  `);
 });

@@ -24,19 +24,35 @@ export function loadWatchlist(): WatchedWallet[] {
     logger.warn({ path: WATCHLIST_PATH }, 'watchlist file missing');
     return [];
   }
-  const raw = JSON.parse(readFileSync(WATCHLIST_PATH, 'utf8')) as Array<Record<string, any>>;
+  let raw: unknown;
+  try {
+    raw = JSON.parse(readFileSync(WATCHLIST_PATH, 'utf8'));
+  } catch (err) {
+    logger.error({ err: String(err), path: WATCHLIST_PATH }, 'watchlist file unreadable');
+    return [];
+  }
+  if (!Array.isArray(raw)) {
+    logger.error({ path: WATCHLIST_PATH }, 'watchlist file must contain an array');
+    return [];
+  }
+  const categories: WalletCategory[] = ['smart_money', 'vc', 'insider_cluster', 'deployer', 'other'];
   const out: WatchedWallet[] = [];
-  for (const e of raw) {
-    if (!e.address || !isAddress(e.address)) {
-      logger.debug({ label: e.label }, 'skipping watchlist entry without a valid address');
+  for (const e of raw as Array<Record<string, any>>) {
+    if (!e?.address || !isAddress(e.address)) {
+      logger.debug({ label: e?.label }, 'skipping watchlist entry without a valid address');
+      continue;
+    }
+    const chains = (Array.isArray(e.chains) ? e.chains : ['base', 'ethereum']).filter((chain) => chain === 'base' || chain === 'ethereum');
+    if (!chains.length) {
+      logger.warn({ label: e.label, chains: e.chains }, 'skipping watchlist entry without a supported chain');
       continue;
     }
     out.push({
       address: getAddress(e.address),
       label: String(e.label ?? 'unlabeled'),
-      category: (e.category ?? 'other') as WalletCategory,
-      chains: e.chains ?? ['base', 'ethereum'],
-      notes: e.notes,
+      category: categories.includes(e.category) ? e.category : 'other',
+      chains,
+      notes: typeof e.notes === 'string' ? e.notes : undefined,
     });
   }
   logger.info({ count: out.length }, 'watchlist loaded');

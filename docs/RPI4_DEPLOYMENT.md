@@ -53,7 +53,7 @@ The service uses Restart=always with StartLimitIntervalSec=0, so it keeps retryi
 
 ## 4. API settings (.env)
 
-API_ENABLED (default true), API_HOST (default 0.0.0.0; use 127.0.0.1 for local only), API_PORT (default 8787), API_TOKEN (if set, all /api/* routes except /api/health need Authorization: Bearer <token>), API_CORS_ORIGINS (extra comma-separated origins).
+API_ENABLED (default true), API_HOST (default 127.0.0.1; set 0.0.0.0 only with a strong API_TOKEN for LAN access), API_PORT (default 8787), API_TOKEN (if set, all /api/* routes except /api/health need Authorization: Bearer <token>; the engine kill control is disabled while empty), API_CORS_ORIGINS (extra comma-separated origins).
 
 After any .env change: sudo systemctl restart whale-tracker
 

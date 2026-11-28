@@ -19,6 +19,8 @@ data/state.json
 data/gold_state.json
 data/signal_state.json
 data/signal_state.json.tmp
+data/watcher_state.json
+data/watcher_state.json.tmp
 *.pid
 
 # OS / editor

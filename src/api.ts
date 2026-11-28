@@ -7,9 +7,10 @@
 // Auth: if API_TOKEN is set, every /api/* route except /api/health needs "Authorization: Bearer <API_TOKEN>".
 // CORS: allows https://openterminal-ashen.vercel.app, any http://localhost or http://127.0.0.1 origin, and API_CORS_ORIGINS.
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
+import { timingSafeEqual } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from './config.js';
 import { logger } from './logger.js';
@@ -21,8 +22,8 @@ import { loadStrategies } from './strategies/registry.js';
 import { KILL_FILE } from './engine/risk.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
-const DECK_DIR = join(here, '..', 'deck');
-const MIME: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json' };
+const DECK_DIR = resolve(here, '..', 'deck');
+const MIME: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2' };
 
 const API_VERSION = '1';
 const DEFAULT_CORS_ORIGINS = ['https://openterminal-ashen.vercel.app'];
@@ -48,7 +49,9 @@ function send(res: ServerResponse, status: number, body: unknown, headers: Recor
 
 function authorized(req: IncomingMessage): boolean {
   if (!config.api.token) return true;
-  return req.headers.authorization === `Bearer ${config.api.token}`;
+  const given = Buffer.from(req.headers.authorization ?? '');
+  const expected = Buffer.from(`Bearer ${config.api.token}`);
+  return given.length === expected.length && timingSafeEqual(given, expected);
 }
 
 function parseLimit(raw: string | null): number {
@@ -97,13 +100,14 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
       ...cors,
-      'access-control-allow-methods': 'GET, OPTIONS',
+      'access-control-allow-methods': 'GET, POST, OPTIONS',
       'access-control-allow-headers': 'authorization, content-type',
       'access-control-max-age': '600',
     });
     return res.end();
   }
   if (req.method === 'POST' && url.pathname === '/api/engine/kill') {
+    if (!config.api.token) return send(res, 403, { error: 'engine kill requires API_TOKEN' }, cors);
     if (!authorized(req)) return send(res, 401, { error: 'unauthorized' }, cors);
     const { writeFileSync } = await import('node:fs');
     writeFileSync(KILL_FILE, `killed ${new Date().toISOString()}\n`);
@@ -118,10 +122,14 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
   // Trading deck static files: /deck and /deck/* from ./deck
   if (url.pathname === '/deck' || url.pathname.startsWith('/deck/')) {
     const rel = url.pathname === '/deck' || url.pathname === '/deck/' ? 'index.html' : url.pathname.slice('/deck/'.length);
-    const file = join(DECK_DIR, rel.split('?')[0]);
-    if (!file.startsWith(DECK_DIR) || !existsSync(file)) return send(res, 404, { error: 'not found' }, cors);
+    const file = resolve(DECK_DIR, rel.split('?')[0]);
+    if (!file.startsWith(DECK_DIR + sep) || !existsSync(file)) return send(res, 404, { error: 'not found' }, cors);
     const ext = file.slice(file.lastIndexOf('.'));
-    res.writeHead(200, { 'content-type': `${MIME[ext] ?? 'application/octet-stream'}; charset=utf-8`, 'cache-control': 'no-store', ...cors });
+    const type = MIME[ext] ?? 'application/octet-stream';
+    const text = type.startsWith('text/') || type === 'application/json';
+    res.writeHead(200, { 'content-type': `${type}${text ? '; charset=utf-8' : ''}`, 'cache-control': 'no-store',
+      'content-security-policy': "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+      'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer', ...cors });
     return res.end(await readFile(file));
   }
 
@@ -176,7 +184,13 @@ export function startApi(): Server | null {
       if (!res.headersSent) send(res, 500, { error: 'internal error' }, {});
     });
   });
+  server.requestTimeout = 10_000;
+  server.headersTimeout = 10_000;
+  server.keepAliveTimeout = 5_000;
   server.on('error', (err) => logger.error({ err: String(err) }, 'api server error'));
+  if (!config.api.token && !['127.0.0.1', 'localhost', '::1'].includes(config.api.host)) {
+    logger.warn({ host: config.api.host }, 'API is network reachable without API_TOKEN; signal data is public and the engine kill endpoint is disabled');
+  }
   server.listen(config.api.port, config.api.host, () => {
     logger.info({ host: config.api.host, port: config.api.port, auth: Boolean(config.api.token) }, 'API listening');
   });
