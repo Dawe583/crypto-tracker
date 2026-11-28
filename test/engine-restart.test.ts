@@ -36,7 +36,7 @@ function runProcess(root: string, ts: number, prices: Record<string, number>, sy
       if (price === undefined) return new Response(null, { status: 503 });
       const candles = Array.from({ length: 40 }, (_, i) => {
         const time = now - (39 - i) * 60_000;
-        return i >= 38 ? [time, 100, price + 1, 99, price, 1000] : [time, 100, 101, 99, 100, 100];
+        return i >= 38 ? [time, 100, Math.max(100, price) * 1.01, Math.min(100, price) * 0.99, price, 1000] : [time, 100, 101, 99, 100, 100];
       });
       return Response.json(candles);
     };

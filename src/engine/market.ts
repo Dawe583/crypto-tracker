@@ -112,6 +112,7 @@ export async function fetchSymbol(symbol: string, interval: string, { requireRec
       const candles = await fn(symbol, exchangeInterval);
       if (!candles.length || candles.some(({ t, o, h, l, c, v }) =>
         !Number.isFinite(t) || ![o, h, l, c].every((p) => Number.isFinite(p) && p > 0)
+        || h < l || h < Math.max(o, c) || l > Math.min(o, c)
         || !Number.isFinite(v) || v < 0)) throw new Error('invalid market candles');
       const latest = candles[candles.length - 1];
       const lastFetch = Date.now();

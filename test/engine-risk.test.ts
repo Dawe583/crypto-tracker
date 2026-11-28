@@ -52,7 +52,7 @@ async function runCycle(
     const now = Math.floor(Date.now() / 60_000) * 60_000;
     const candles = Array.from({ length: 70 }, (_, i) => {
       const time = now - (69 - i) * 60_000;
-      return i >= 68 ? [time, 100, lastPrice + 1, 99, lastPrice, 1000] : [time, 100, 101, 99, 100, 100];
+      return i >= 68 ? [time, 100, Math.max(100, lastPrice) * 1.01, Math.min(100, lastPrice) * 0.99, lastPrice, 1000] : [time, 100, 101, 99, 100, 100];
     });
     return Response.json(candles);
   });
