@@ -42,3 +42,28 @@ test('strategies evaluate each completed candle once, not the forming candle', a
   await engine.cycle();
   assert.equal(seen.length, 6);
 });
+
+test('a changed external signal reevaluates the same closed bar', async () => {
+  const firstOpen = Date.UTC(2026, 10, 24, 12, 0);
+  const candle = (index: number): Candle => ({ t: firstOpen + index * minute, o: 100, h: 101, l: 99, c: 100, v: 10 });
+  const completed = Array.from({ length: 70 }, (_, i) => candle(i));
+  const forming = candle(70);
+  const feed: Feed = { candles: [...completed, forming], price: 100, source: 'binance', lastFetch: forming.t + 30_000, requestedAt: forming.t + 30_000 };
+  let whaleBuys = 0;
+  let evaluations = 0;
+  const fixture: Strategy = { name: 'signal-fixture', description: '', defaults: {}, evaluate: () => { evaluations += 1; return []; } };
+  const state = { snapshot: null, decisions: [], halted: false };
+  const engine = createPaperEngine({
+    state,
+    append: () => {},
+    refresh: async () => feed,
+    signals: () => ({ whaleBuys, newPools: 0, goldSpread: {} }),
+    strategies: [{ strategy: fixture, params: {}, enabled: true }],
+  });
+  await engine.cycle();
+  await engine.cycle();
+  const initial = evaluations;
+  whaleBuys = 1;
+  await engine.cycle();
+  assert.equal(evaluations, initial * 2);
+});

@@ -18,6 +18,7 @@ export type EngineCheckpoint = {
   risk: ReturnType<RiskEngine['checkpoint']>;
   stats: [string, { pnl: number; trades: number; wins: number }][];
   lastSignalBars?: [string, number][];
+  signalFingerprints?: [string, string][];
 };
 
 export function createPaperEngine(options: {
@@ -43,10 +44,12 @@ export function createPaperEngine(options: {
   const equityCurve = [...(state.snapshot?.equityCurve ?? [])];
   const perStrategy = new Map<string, { pnl: number; trades: number; wins: number }>();
   const lastSignalBars = new Map<string, number>();
+  const signalFingerprints = new Map<string, string>();
   let checkpointDirty = false;
 
   function checkpointState(): EngineCheckpoint {
-    return { portfolio: portfolio.checkpoint(), risk: risk.checkpoint(), stats: [...perStrategy], lastSignalBars: [...lastSignalBars] };
+    return { portfolio: portfolio.checkpoint(), risk: risk.checkpoint(), stats: [...perStrategy],
+      lastSignalBars: [...lastSignalBars], signalFingerprints: [...signalFingerprints] };
   }
 
   function restore(checkpoint: EngineCheckpoint) {
@@ -54,6 +57,7 @@ export function createPaperEngine(options: {
     risk.restoreCheckpoint(checkpoint.risk);
     for (const [name, stats] of checkpoint.stats) perStrategy.set(name, stats);
     for (const [key, bar] of checkpoint.lastSignalBars ?? []) lastSignalBars.set(key, bar);
+    for (const [key, fingerprint] of checkpoint.signalFingerprints ?? []) signalFingerprints.set(key, fingerprint);
   }
 
   function append(type: LedgerRecord['type'], data: unknown) {
@@ -140,6 +144,7 @@ export function createPaperEngine(options: {
     }
     const { stopped } = checkExits(prices, now);
     const signals = options.signals();
+    const signalFingerprint = JSON.stringify(signals);
 
     for (const { strategy, params, enabled } of strategies) {
       const held = [...portfolio.positions.values()].filter((p) => p.strategy === strategy.name).map((p) => p.symbol);
@@ -150,8 +155,10 @@ export function createPaperEngine(options: {
         const candles = validClosedBars(feed, config.engine.interval, strategy.closedBars ?? DEFAULT_CLOSED_BARS);
         if (!candles.length) continue;
         const bar = candles[candles.length - 1].t;
-        if (bar <= (lastSignalBars.get(key) ?? -Infinity)) continue;
+        const priorBar = lastSignalBars.get(key) ?? -Infinity;
+        if (bar < priorBar || (bar === priorBar && signalFingerprints.get(key) === signalFingerprint)) continue;
         lastSignalBars.set(key, bar);
+        signalFingerprints.set(key, signalFingerprint);
         checkpointDirty = true;
         let intents: TradeIntent[] = [];
         try {
