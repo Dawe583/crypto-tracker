@@ -21,12 +21,13 @@ export interface WhaleSignal {
 
 const SEND_TIMEOUT_MS = 5_000;
 const TELEGRAM_LIMIT = 4_096;
+const stripControls = (text: string) => text.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F]/g, '');
 
 const fmtUsd = (n: number | null | undefined) =>
   n === null || n === undefined ? 'n/a' : n >= 1e6 ? `$${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `$${(n / 1e3).toFixed(1)}K` : `$${n.toFixed(2)}`;
 
 export function renderText(s: WhaleSignal): string {
-  if (s.text) return s.text;
+  if (s.text) return stripControls(s.text);
   const lines = [
     `🐋 ${s.kind === 'whale_buy' ? 'WHALE BUY' : 'NEW POOL'} on ${CHAINS[s.chain].name}`,
     `Token: ${s.token.symbol} (${s.token.address})`,
@@ -42,7 +43,7 @@ export function renderText(s: WhaleSignal): string {
   if (s.links.dexscreener) lines.push(`DexScreener: ${s.links.dexscreener}`);
   lines.push(`Explorer: ${s.links.explorerToken}`);
   if (s.links.explorerTx) lines.push(`Tx: ${s.links.explorerTx}`);
-  return lines.join('\n');
+  return stripControls(lines.join('\n'));
 }
 
 export async function dispatch(s: WhaleSignal): Promise<void> {
