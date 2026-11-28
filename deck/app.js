@@ -2,6 +2,7 @@
 // canvases animate continuously via requestAnimationFrame.
 'use strict';
 const $ = (id) => document.getElementById(id);
+window.DECK_DEMO_FALLBACK = window.DECK_DEMO_FALLBACK || document.documentElement?.dataset.deckDemoFallback === 'true';
 const fmt$ = (n, d = 0) => (n == null ? '—' : `$${Number(n).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: Math.max(2, d) })}`);
 const cls = (n) => (n >= 0 ? 'pos' : 'neg');
 const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };

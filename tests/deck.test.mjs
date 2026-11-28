@@ -13,10 +13,12 @@ function runtime(fetch = async () => ({ ok: true, json: async () => ({}) }), hos
     classList: { toggle() {}, add() {}, remove() {} }, querySelector: () => element(), addEventListener() {}, setAttribute() {}, getAnimations: () => [],
   });
   const body = element();
+  const documentElement = element();
+  documentElement.dataset.deckDemoFallback = hosted ? 'true' : '';
   const context = vm.createContext({
-    console, fetch, AbortSignal, document: { hidden: true, body, createElement: element, addEventListener() {}, querySelectorAll: () => [],
+    console, fetch, AbortSignal, document: { hidden: true, body, documentElement, createElement: element, addEventListener() {}, querySelectorAll: () => [],
       getElementById: (id) => { if (!elements.has(id)) elements.set(id, element()); return elements.get(id); }, querySelector: element,
-    }, window: { DECK_DEMO_FALLBACK: hosted, addEventListener() {} }, sessionStorage: { getItem: () => null, setItem() {} },
+    }, window: { addEventListener() {} }, sessionStorage: { getItem: () => null, setItem() {} },
     matchMedia: () => ({ matches: false, addEventListener() {} }), IntersectionObserver: class { observe() {} },
     requestAnimationFrame() {}, setInterval() {}, prompt: () => null,
   });
