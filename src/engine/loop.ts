@@ -112,7 +112,7 @@ export function createPaperEngine(options: {
       const price = slippedPrice(px, 'sell', p.trailing ? MANAGED_SLIPPAGE_BPS : 0);
       const fill = portfolio.close(p.strategy, p.symbol, price, config.engine.feePct, reason, now);
       if (fill) {
-        if (p.trailing) stopped.add(`${p.strategy}|${p.symbol}`);
+        stopped.add(`${p.strategy}|${p.symbol}`);
         recordFill(fill);
         logger.info({ symbol: p.symbol, strategy: p.strategy, pnl: fill.pnlUsd }, 'position closed');
       }

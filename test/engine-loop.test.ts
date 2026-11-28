@@ -88,3 +88,28 @@ test('engine checkpoints reject malformed stats and signal cursors', () => {
     assert.throws(() => engine.restore(malformed as never), /invalid paper engine ledger checkpoint/);
   }
 });
+
+test('a protective stop cannot re-enter the same market in the same cycle', async () => {
+  const firstOpen = Date.UTC(2026, 10, 24, 12, 0);
+  const candle = (index: number): Candle => ({ t: firstOpen + index * minute, o: 100, h: 101, l: 99, c: 100, v: 10 });
+  const completed = Array.from({ length: 70 }, (_, i) => candle(i));
+  const forming = { ...candle(70), c: 94, l: 93 };
+  const feed: Feed = { candles: [...completed, forming], price: 94, source: 'binance', lastFetch: forming.t + 30_000, requestedAt: forming.t + 30_000 };
+  const fixture: Strategy = {
+    name: 'stop-fixture', description: '', defaults: {}, evaluate: ({ symbol }) => [{
+      strategy: 'stop-fixture', symbol, side: 'buy', confidence: 1, reason: 'always re-enter', sizeUsd: 100,
+    }],
+  };
+  const state = { snapshot: null, decisions: [], halted: false };
+  const engine = createPaperEngine({
+    state,
+    append: () => {},
+    refresh: async () => feed,
+    signals: () => ({ whaleBuys: 0, newPools: 0, goldSpread: {} }),
+    strategies: [{ strategy: fixture, params: {}, enabled: true }],
+  });
+  engine.portfolio.open({ strategy: 'stop-fixture', symbol: 'BTCUSDT', side: 'buy', confidence: 1, reason: 'seed', sizeUsd: 100, stopLossPct: 5 }, 100, 0.1, forming.t - minute);
+  await engine.cycle();
+  assert.equal(engine.portfolio.positions.has('stop-fixture|BTCUSDT'), false);
+  assert.equal(engine.portfolio.tradesClosed, 1);
+});
