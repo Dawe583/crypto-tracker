@@ -75,7 +75,7 @@ test('fallback requests the configured 30-minute candles and skips unsupported e
       return Response.json({ retCode: 0, result: { list: [[open, 100, 103, 99, 102, 10]] } });
     }
     if (hostname === 'api.kraken.com' && searchParams.get('interval') === '30') {
-      return Response.json({ error: [], result: { XBTUSD: [[open / 1000, 100, 103, 99, 102, 101, 10]] } });
+      return Response.json({ error: [], result: { last: open / 1000, XBTUSD: [[open / 1000, 100, 103, 99, 102, 101, 10]] } });
     }
     return new Response(null, { status: 503 });
   });
