@@ -259,16 +259,30 @@ const watchedWallets = {
   ethereum: new Set(watchedAddresses('ethereum').map((address) => address.toLowerCase())),
 };
 
+export function exchangeSymbolForBase(base: string, symbols = config.engine.symbols): string | undefined {
+  const normalized = base.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  return symbols.find((symbol) => symbol === normalized || symbol.replace(/(USDT|USDC|USD)$/, '') === normalized);
+}
+
 export function whaleSymbolCounts(whales: Array<{ token: { symbol: string } }>, symbols = config.engine.symbols): Record<string, number> {
   const counts: Record<string, number> = {};
-  const exchangeSymbol = (base: string) => symbols.find((symbol) =>
-    symbol === base || symbol.replace(/(USDT|USDC|USD)$/, '') === base);
   for (const signal of whales) {
-    const base = signal.token.symbol.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    const symbol = exchangeSymbol(base);
+    const symbol = exchangeSymbolForBase(signal.token.symbol, symbols);
     if (symbol) counts[symbol] = Math.min((counts[symbol] ?? 0) + 1, 50);
   }
   return counts;
+}
+
+export function goldSpreadsBySymbol(
+  quotes: Array<{ symbol: string; chain: 'base' | 'ethereum'; deviationPct: number; stale: boolean }>,
+  symbols = config.engine.symbols,
+): Record<string, number> {
+  const spreads: Record<string, number> = {};
+  for (const quote of quotes) {
+    const symbol = exchangeSymbolForBase(quote.symbol, symbols);
+    if (symbol && !quote.stale && (quote.chain === 'base' || spreads[symbol] === undefined)) spreads[symbol] = quote.deviationPct;
+  }
+  return spreads;
 }
 
 function monitorSignals() {
@@ -279,11 +293,7 @@ function monitorSignals() {
     return typeof wallet === 'string' && watchedWallets[s.chain].has(wallet.toLowerCase()) && age >= 0 && age < 4 * 3600_000;
   });
   const gold = getGoldSnapshot();
-  const goldSpread: Record<string, number> = {};
-  for (const q of gold.quotes) {
-    const symbol = `${q.symbol}USD`;
-    if (!q.stale && (q.chain === 'base' || goldSpread[symbol] === undefined)) goldSpread[symbol] = q.deviationPct;
-  }
+  const goldSpread = goldSpreadsBySymbol(gold.quotes);
   return { whaleBuys: Math.min(whales.length, 50), newPools: listSignals('new_pool', 50).length, goldSpread, whaleSymbols: whaleSymbolCounts(whales) };
 }
 

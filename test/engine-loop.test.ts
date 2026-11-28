@@ -1,10 +1,20 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { createPaperEngine } from '../src/engine/loop.js';
+import { createPaperEngine, goldSpreadsBySymbol } from '../src/engine/loop.js';
 import type { Candle, Strategy } from '../src/engine/types.js';
 import type { Feed } from '../src/engine/market.js';
 
 const minute = 60_000;
+
+
+test('gold spreads map token symbols onto configured exchange symbols', () => {
+  const spreads = goldSpreadsBySymbol([
+    { symbol: 'PAXG', chain: 'ethereum', deviationPct: -1.25, stale: false },
+    { symbol: 'PAXG', chain: 'base', deviationPct: -1.1, stale: false },
+  ], ['PAXGUSDT']);
+  assert.equal(spreads.PAXGUSDT, -1.1);
+  assert.equal(spreads.PAXGUSD, undefined);
+});
 
 test('strategies evaluate each completed candle once, not the forming candle', async () => {
   const firstOpen = Date.UTC(2026, 10, 24, 12, 0);
