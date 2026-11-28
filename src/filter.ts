@@ -6,6 +6,8 @@ import { logger } from './logger.js';
 
 export type ChainKey = 'base' | 'ethereum';
 
+const FILTER_TIMEOUT_MS = 5_000;
+
 const erc20 = parseAbi([
   'function decimals() view returns (uint8)',
   'function symbol() view returns (string)',
@@ -32,7 +34,7 @@ export interface MarketData {
 // DexScreener public API (no key). Picks the pair with the deepest USD liquidity.
 export async function getMarket(chain: ChainKey, token: Address): Promise<MarketData | null> {
   try {
-    const r = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${token}`);
+    const r = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${token}`, { signal: AbortSignal.timeout(FILTER_TIMEOUT_MS) });
     if (!r.ok) return null;
     const j: any = await r.json();
     const pairs = (j.pairs ?? []).filter((p: any) => p.chainId === CHAINS[chain].dexscreenerSlug && p.priceUsd);
@@ -63,7 +65,7 @@ export interface HoneypotResult {
 // honeypot.is public simulation API (no key). Simulates buy+sell to estimate taxes and honeypot status.
 export async function checkHoneypot(chain: ChainKey, token: Address): Promise<HoneypotResult> {
   try {
-    const r = await fetch(`https://api.honeypot.is/v2/IsHoneypot?address=${token}&chainID=${CHAINS[chain].honeypotChainId}`);
+    const r = await fetch(`https://api.honeypot.is/v2/IsHoneypot?address=${token}&chainID=${CHAINS[chain].honeypotChainId}`, { signal: AbortSignal.timeout(FILTER_TIMEOUT_MS) });
     if (!r.ok) return { isHoneypot: null, buyTaxPct: null, sellTaxPct: null, reason: `http ${r.status}` };
     const j: any = await r.json();
     return {
@@ -83,7 +85,7 @@ export async function checkVerified(chain: ChainKey, token: Address): Promise<bo
   if (!key) return null;
   const host = chain === 'base' ? 'https://api.basescan.org/api' : 'https://api.etherscan.io/api';
   try {
-    const r = await fetch(`${host}?module=contract&action=getsourcecode&address=${token}&apikey=${key}`);
+    const r = await fetch(`${host}?module=contract&action=getsourcecode&address=${token}&apikey=${key}`, { signal: AbortSignal.timeout(FILTER_TIMEOUT_MS) });
     const j: any = await r.json();
     const src = j.result?.[0]?.SourceCode ?? '';
     return src !== '';
