@@ -25,7 +25,7 @@ const dedupe = (k: string) => {
 
 const WATCHER_STATE_PATH = 'data/watcher_state.json';
 
-export type WatcherCursor = { get(): bigint | undefined; set(nextBlock: bigint): void };
+export type WatcherCursor = { get(): bigint | undefined; set(nextBlock: bigint, immediate?: boolean): void };
 
 function readWatcherState(path = WATCHER_STATE_PATH): Record<string, string> {
   try {
@@ -39,13 +39,17 @@ function readWatcherState(path = WATCHER_STATE_PATH): Record<string, string> {
 }
 
 export function watcherCursor(key: string, path = WATCHER_STATE_PATH): WatcherCursor {
+  let lastWrite = 0;
   return {
     get() {
       const raw = readWatcherState(path)[key];
       if (!raw || !/^\d+$/.test(raw)) return undefined;
       return BigInt(raw);
     },
-    set(nextBlock) {
+    set(nextBlock, immediate = false) {
+      const now = Date.now();
+      if (!immediate && lastWrite && now - lastWrite < 60_000) return;
+      lastWrite = now;
       const state = readWatcherState(path);
       state[key] = nextBlock.toString();
       mkdirSync(dirname(path), { recursive: true });
@@ -162,7 +166,7 @@ export function watchLogs(client: PublicClient, ctx: Record<string, unknown>, { 
       const logs = await client.getLogs({ ...filter, fromBlock: nextBlock, toBlock, blockRange: MAX_BLOCKS_PER_POLL });
       if (!active) return;
       if (logs.length) await onLogs(logs);
-      cursor?.set(toBlock + 1n);
+      cursor?.set(toBlock + 1n, logs.length > 0);
       nextBlock = toBlock + 1n;
     } catch (err) {
       if (active) onError(err);

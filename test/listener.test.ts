@@ -116,3 +116,15 @@ test('watcher cursor state survives a reload and ignores malformed values', (t) 
   assert.equal(watcherCursor('base:transfers', file).get(), 123n);
   assert.equal(watcherCursor('base:factory', file).get(), 99n);
 });
+
+test('quiet cursor advances are throttled while batches with matching logs persist immediately', (t) => {
+  const dir = mkdtempSync(join(tmpdir(), 'crypto-tracker-cursor-'));
+  t.after(() => rmSync(dir, { recursive: true, force: true }));
+  const file = join(dir, 'watcher_state.json');
+  const cursor = watcherCursor('base:transfers', file);
+  cursor.set(100n);
+  cursor.set(101n);
+  assert.equal(watcherCursor('base:transfers', file).get(), 100n);
+  cursor.set(102n, true);
+  assert.equal(watcherCursor('base:transfers', file).get(), 102n);
+});
