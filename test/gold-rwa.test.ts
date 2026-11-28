@@ -59,3 +59,18 @@ test('scheduled gold polls do not overlap', async (t) => {
   await tick();
   assert.equal(requests, 2);
 });
+
+
+test('thin gold pairs do not produce spread signals', async (t) => {
+  const [paxg, xaut] = GOLD_ASSETS;
+  t.mock.method(globalThis, 'fetch', async (url: string) => {
+    if (url === config.gold.spotUrl) return Response.json({ price: 100 });
+    const address = url.split('/').at(-1);
+    if (address === paxg.address) return new Response(null, { status: 503 });
+    if (address !== xaut.address) return new Response(null, { status: 404 });
+    return Response.json({ pairs: [{
+      chainId: xaut.chain, baseToken: { address }, priceUsd: '90', liquidity: { usd: 19_999 },
+    }] });
+  });
+  assert.deepEqual(await scanGold(), []);
+});

@@ -223,6 +223,7 @@ All settings come from `.env`. The template is `.env.example`.
 | `GOLD_POLL_MS` | No | `60000` | Gold scan interval in milliseconds. |
 | `GOLD_ALERT_PCT` | No | `0.5` | Spread (%) that triggers a gold alert. |
 | `GOLD_MAJOR_PCT` | No | `1.5` | Spread (%) that triggers a major gold alert. |
+| `GOLD_MIN_LIQUIDITY_USD` | No | `20000` | Minimum DEX liquidity before a gold pair can alert or trade. |
 | `BASE_PAXG_ADDRESS` | No | (empty) | Optional Base PAXG address. Verify on Basescan first. |
 | `BASE_XAUT_ADDRESS` | No | (empty) | Optional Base XAUt address. Verify on Basescan first. |
 | `LOG_LEVEL` | No | `info` | `fatal`, `error`, `warn`, `info`, `debug`, or `trace`. |

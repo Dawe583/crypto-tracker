@@ -89,7 +89,7 @@ export async function scanGold(): Promise<GoldQuote[]> {
   }
   const quotes = await Promise.all(GOLD_ASSETS.map(async (a): Promise<GoldQuote | null> => {
     const q = await dexQuote(a.chain, a.address).catch(() => null);
-    if (!q) return null;
+    if (!q || q.liquidityUsd < config.gold.minLiquidityUsd) return null;
     const dev = ((q.priceUsd - spot.usd) / spot.usd) * 100;
     if (!Number.isFinite(dev)) return null;
     return {
