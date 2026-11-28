@@ -17,7 +17,7 @@ if [ ! -f "$APP_DIR/.env" ]; then
 fi
 
 chmod 600 "$APP_DIR/.env"
-(cd "$APP_DIR" && npm install --no-audit --no-fund)
+(cd "$APP_DIR" && npm ci --no-audit --no-fund)
 
 TMP_UNIT="$(mktemp)"
 sed -e "s|<USER>|$RUN_USER|g" \

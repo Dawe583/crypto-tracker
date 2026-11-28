@@ -33,7 +33,7 @@ Install the systemd service and start it:
 
   cd ~/crypto-tracker && bash deploy/install-service.sh
 
-The script runs npm install, writes the unit to /etc/systemd/system/whale-tracker.service with your user, the app path, and the npm path, then runs daemon-reload and enable --now.
+The script runs npm ci from the locked dependency graph, writes the unit to /etc/systemd/system/whale-tracker.service with your user, the app path, and the npm path, then runs daemon-reload and enable --now.
 
 ## 3. Verify
 
@@ -45,7 +45,7 @@ The script runs npm install, writes the unit to /etc/systemd/system/whale-tracke
 
 Boot test: sudo reboot, then systemctl is-active whale-tracker.
 
-Update: cd ~/crypto-tracker && git pull && npm install && sudo systemctl restart whale-tracker
+Update: cd ~/crypto-tracker && git pull && npm ci && sudo systemctl restart whale-tracker
 
 Stop or disable: sudo systemctl stop whale-tracker; sudo systemctl disable whale-tracker
 
