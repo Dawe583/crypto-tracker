@@ -56,8 +56,11 @@ export class PaperPortfolio {
 
   open(i: TradeIntent, price: number, feePct: number, ts = Date.now()): Fill | null {
     const usd = Math.min(i.sizeUsd ?? 500, this.cashUsd / (1 + feePct / 100));
+    const validOptional = (value: number | null | undefined, allowHundred = false) =>
+      value === undefined || value === null || (Number.isFinite(value) && value > 0 && (allowHundred || value < 100));
     if (!Number.isFinite(usd) || usd < 5 || !Number.isFinite(price) || price <= 0
-      || !Number.isFinite(feePct) || feePct < 0 || !this.canOpen(i)) return null;
+      || !Number.isFinite(feePct) || feePct < 0 || !this.canOpen(i)
+      || !validOptional(i.stopLossPct) || !validOptional(i.takeProfitPct, true) || !validOptional(i.maxHoldMin, true)) return null;
     const qty = usd / price;
     const fee = usd * (feePct / 100);
     this.cashUsd = Math.max(0, this.cashUsd - usd - fee);

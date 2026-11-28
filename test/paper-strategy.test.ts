@@ -127,3 +127,13 @@ test('archive reports for different symbols and windows do not overwrite each ot
   assert.equal(new Set([first.file, otherSymbol.file, next.file]).size, 3);
   assert.ok([first, otherSymbol, next].every(({ file }) => existsSync(file)));
 });
+
+test('portfolio rejects malformed optional risk exits before they enter the ledger', () => {
+  const pf = new PaperPortfolio(1000);
+  const intent = { strategy: 'fixture', symbol: 'BTCUSDT', side: 'buy' as const, confidence: 1, sizeUsd: 100, reason: 'test' };
+  assert.equal(pf.open({ ...intent, stopLossPct: -1 }, 100, 0), null);
+  assert.equal(pf.open({ ...intent, stopLossPct: 100 }, 100, 0), null);
+  assert.equal(pf.open({ ...intent, takeProfitPct: 0 }, 100, 0), null);
+  assert.equal(pf.open({ ...intent, maxHoldMin: -5 }, 100, 0), null);
+  assert.ok(pf.open({ ...intent, stopLossPct: 5, takeProfitPct: 10, maxHoldMin: 60 }, 100, 0));
+});
