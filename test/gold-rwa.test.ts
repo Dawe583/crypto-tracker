@@ -3,7 +3,6 @@ import { test } from 'node:test';
 import { setImmediate, setTimeout } from 'node:timers/promises';
 import { config } from '../src/config.js';
 import { GOLD_ASSETS, scanGold, startGoldLoop } from '../src/gold_rwa.js';
-import { classify } from '../src/gold_rwa.js';
 
 test('a stalled DEX request does not prevent a valid asset from refreshing', async (t) => {
   const [paxg, xaut] = GOLD_ASSETS;
@@ -50,7 +49,8 @@ test('thin gold pairs do not produce spread signals', async (t) => {
   assert.deepEqual(await scanGold(), []);
 });
 
-test('reversed gold thresholds cannot turn small spreads into major alerts', (t) => {
+test('reversed gold thresholds cannot turn small spreads into major alerts', async (t) => {
+  const { classify } = await import('../src/gold_rwa.js');
   const alertPct = config.gold.alertPct;
   const majorPct = config.gold.majorPct;
   t.after(() => { config.gold.alertPct = alertPct; config.gold.majorPct = majorPct; });
