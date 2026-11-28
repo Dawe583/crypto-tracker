@@ -24,7 +24,7 @@ rsync -avz --exclude node_modules --exclude .env --exclude 'data/*_state.json' -
 
 ## 3. Install dependencies
 ```bash
-npm i
+npm ci
 ```
 devDependencies are needed because `npm start` runs TypeScript through tsx.
 
@@ -68,7 +68,7 @@ sudo systemctl disable whale-tracker           # no auto-start on boot
 
 ## 8. Update
 ```bash
-cd ~/crypto-tracker && git pull && npm i && sudo systemctl restart whale-tracker
+cd ~/crypto-tracker && git pull && npm ci && sudo systemctl restart whale-tracker
 ```
 
 ## Notes
