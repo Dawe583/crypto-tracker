@@ -67,9 +67,8 @@ async function onNewPool(chain: ChainKey, dex: string, kind: 'v2' | 'v3' | 'aero
   const pair = getAddress((log.args.pool ?? log.args.pair) as Address);
   if (!dedupe(`${chain}:${pair}`)) return;
 
-  const quotes = QUOTE_TOKENS[CHAINS[chain].id].map((q) => q.toLowerCase());
-  const token = quotes.includes(t0.toLowerCase()) ? t1 : t0;
-  if (quotes.includes(token.toLowerCase())) return; // quote/quote pair, skip
+  const token = nonQuoteToken(chain, t0, t1);
+  if (!token) return; // quote/quote or unknown/unknown pair has no reliable token side
 
   // Give the DEX indexer a moment to pick up the new pool before the market lookup.
   await new Promise((r) => setTimeout(r, 15_000));
@@ -141,6 +140,14 @@ async function onWatchedTransfer(chain: ChainKey, logs: Log[]) {
       logger.error({ chain, tx: log.transactionHash, err: String(err) }, 'transfer log handler');
     }
   }
+}
+
+export function nonQuoteToken(chain: ChainKey, token0: Address, token1: Address): Address | null {
+  const quotes = new Set(QUOTE_TOKENS[CHAINS[chain].id].map((q) => q.toLowerCase()));
+  const quote0 = quotes.has(token0.toLowerCase());
+  const quote1 = quotes.has(token1.toLowerCase());
+  if (quote0 === quote1) return null;
+  return quote0 ? token1 : token0;
 }
 
 const MAX_BLOCKS_PER_POLL = 100n;

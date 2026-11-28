@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseAbiItem, type Log, type PublicClient } from 'viem';
-import { watchLogs, watcherCursor } from '../src/listener.js';
+import { nonQuoteToken, watchLogs, watcherCursor } from '../src/listener.js';
 
 const transfer = parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)');
 const to = ['0x0000000000000000000000000000000000000001'] as const;
@@ -127,4 +127,16 @@ test('quiet cursor advances are throttled while batches with matching logs persi
   assert.equal(watcherCursor('base:transfers', file).get(), 100n);
   cursor.set(102n, true);
   assert.equal(watcherCursor('base:transfers', file).get(), 102n);
+});
+
+test('pool token selection requires exactly one recognized quote side', () => {
+  const weth = '0x4200000000000000000000000000000000000006';
+  const usdc = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
+  const usdt = '0xfde4C96c8593536E31F229EA8f37b2ADa2699bb2';
+  const token = '0x00000000000000000000000000000000000000aa';
+  const other = '0x00000000000000000000000000000000000000bb';
+  assert.equal(nonQuoteToken('base', weth, token), token);
+  assert.equal(nonQuoteToken('base', token, usdt), token);
+  assert.equal(nonQuoteToken('base', weth, usdc), null);
+  assert.equal(nonQuoteToken('base', token, other), null);
 });
