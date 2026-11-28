@@ -174,7 +174,7 @@ export const LIBRARY: Strategy[] = [
     evaluate(ctx) {
       const has = ctx.positions.some((p) => p.strategy === 'whale_follow' && p.symbol === ctx.symbol);
       const whaleBuys = ctx.signals.whaleSymbols?.[ctx.symbol] ?? 0;
-      if (whaleBuys >= ctx.params.minSignals && !has)
+      if (ctx.params.minSignals >= 1 && whaleBuys >= ctx.params.minSignals && !has)
         return [buy('whale_follow', ctx.symbol, 0.7, `${whaleBuys} whale buy signal(s) for ${ctx.symbol}`, { sizeUsd: ctx.params.sizeUsd, stopLossPct: ctx.params.stopLossPct, takeProfitPct: ctx.params.takeProfitPct, maxHoldMin: ctx.params.maxHoldMin })];
       return [];
     },
