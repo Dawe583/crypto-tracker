@@ -33,8 +33,8 @@ export class PaperPortfolio {
   }
 
   restoreCheckpoint(c: PaperPortfolioCheckpoint) {
-    const validOptional = (value: number | null, allowHundred = false) =>
-      value === null || (Number.isFinite(value) && value > 0 && (allowHundred || value < 100));
+    const validOptional = (value: number | null | undefined, allowHundred = false) =>
+      value == null || (Number.isFinite(value) && value > 0 && (allowHundred || value < 100));
     const validPosition = (p: Position) => p && typeof p.id === 'string' && p.id !== ''
       && typeof p.strategy === 'string' && p.strategy !== '' && typeof p.symbol === 'string' && p.symbol !== ''
       && Number.isFinite(p.qty) && p.qty > 0 && Number.isFinite(p.entryPrice) && p.entryPrice > 0

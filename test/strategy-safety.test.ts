@@ -70,6 +70,11 @@ test('portfolio checkpoint restore rejects impossible positions fail-closed', ()
   const checkpoint = source.checkpoint();
   const position = checkpoint.positions[0];
   assert.doesNotThrow(() => new PaperPortfolio(1000).restoreCheckpoint(checkpoint));
+  const legacyPosition = { ...position } as Record<string, unknown>;
+  delete legacyPosition.stopLossPct;
+  delete legacyPosition.takeProfitPct;
+  delete legacyPosition.maxHoldMin;
+  assert.doesNotThrow(() => new PaperPortfolio(1000).restoreCheckpoint({ ...checkpoint, positions: [legacyPosition as never] }));
   for (const positions of [
     [{ ...position, qty: -1 }],
     [{ ...position, entryPrice: 0 }],
