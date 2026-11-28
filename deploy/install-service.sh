@@ -31,7 +31,8 @@ sed -e "s|<USER>|$RUN_USER|g" \
 sudo install -m 644 "$TMP_UNIT" /etc/systemd/system/whale-tracker.service
 rm -f "$TMP_UNIT"
 sudo systemctl daemon-reload
-sudo systemctl enable --now whale-tracker
+sudo systemctl enable whale-tracker
+sudo systemctl restart whale-tracker
 sleep 3
 sudo systemctl --no-pager status whale-tracker || true
 
