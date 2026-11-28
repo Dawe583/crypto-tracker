@@ -69,7 +69,7 @@ test('non-JSON gateway authentication failures keep their original status', asyn
   }
 });
 
-test('the rewritten Vercel route can serve Supabase paper data without an upstream origin', async () => {
+test('the rewritten Vercel route can serve hosted paper data without an upstream origin', async () => {
   delete process.env.ENGINE_API_ORIGIN;
   Object.assign(process.env, {
     API_TOKEN: 'deck-test', SUPABASE_URL: 'https://storage.example', SUPABASE_SECRET_KEY: 'secret-test',
@@ -77,16 +77,23 @@ test('the rewritten Vercel route can serve Supabase paper data without an upstre
   let calls = 0;
   globalThis.fetch = async (url, options) => {
     calls++;
+    if (String(url).startsWith('https://api.binance.com/')) {
+      const now = Math.floor(Date.now() / 60_000) * 60_000;
+      return Response.json([[now, '2500', '2501', '2499', '2500', '1', 0, '0', 0, '0', '0', '0']]);
+    }
     assert.equal(String(url), 'https://storage.example/rest/v1/rpc/paper_engine_read');
-    assert.deepEqual(JSON.parse(options.body), { p_key: 'candles', p_symbol: 'ETHUSDT' });
-    return Response.json({ source: 'coinbase', candles: [{ c: 2500 }], lastFetch: 42 });
+    assert.deepEqual(JSON.parse(options.body), { p_key: 'decisions', p_symbol: null });
+    return Response.json([]);
   };
   const url = '/api/read?__deck_path=engine/candles&symbol=ethusdt';
   assert.equal((await request(url)).code, 401);
   const result = await request(url, 'GET', 'Bearer deck-test');
   assert.equal(result.code, 200);
   assert.equal(result.headers['Cache-Control'], 'no-store');
-  assert.deepEqual(result.data, { source: 'coinbase', candles: [{ c: 2500 }], lastFetch: 42, symbol: 'ETHUSDT' });
+  assert.equal(result.data.symbol, 'ETHUSDT');
+  assert.equal(result.data.source, 'binance');
+  assert.equal(result.data.candles.length, 1);
+  assert.equal(result.data.candles[0].c, 2500);
   assert.deepEqual((await request('/api/read?__deck_path=whales', 'GET', 'Bearer deck-test')).data,
     { count: 0, signals: [], available: false });
   assert.equal(calls, 1);
