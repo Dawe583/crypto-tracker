@@ -94,9 +94,10 @@ export async function scanGold(): Promise<GoldQuote[]> {
     logger.warn('no spot gold reference available this cycle');
     return [];
   }
+  const minLiquidityUsd = config.gold.minLiquidityUsd >= 0 ? config.gold.minLiquidityUsd : 20_000;
   const quotes = await Promise.all(GOLD_ASSETS.map(async (a): Promise<GoldQuote | null> => {
     const q = await dexQuote(a.chain, a.address).catch(() => null);
-    if (!q || q.liquidityUsd < config.gold.minLiquidityUsd) return null;
+    if (!q || q.liquidityUsd < minLiquidityUsd) return null;
     const dev = ((q.priceUsd - spot.usd) / spot.usd) * 100;
     if (!Number.isFinite(dev)) return null;
     return {

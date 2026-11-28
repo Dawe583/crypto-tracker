@@ -49,6 +49,22 @@ test('thin gold pairs do not produce spread signals', async (t) => {
   assert.deepEqual(await scanGold(), []);
 });
 
+
+test('negative configured gold liquidity cannot disable the floor', async (t) => {
+  const [paxg, xaut] = GOLD_ASSETS;
+  const original = config.gold.minLiquidityUsd;
+  t.after(() => { config.gold.minLiquidityUsd = original; });
+  config.gold.minLiquidityUsd = -1;
+  t.mock.method(globalThis, 'fetch', async (url: string) => {
+    if (url === config.gold.spotUrl) return Response.json({ price: 100 });
+    const address = url.split('/').at(-1);
+    if (address === paxg.address) return new Response(null, { status: 503 });
+    if (address !== xaut.address) return new Response(null, { status: 404 });
+    return Response.json({ pairs: [{ chainId: xaut.chain, baseToken: { address }, priceUsd: '90', liquidity: { usd: 19_999 } }] });
+  });
+  assert.deepEqual(await scanGold(), []);
+});
+
 test('reversed gold thresholds cannot turn small spreads into major alerts', async (t) => {
   const { classify } = await import('../src/gold_rwa.js');
   const alertPct = config.gold.alertPct;
