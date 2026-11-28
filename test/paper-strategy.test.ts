@@ -82,6 +82,16 @@ test('replay buys at next open, charges both sides on a gap stop and includes th
   assert.equal(replayOne(fixture, {}, symbol, candles.slice(0, 1), 0.2, 10, minute).trades, 0);
 });
 
+
+test('strategy config ignores malformed roots and non-numeric parameter overrides', () => {
+  assert.deepEqual(loadStrategies([] as never).filter(({ enabled }) => enabled), []);
+  const rsi = loadStrategies({ rsi_reversion: { enabled: true, params: { oversold: 'bad', exitAt: 55, extra: NaN } as never } }).find(({ strategy }) => strategy.name === 'rsi_reversion')!;
+  assert.equal(rsi.enabled, true);
+  assert.equal(rsi.params.oversold, rsi.strategy.defaults.oversold);
+  assert.equal(rsi.params.exitAt, 55);
+  assert.equal('extra' in rsi.params, false);
+});
+
 test('indicator helpers reject invalid lookback parameters instead of producing NaN signals', async () => {
   const { sma, ema, rsi, bollinger, zscore, pctChange, macdHist } = await import('../src/engine/indicators.js');
   const xs = [1, 2, 3, 4, 5];

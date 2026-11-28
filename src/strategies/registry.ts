@@ -16,10 +16,16 @@ type StrategyConfig = Record<string, { enabled?: boolean; params?: Record<string
 export function loadStrategies(overrides?: StrategyConfig): ActiveStrategy[] {
   let conf: StrategyConfig = overrides ?? {};
   if (!overrides && existsSync(CONF_PATH)) {
-    try { conf = JSON.parse(readFileSync(CONF_PATH, 'utf8')); } catch (e) { logger.warn({ err: String(e) }, 'strategies.json parse failed'); }
+    try {
+      const parsed: unknown = JSON.parse(readFileSync(CONF_PATH, 'utf8'));
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) conf = parsed as StrategyConfig;
+      else logger.warn('strategies.json root must be an object');
+    } catch (e) { logger.warn({ err: String(e) }, 'strategies.json parse failed'); }
   }
   return LIBRARY.map((s) => {
     const c = conf[s.name] ?? {};
-    return { strategy: s, params: { ...s.defaults, ...(c.params ?? {}) }, enabled: c.enabled === true };
+    const rawParams = c.params && typeof c.params === 'object' && !Array.isArray(c.params) ? c.params : {};
+    const params = Object.fromEntries(Object.entries(rawParams).filter(([, value]) => Number.isFinite(value)));
+    return { strategy: s, params: { ...s.defaults, ...params }, enabled: c.enabled === true };
   });
 }
