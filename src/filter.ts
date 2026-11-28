@@ -6,6 +6,8 @@ import { logger } from './logger.js';
 
 export type ChainKey = 'base' | 'ethereum';
 
+const FILTER_TIMEOUT_MS = 5_000;
+
 const erc20 = parseAbi([
   'function decimals() view returns (uint8)',
   'function symbol() view returns (string)',
@@ -32,17 +34,22 @@ export interface MarketData {
 // DexScreener public API (no key). Picks the pair with the deepest USD liquidity.
 export async function getMarket(chain: ChainKey, token: Address): Promise<MarketData | null> {
   try {
-    const r = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${token}`);
+    const r = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${token}`, { signal: AbortSignal.timeout(FILTER_TIMEOUT_MS) });
     if (!r.ok) return null;
     const j: any = await r.json();
-    const pairs = (j.pairs ?? []).filter((p: any) => p.chainId === CHAINS[chain].dexscreenerSlug && p.priceUsd);
+    const tokenAddress = token.toLowerCase();
+    const pairs = (j.pairs ?? []).filter((p: any) => p.chainId === CHAINS[chain].dexscreenerSlug && p.priceUsd && p.baseToken?.address?.toLowerCase() === tokenAddress && Number.isFinite(Number(p.priceUsd)) && Number(p.priceUsd) > 0);
     if (!pairs.length) return null;
-    pairs.sort((a: any, b: any) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0));
-    const p = pairs[0];
+    const liquid = pairs.map((p: any) => {
+      const liquidityUsd = Number(p.liquidity?.usd ?? 0);
+      return { p, liquidityUsd: Number.isFinite(liquidityUsd) && liquidityUsd > 0 ? liquidityUsd : 0 };
+    }).sort((a: { liquidityUsd: number }, b: { liquidityUsd: number }) => b.liquidityUsd - a.liquidityUsd);
+    const { p, liquidityUsd } = liquid[0];
+    const marketCapUsd = Number(p.marketCap ?? p.fdv);
     return {
       priceUsd: Number(p.priceUsd),
-      liquidityUsd: Number(p.liquidity?.usd ?? 0),
-      marketCapUsd: p.marketCap ?? p.fdv ?? null,
+      liquidityUsd,
+      marketCapUsd: Number.isFinite(marketCapUsd) && marketCapUsd > 0 ? marketCapUsd : null,
       pairAddress: p.pairAddress,
       dexId: p.dexId,
       pairUrl: p.url ?? `https://dexscreener.com/${CHAINS[chain].dexscreenerSlug}/${p.pairAddress}`,
@@ -63,14 +70,18 @@ export interface HoneypotResult {
 // honeypot.is public simulation API (no key). Simulates buy+sell to estimate taxes and honeypot status.
 export async function checkHoneypot(chain: ChainKey, token: Address): Promise<HoneypotResult> {
   try {
-    const r = await fetch(`https://api.honeypot.is/v2/IsHoneypot?address=${token}&chainID=${CHAINS[chain].honeypotChainId}`);
+    const r = await fetch(`https://api.honeypot.is/v2/IsHoneypot?address=${token}&chainID=${CHAINS[chain].honeypotChainId}`, { signal: AbortSignal.timeout(FILTER_TIMEOUT_MS) });
     if (!r.ok) return { isHoneypot: null, buyTaxPct: null, sellTaxPct: null, reason: `http ${r.status}` };
     const j: any = await r.json();
+    const tax = (value: unknown) => {
+      const n = Number(value);
+      return Number.isFinite(n) && n >= 0 ? n : null;
+    };
     return {
-      isHoneypot: j.honeypotResult?.isHoneypot ?? null,
-      buyTaxPct: j.simulationResult?.buyTax ?? null,
-      sellTaxPct: j.simulationResult?.sellTax ?? null,
-      reason: j.honeypotResult?.honeypotReason,
+      isHoneypot: typeof j.honeypotResult?.isHoneypot === 'boolean' ? j.honeypotResult.isHoneypot : null,
+      buyTaxPct: tax(j.simulationResult?.buyTax),
+      sellTaxPct: tax(j.simulationResult?.sellTax),
+      reason: typeof j.honeypotResult?.honeypotReason === 'string' ? j.honeypotResult.honeypotReason : undefined,
     };
   } catch (err) {
     return { isHoneypot: null, buyTaxPct: null, sellTaxPct: null, reason: String(err) };
@@ -83,10 +94,12 @@ export async function checkVerified(chain: ChainKey, token: Address): Promise<bo
   if (!key) return null;
   const host = chain === 'base' ? 'https://api.basescan.org/api' : 'https://api.etherscan.io/api';
   try {
-    const r = await fetch(`${host}?module=contract&action=getsourcecode&address=${token}&apikey=${key}`);
+    const r = await fetch(`${host}?module=contract&action=getsourcecode&address=${token}&apikey=${key}`, { signal: AbortSignal.timeout(FILTER_TIMEOUT_MS) });
+    if (!r.ok) return null;
     const j: any = await r.json();
-    const src = j.result?.[0]?.SourceCode ?? '';
-    return src !== '';
+    if (j.status !== undefined && String(j.status) !== '1') return null;
+    const src = j.result?.[0]?.SourceCode;
+    return typeof src === 'string' && src !== '';
   } catch {
     return null;
   }
