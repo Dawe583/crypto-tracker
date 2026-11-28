@@ -21,7 +21,7 @@ type Commit = {
   p_seq: number;
   p_hash: string;
   p_checkpoint: EngineCheckpoint;
-  p_deck: DeckState & { candles: Record<string, Feed> };
+  p_deck: DeckState;
   p_records: PersistedRecord[];
 };
 
@@ -95,7 +95,10 @@ export async function runHostedCycle(
     p_seq: head.seq,
     p_hash: head.hash,
     p_checkpoint: checkpoint,
-    p_deck: { snapshot: state.snapshot, decisions: state.decisions, candles: Object.fromEntries(feeds) },
+    p_deck: {
+      snapshot: state.snapshot,
+      decisions: state.decisions,
+    },
     p_records: records,
   });
 }

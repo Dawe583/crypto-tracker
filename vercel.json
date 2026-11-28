@@ -3,8 +3,20 @@
   "buildCommand": "npm run build:deck",
   "outputDirectory": "public",
   "functions": {
+    "api/market.ts": { "maxDuration": 30 },
     "api/cron/paper-engine.ts": { "maxDuration": 60 }
   },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "Content-Security-Policy", "value": "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "no-referrer" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=()" }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/api/engine/:endpoint*", "destination": "/api/read?__deck_path=engine/:endpoint*" },
     { "source": "/api/whales", "destination": "/api/read?__deck_path=whales" },

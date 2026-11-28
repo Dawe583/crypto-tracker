@@ -1,7 +1,8 @@
 import { timingSafeEqual } from 'node:crypto';
+import { config } from '../config.js';
 import { logger } from '../logger.js';
 import { createHostedStore, hostedEngineEnabled, hostedStrategies, runHostedCycle } from './hosted.js';
-import type { Feed } from './market.js';
+import { fetchSymbol, type Feed } from './market.js';
 import type { EngineSnapshot } from './state.js';
 
 const reply = (status: number, body: unknown) => ({ status, body });
@@ -12,6 +13,33 @@ const authorized = (given: string | undefined, secret: string | undefined) => {
   const expected = Buffer.from(`Bearer ${secret}`);
   return value.length === expected.length && timingSafeEqual(value, expected);
 };
+
+
+const HOSTED_CANDLE_WINDOW = 120;
+const HOSTED_CANDLE_CACHE_MS = 20_000;
+const candleCache = new Map<string, { at: number; feed: Feed | null }>();
+const pendingCandles = new Map<string, Promise<Feed | null>>();
+
+async function hostedCandles(symbol: string): Promise<Feed | null> {
+  const cached = candleCache.get(symbol);
+  if (cached && Date.now() - cached.at < HOSTED_CANDLE_CACHE_MS) return cached.feed;
+  let pending = pendingCandles.get(symbol);
+  if (!pending) {
+    pending = fetchSymbol(symbol, '1m').then((feed) => {
+      const prior = candleCache.get(symbol)?.feed ?? null;
+      const trimmed = feed ? { ...feed, candles: feed.candles.slice(-HOSTED_CANDLE_WINDOW) } : null;
+      if (trimmed || !prior) candleCache.set(symbol, { at: Date.now(), feed: trimmed });
+      return trimmed ?? prior;
+    }).finally(() => pendingCandles.delete(symbol));
+    pendingCandles.set(symbol, pending);
+  }
+  return pending;
+}
+
+export function resetHostedCandleCacheForTests() {
+  candleCache.clear();
+  pendingCandles.clear();
+}
 
 export const hostedReadPaths = new Set([
   '/api/engine/snapshot', '/api/engine/strategies', '/api/engine/decisions',
@@ -48,8 +76,8 @@ export async function hostedRead(url: URL, method?: string, authorization?: stri
       }
       case '/api/engine/candles': {
         const symbol = (url.searchParams.get('symbol') ?? 'BTCUSDT').toUpperCase();
-        if (!/^[A-Z0-9]{1,20}$/.test(symbol)) return failure(400, 'Invalid symbol');
-        const feed = await store.read('candles', symbol) as Feed | null;
+        if (!/^[A-Z0-9]{1,20}$/.test(symbol) || !config.engine.symbols.includes(symbol)) return failure(400, 'Invalid symbol');
+        const feed = await hostedCandles(symbol);
         return reply(200, feed ? { symbol, source: feed.source, lastFetch: feed.lastFetch, candles: feed.candles } : { symbol, candles: [] });
       }
       case '/api/gold':

@@ -5,6 +5,8 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { config } from '../src/config.js';
 import { replayOne, runBacktest } from '../src/engine/backtest.js';
+import { createPaperEngine } from '../src/engine/loop.js';
+import { engineState } from '../src/engine/state.js';
 import { managedSize } from '../src/engine/execution.js';
 import { closedStrategyBars } from '../src/engine/market.js';
 import { PaperPortfolio } from '../src/engine/portfolio.js';
@@ -93,4 +95,42 @@ test('archive reports for different symbols and windows do not overwrite each ot
   const next = await runBacktest([symbol], '1m', 'next.csv');
   assert.equal(new Set([first.file, otherSymbol.file, next.file]).size, 3);
   assert.ok([first, otherSymbol, next].every(({ file }) => existsSync(file)));
+});
+
+
+test('engine checkpoints reject corrupt risk and statistics state', () => {
+  const engine = createPaperEngine({
+    state: engineState,
+    append: () => {},
+    refresh: async () => null,
+    signals: () => ({ whaleBuys: 0, newPools: 0, goldSpread: {} }),
+    strategies: [],
+  });
+  const checkpoint = engine.checkpoint();
+  const badRisk = structuredClone(checkpoint);
+  badRisk.risk.dayStartEquity = -1;
+  assert.throws(() => engine.restore(badRisk), /invalid paper risk/);
+  const badStats = structuredClone(checkpoint);
+  badStats.stats = [['fixture', { pnl: NaN, trades: 0, wins: 0 }]];
+  assert.throws(() => engine.restore(badStats), /invalid paper engine/);
+  engine.restore(checkpoint);
+});
+
+test('portfolio checkpoints reject corrupt positions instead of restoring them', () => {
+  const pf = new PaperPortfolio(100);
+  const fill = pf.open({ strategy: 'fixture', symbol: 'BTCUSDT', side: 'buy', confidence: 1, reason: 'test', sizeUsd: 10 }, 100, 0.1)!;
+  assert.ok(fill);
+  const checkpoint = pf.checkpoint();
+  const corrupt = structuredClone(checkpoint);
+  corrupt.positions[0].qty = -1;
+  assert.throws(() => new PaperPortfolio().restoreCheckpoint(corrupt), /invalid paper portfolio/);
+  const duplicate = structuredClone(checkpoint);
+  duplicate.positions.push({ ...duplicate.positions[0], id: 'other' });
+  assert.throws(() => new PaperPortfolio().restoreCheckpoint(duplicate), /invalid paper portfolio/);
+  const legacy = structuredClone(checkpoint);
+  delete (legacy.positions[0] as Partial<typeof legacy.positions[0]>).stopLossPct;
+  const restored = new PaperPortfolio();
+  restored.restoreCheckpoint(legacy);
+  assert.equal(restored.positions.get('fixture|BTCUSDT')?.stopLossPct, null);
+  new PaperPortfolio().restoreCheckpoint(checkpoint);
 });

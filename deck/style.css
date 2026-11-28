@@ -85,6 +85,7 @@ button:active:not(:disabled) { background: #26445b; transform: translateY(1px); 
 .market-quote.on::after, .market-quote:hover::after { transform: scaleX(1); }
 .market-quote b { font: 600 13px var(--ui); letter-spacing: .8px; }
 .market-quote small { color: var(--dim); font-size: 9px; text-align: right; }
+.market-quote.stale small { color: var(--amber); }
 .market-quote strong { font: 500 19px var(--ui); letter-spacing: -.4px; }
 .quote-wave { display: flex; align-items: center; justify-content: flex-end; gap: 3px; height: 18px; }
 .quote-wave i { background: #57dcff80; width: 2px; height: 10px; transform-origin: center; animation: wave 2.4s ease-in-out infinite; }

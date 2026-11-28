@@ -2,8 +2,11 @@
 // canvases animate continuously via requestAnimationFrame.
 'use strict';
 const $ = (id) => document.getElementById(id);
-const fmt$ = (n, d = 0) => (n == null ? '—' : `$${Number(n).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: 2 })}`);
+window.DECK_DEMO_FALLBACK = window.DECK_DEMO_FALLBACK || document.documentElement?.dataset.deckDemoFallback === 'true';
+const fmt$ = (n, d = 0) => (n == null ? '—' : `$${Number(n).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: Math.max(2, d) })}`);
 const cls = (n) => (n >= 0 ? 'pos' : 'neg');
+const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ESCAPES[ch]);
 const ago = (ts) => { const s = (Date.now() - ts) / 1000; return s < 60 ? `${s | 0}s` : s < 3600 ? `${(s / 60) | 0}m` : `${(s / 3600) | 0}h`; };
 
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -34,7 +37,9 @@ const utc = (ts) => new Date(ts).toISOString().slice(11, 19);
 let TOKEN = sessionStorage.getItem('apiToken') || '';
 let tokenRequest;
 const api = async (path, opts = {}, retried = false) => {
-  const r = await fetch(path, { ...opts, headers: TOKEN ? { authorization: `Bearer ${TOKEN}` } : {} });
+  const { headers: extraHeaders, ...rest } = opts;
+  const r = await fetch(path, { ...rest, signal: AbortSignal.timeout(10_000),
+    headers: { ...extraHeaders, ...(TOKEN ? { authorization: `Bearer ${TOKEN}` } : {}) } });
   if (r.status === 401 && !retried) {
     tokenRequest ??= Promise.resolve().then(() => {
       const token = prompt('Enter the configured API token to connect this deck.');
@@ -66,24 +71,56 @@ const ctx2d = (id) => {
   return { x, w, h };
 };
 
-const STATE = { snap: null, halted: false, strats: [], decisions: [], candles: {}, marketAt: {}, sym: 'BTCUSDT', whales: 0, pools: 0, gold: [], book: null, bookAt: 0 };
+const STATE = { snap: null, halted: false, strats: [], decisions: [], candles: {}, marketAt: {}, publicMarkets: {}, sym: 'BTCUSDT', whales: 0, pools: 0, gold: [], book: null, bookAt: 0 };
+const MARKET_SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'DOGEUSDT', 'AVAXUSDT', 'LINKUSDT'];
 let demoMode = false;
+let marketRequest = null, marketRequestedAt = 0, marketFailed = false;
+const marketPrices = () => demoMode
+  ? Object.fromEntries(MARKET_SYMBOLS.map((symbol) => [symbol, STATE.publicMarkets[symbol]?.price ?? null]))
+  : STATE.snap?.prices || {};
+const publicMarketCached = (symbol) => {
+  if (!demoMode) return false;
+  const feed = STATE.publicMarkets[symbol];
+  return !!feed?.price && (marketFailed || feed.failed || Date.now() - (feed.lastFetch ?? 0) > 90_000);
+};
+
+async function refreshPublicMarkets() {
+  if (marketRequest) return marketRequest;
+  if (Date.now() - marketRequestedAt < 30_000) return;
+  marketRequestedAt = Date.now();
+  marketRequest = (async () => {
+    try {
+      const response = await fetch('/api/market', { signal: AbortSignal.timeout(25_000) });
+      if (!response.ok) throw new Error('Market unavailable');
+      const { markets } = await response.json();
+      if (!markets || !Object.keys(markets).length) throw new Error('Market unavailable');
+      if (!demoMode) return;
+      for (const symbol of MARKET_SYMBOLS) {
+        const feed = markets[symbol];
+        if (Number.isFinite(feed?.price) && feed.price > 0 && feed.candles?.length > 1 && Number.isFinite(feed.lastFetch)) {
+          STATE.publicMarkets[symbol] = { ...feed, failed: false };
+          STATE.candles[symbol] = feed.candles;
+          STATE.marketAt[symbol] = feed.lastFetch;
+        } else if (STATE.publicMarkets[symbol]) STATE.publicMarkets[symbol].failed = true;
+      }
+      marketFailed = false;
+    } catch {
+      marketFailed = true;
+    } finally {
+      marketRequest = null;
+      if (demoMode) { renderStatic(); drawSlow(); }
+    }
+  })();
+  return marketRequest;
+}
 
 function loadDemo() {
   const now = Date.now(), phase = now / 12000;
-  const symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'DOGEUSDT', 'ADAUSDT'];
+  const symbols = MARKET_SYMBOLS;
   const bases = [96700, 3420, 186, 1.94, .32, .87];
   const names = ['ema_cross', 'rsi_reversion', 'bollinger_reversion', 'breakout', 'macd_momentum', 'atr_trend'];
-  STATE.candles = {};
-  STATE.marketAt = {};
-  const prices = {};
-  symbols.forEach((symbol, j) => {
-    STATE.candles[symbol] = Array.from({ length: 120 }, (_, i) => {
-      const c = bases[j] * (1 + .008 * Math.sin(i / 9 + j) + .00012 * i + .002 * Math.sin(phase + j));
-      return { t: now - (119 - i) * 60000, o: c * .9996, h: c * 1.0015, l: c * .9985, c, v: 30 + 20 * (1 + Math.sin(i + j)) };
-    });
-    prices[symbol] = STATE.candles[symbol].at(-1).c;
-  });
+  STATE.candles = Object.fromEntries(Object.entries(STATE.publicMarkets).map(([symbol, feed]) => [symbol, feed.candles]));
+  STATE.marketAt = Object.fromEntries(Object.entries(STATE.publicMarkets).map(([symbol, feed]) => [symbol, feed.lastFetch]));
   if (!symbols.includes(STATE.sym)) STATE.sym = symbols[0];
   STATE.strats = names.map((name) => ({ name, enabled: true }));
   STATE.decisions = Array.from({ length: 36 }, (_, i) => ({ ts: now - i * 1700, strategy: names[i % names.length],
@@ -91,8 +128,8 @@ function loadDemo() {
     reason: 'Generated demonstration event · not an engine decision' }));
   const equityCurve = Array.from({ length: 100 }, (_, i) => ({ ts: now - (99 - i) * 60000, equityUsd: 10000 + i * 3.2 + Math.sin(i / 7 + phase) * 24 }));
   const equityUsd = equityCurve.at(-1).equityUsd;
-  STATE.snap = { ts: now, killed: false, equityUsd, cashUsd: equityUsd - 600, realizedUsd: equityUsd - 10012, unrealizedUsd: 12, prices, equityCurve,
-    positions: symbols.slice(0, 2).map((symbol, i) => ({ symbol, strategy: names[i], entryPrice: prices[symbol] * .98, markPrice: prices[symbol], sizeUsd: 300, unrealizedUsd: 6 })),
+  STATE.snap = { ts: now, killed: false, equityUsd, cashUsd: equityUsd - 600, realizedUsd: equityUsd - 10012, unrealizedUsd: 12, prices: {}, equityCurve,
+    positions: symbols.slice(0, 2).map((symbol, i) => ({ symbol, strategy: names[i], entryPrice: bases[i] * .98, markPrice: bases[i], sizeUsd: 300, unrealizedUsd: 6 })),
     stats: Object.fromEntries(names.map((name, i) => [name, { pnl: 35 + i * 7, trades: 12 + i, wins: 8 + i }])) };
   STATE.whales = 18; STATE.pools = 7; STATE.gold = [];
 }
@@ -145,8 +182,9 @@ async function refresh() {
       document.body.classList.remove('data-stale');
       $('demoBanner').hidden = false;
       $('connection').textContent = 'DEMO';
-      $('lastSync').textContent = 'SIMULATED DATA · RETRYING ENGINE EVERY 12 SECONDS';
+      $('lastSync').textContent = 'DEMO PORTFOLIO & TRADES · MARKET REFRESH ~30s';
       renderStatic(); drawSlow();
+      await refreshPublicMarkets();
       return;
     }
     document.body.classList.add('data-stale');
@@ -163,9 +201,9 @@ function selectMarket(symbol) {
   refresh();
 }
 
-const marketQuote = (symbol) => symbol.match(/(USDT|USD)$/)?.[0] || '';
+const marketQuote = (symbol) => demoMode && STATE.publicMarkets[symbol]?.quote || symbol.match(/(USDT|USD)$/)?.[0] || '';
 function renderMarkets() {
-  const prices = STATE.snap?.prices || {};
+  const prices = marketPrices();
   const symbols = Object.keys(prices);
   if ($('marketRail').dataset.symbols !== symbols.join(',')) {
     $('marketRail').dataset.symbols = symbols.join(',');
@@ -191,15 +229,23 @@ function renderMarkets() {
     const symbol = button.dataset.symbol;
     button.classList.toggle('on', symbol === STATE.sym);
     button.setAttribute('aria-pressed', String(symbol === STATE.sym));
+    const displaySymbol = symbol.replace(/USDT$|USD$/, '') + marketQuote(symbol);
     if (button.classList.contains('market-quote')) {
-      const value = fmt$(prices[symbol], prices[symbol] < 10 ? 2 : 0);
+      const feed = STATE.publicMarkets[symbol];
+      const cached = publicMarketCached(symbol);
+      button.classList.toggle('stale', cached);
+      button.querySelector('small').textContent = `${marketQuote(symbol)}${cached ? ' · cached' : ''}`;
+      button.title = demoMode
+        ? `${feed?.source || 'Waiting for market'} · ${marketQuote(symbol)}${cached && feed?.lastFetch ? ` · cached ${ago(feed.lastFetch)} ago` : ''}`
+        : symbol;
+      const value = fmt$(prices[symbol], prices[symbol] < 1 ? 4 : 2);
       const strong = button.querySelector('strong');
       if (strong.textContent !== value && strong.textContent && !isStill()) {
         strong.animate([{ background: '#57dcff30' }, { background: 'transparent' }], { duration: 700 });
       }
       strong.textContent = value;
-      button.setAttribute('aria-label', `${symbol}, ${value}, select market`);
-    }
+      button.setAttribute('aria-label', `${displaySymbol}, ${value}${cached ? ', cached market data' : ''}, select market`);
+    } else button.textContent = displaySymbol;
   });
 }
 
@@ -226,20 +272,22 @@ function renderStatic() {
     for (const id of ['marketRail', 'cortexList', 'indChips', 'modelRows', 'kellyBox', 'thoughts', 'trace', 'orderBook']) $(id).innerHTML = waiting;
     return;
   }
-  const start = s.equityUsd - s.realizedUsd - s.unrealizedUsd || 10000;
-  const dayPnl = s.realizedUsd + s.unrealizedUsd;
+  const hasDayBaseline = Number.isFinite(s.dayStartEquityUsd) && s.dayStartEquityUsd > 0;
+  const dayPnl = hasDayBaseline ? s.equityUsd - s.dayStartEquityUsd : s.realizedUsd + s.unrealizedUsd;
+  const pnlLabel = hasDayBaseline ? 'DAY PNL' : 'TOTAL PNL';
   const stats = Object.values(s.stats || {});
   const trades = stats.reduce((a, v) => a + v.trades, 0);
   const wins = stats.reduce((a, v) => a + v.wins, 0);
   setText('sNav', fmt$(s.equityUsd));
   $('sNav').classList.toggle('pos', dayPnl >= 0); $('sNav').classList.toggle('neg', dayPnl < 0);
+  $('sPnlLabel').textContent = pnlLabel;
   setText('sPnl', fmt$(dayPnl, 2));
   $('sPnl').classList.toggle('pos', dayPnl >= 0); $('sPnl').classList.toggle('neg', dayPnl < 0);
   $('sWin').textContent = trades ? `${((wins / trades) * 100).toFixed(0)}%` : '—';
   setText('sOpen', s.positions.length);
   setText('bigNav', fmt$(s.equityUsd));
   $('bigNav').classList.toggle('up', dayPnl >= 0);
-  $('bigDelta').innerHTML = `<span class="${cls(dayPnl)}">${dayPnl >= 0 ? '▲' : '▼'} ${fmt$(Math.abs(dayPnl), 2)} session</span> · cash ${fmt$(s.cashUsd)}`;
+  $('bigDelta').innerHTML = `<span class="${cls(dayPnl)}">${dayPnl >= 0 ? '▲' : '▼'} ${fmt$(Math.abs(dayPnl), 2)} ${hasDayBaseline ? 'today' : 'total'}</span> · cash ${fmt$(s.cashUsd)}`;
   const stopped = s.killed;
   $('running').textContent = demoMode ? 'DEMO' : stopped ? 'STOPPED' : 'RUNNING';
   $('running').className = `right ${stopped ? 'neg' : 'pos'}`;
@@ -254,19 +302,23 @@ function renderStatic() {
   $('kill').classList.toggle('killed', !!stopped);
   $('kill').textContent = demoMode ? 'Demo · read only' : window.DECK_DEMO_FALLBACK ? 'Hosted · read only' : stopped ? 'Engine stopped' : 'Stop engine';
   $('kill').disabled = demoMode || !!window.DECK_DEMO_FALLBACK || !!stopped;
-  $('tapeSym').textContent = STATE.sym;
+  $('tapeSym').textContent = STATE.sym.replace(/USDT$|USD$/, '') + marketQuote(STATE.sym);
 
   const cd = STATE.candles[STATE.sym];
   const fetchedAt = STATE.marketAt[STATE.sym];
-  const cached = !demoMode && fetchedAt > 0 && Date.now() - fetchedAt > 5 * 60_000;
+  const publicFeed = STATE.publicMarkets[STATE.sym];
+  const cached = demoMode
+    ? publicMarketCached(STATE.sym)
+    : fetchedAt > 0 && Date.now() - fetchedAt > 5 * 60_000;
+  if (demoMode) $('demoBanner').textContent = `${publicFeed ? cached ? 'CACHED MARKET DATA' : 'LIVE MARKET DATA' : marketFailed ? 'MARKET DATA UNAVAILABLE' : 'WAITING FOR MARKET DATA'} · DEMO PORTFOLIO & TRADES · READ ONLY`;
   if (cd?.length > 1) {
     const chg = ((cd[cd.length - 1].c - cd[0].c) / cd[0].c) * 100;
     $('tapeChg').innerHTML = `<span class="${cls(chg)}">${chg >= 0 ? '▲' : '▼'} ${chg.toFixed(2)}%</span>`;
     const lp = cd[cd.length - 1].c;
     const bp = $('bigPrice');
-    setText('bigPrice', fmt$(lp, 2));
+    setText('bigPrice', fmt$(lp, lp < 1 ? 4 : 2));
     bp.classList.toggle('up', chg >= 0); bp.classList.toggle('dn', chg < 0);
-    const freshness = demoMode ? 'GENERATED DATA' : fetchedAt ? `${cached ? 'CACHED · ' : ''}last market fetch ${utc(fetchedAt)} UTC` : 'FETCH TIME UNKNOWN';
+    const freshness = fetchedAt ? `${cached ? 'CACHED · ' : ''}${demoMode ? `${publicFeed?.source?.toUpperCase() || 'MARKET'} · ${marketQuote(STATE.sym)} · 1m · ` : ''}last market fetch ${utc(fetchedAt)} UTC` : 'FETCH TIME UNKNOWN';
     $('bigPriceSub').innerHTML = `<span class="${cls(chg)}">${chg >= 0 ? '▲' : '▼'} ${Math.abs(chg).toFixed(2)}%</span> · <span class="${cached ? 'amb' : 'dim'}">${freshness}</span>`;
     const fair = vwapN(cd);
     const dpm = STATE.decisions.filter((d) => Date.now() - d.ts < 60_000).length;
@@ -275,7 +327,7 @@ function renderStatic() {
       ` · OPEN ${s.positions.length} TICKETS · ${s.killed ? 'ENGINE KILLED' : 'ENGINE ONLINE'}`;
   } else {
     $('bigPrice').textContent = '—';
-    $('bigPriceSub').textContent = 'Loading market…';
+    $('bigPriceSub').textContent = demoMode && marketFailed ? 'Market data unavailable · retrying; no generated prices' : 'Loading market…';
     $('tapeChg').textContent = '';
     $('orderBook').replaceChildren();
   }
@@ -283,7 +335,7 @@ function renderStatic() {
 
   $('cortexList').innerHTML = s.positions.map((p) => {
     const pc = ((p.markPrice - p.entryPrice) / p.entryPrice) * 100;
-    return `<div class="crow"><span>${p.strategy}·${p.symbol.replace('USDT', '')}</span>
+    return `<div class="crow"><span>${esc(p.strategy)}·${esc(p.symbol.replace('USDT', ''))}</span>
       <span class="${cls(pc)}">${pc.toFixed(2)}%</span><span>${fmt$(p.unrealizedUsd, 2)}</span></div>`;
   }).join('') || '<div class="empty-state">No open tickets. Waiting for an entry.</div>';
 
@@ -291,22 +343,22 @@ function renderStatic() {
 
   renderFeed('thoughts', 40, (d) =>
     `<span class="t">${utc(d.ts)}</span>
-     <b style="color:${stageColor(d)}">${d.strategy}</b> ${d.action.toUpperCase()} ${d.symbol.replace('USDT', '')}
-     <span class="dim">${(d.confidence * 100) | 0}%</span>${d.vetoed ? ` <span class="amb">VETO ${d.vetoed}</span>` : ''}`);
+     <b style="color:${stageColor(d)}">${esc(d.strategy)}</b> ${esc(d.action.toUpperCase())} ${esc(d.symbol.replace('USDT', ''))}
+     <span class="dim">${(d.confidence * 100) | 0}%</span>${d.vetoed ? ` <span class="amb">VETO ${esc(d.vetoed)}</span>` : ''}`);
 
   renderFeed('trace', 50, (d) =>
     `<span class="tm">${utc(d.ts)}</span>
-     <span style="color:${stageColor(d)}">■</span> ${d.strategy} → ${d.action}${d.vetoed ? ' (veto)' : ''} — ${d.reason}`);
+     <span style="color:${stageColor(d)}">■</span> ${esc(d.strategy)} → ${esc(d.action)}${d.vetoed ? ' (veto)' : ''} — ${esc(d.reason)}`);
 
   $('rotLegend').innerHTML = STATE.strats.map((s, i) =>
-    `<span><i style="background:${STRAT_COLORS[i % STRAT_COLORS.length]}"></i>${s.name}${s.enabled ? '' : ' (off)'}</span>`).join('');
+    `<span><i style="background:${STRAT_COLORS[i % STRAT_COLORS.length]}"></i>${esc(s.name)}${s.enabled ? '' : ' (off)'}</span>`).join('');
 
   const last = STATE.decisions[0];
   const wire = last
     ? `${last.strategy} ${last.action} ${last.symbol} @${(last.confidence * 100) | 0}%`
     : s.killed ? 'engine stopped' : 'scanning for signals';
   $('wireMsg').textContent = `LIVE WIRE — ${wire} · whale signals ${STATE.whales ?? 'unavailable'} · new pools ${STATE.pools ?? 'unavailable'}`;
-  if (demoMode) $('wireMsg').textContent = 'SIMULATED DEMO · generated prices, portfolio and decisions · no live engine connected';
+  if (demoMode) $('wireMsg').textContent = `${publicFeed ? 'PUBLIC EXCHANGE MARKET DATA' : 'WAITING FOR PUBLIC MARKET DATA'} · portfolio, positions and decisions are simulated · no live engine connected`;
   if (cached) $('wireMsg').textContent = `CACHED QUOTES · ${$('wireMsg').textContent}`;
 }
 
@@ -782,7 +834,7 @@ function drawCortex(now) {
 function drawCalcium(now) {
   const { x, w, h } = ctx2d('calcium');
   x.clearRect(0, 0, w, h);
-  const syms = Object.keys(STATE.snap?.prices || {});
+  const syms = Object.keys(marketPrices());
   if (!syms.length) return;
   const half = w * .55;
   for (let i = 0; i < 90; i++) {
@@ -950,6 +1002,9 @@ function renderIndicators(s) {
     $('modelRows').innerHTML = '<div class="empty-state">Waiting for market candles…</div>';
     $('kellyBox').innerHTML = '<div class="empty-state">Waiting for market candles…</div>';
     $('tapeRsi').textContent = '';
+    $('biasUp').style.width = '0%';
+    $('biasDn').style.width = '0%';
+    $('biasTxt').textContent = '—';
     return;
   }
   const last = cl[cl.length - 1];
@@ -985,8 +1040,8 @@ function renderIndicators(s) {
 
   // matched inventory: buy vs sell pressure from decisions + tape volume split
   const ds = STATE.decisions || [];
-  const buys = ds.filter((d) => d.intent?.side === 'buy').length;
-  const sells = ds.filter((d) => d.intent?.side === 'sell').length;
+  const buys = ds.filter((d) => d.action === 'buy').length;
+  const sells = ds.filter((d) => d.action === 'sell').length;
   const tot = buys + sells || 1;
   $('invB').style.width = `${(buys / tot) * 100}%`; $('invS').style.width = `${(sells / tot) * 100}%`;
   $('invTxt').textContent = `${buys} buy / ${sells} sell`;

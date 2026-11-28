@@ -61,7 +61,8 @@ async function fromKraken(symbol: string, interval: string): Promise<Candle[]> {
   if (!r.ok) throw new Error(`kraken ${r.status}`);
   const j: any = await r.json();
   if (j.error?.length) throw new Error(`kraken ${j.error[0]}`);
-  const rows = Object.values(j.result)[0] as any[];
+  const rows = Object.entries(j.result).find(([key]) => key !== 'last')?.[1] as any[] | undefined;
+  if (!Array.isArray(rows)) throw new Error('kraken bad payload');
   return rows.map((k) => ({ t: +k[0] * 1000, o: +k[1], h: +k[2], l: +k[3], c: +k[4], v: +k[6] }));
 }
 

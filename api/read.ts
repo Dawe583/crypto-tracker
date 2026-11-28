@@ -1,8 +1,15 @@
+import type { IncomingMessage, ServerResponse } from 'node:http';
 import { hostedRead, hostedReadPaths } from '../src/engine/hosted-api.js';
 
-export default async function handler(req, res) {
+type VercelRequest = IncomingMessage & { query?: Record<string, string | string[]> };
+type VercelResponse = ServerResponse & {
+  status(code: number): VercelResponse;
+  json(body: unknown): VercelResponse;
+};
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Cache-Control', 'no-store');
-  const requested = new URL(req.url, 'https://deck.invalid');
+  const requested = new URL(req.url ?? '/', 'https://deck.invalid');
   const routedPath = req.query?.__deck_path ?? requested.searchParams.get('__deck_path');
   if (typeof routedPath === 'string') requested.pathname = `/api/${routedPath}`;
   requested.searchParams.delete('__deck_path');
