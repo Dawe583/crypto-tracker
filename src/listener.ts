@@ -141,7 +141,7 @@ async function onWatchedTransfer(chain: ChainKey, logs: Log[]) {
       // A received token is only directional buy evidence when the wallet paid native
       // currency or a quote asset in the same transaction. If receipt lookup fails,
       // keep the historical fail-open behavior rather than dropping the signal.
-      if (receipt && transaction && transfers && !walletPaidForTransfer(chain, to, transfers, transaction.value)) continue;
+      if (receipt && transaction && transfers && !walletPaidForTransfer(chain, to, transfers, transaction.value, transaction.from)) continue;
       const buyUsd = transferBuyUsd(log.args.value as bigint, meta.decimals, market.priceUsd);
       if (buyUsd === null || buyUsd < config.whaleMinUsd) continue;
       const safety = await evaluateToken({ chain, token, client });
@@ -177,8 +177,9 @@ export function walletPaidForTransfer(
   wallet: Address,
   transfers: Array<{ address: string; args: { from?: string } }>,
   nativeValue: bigint,
+  transactionFrom?: string,
 ): boolean {
-  if (nativeValue > 0n) return true;
+  if (nativeValue > 0n && transactionFrom?.toLowerCase() === wallet.toLowerCase()) return true;
   const source = wallet.toLowerCase();
   return transfers.some((log) => log.args.from?.toLowerCase() === source && isQuoteToken(chain, getAddress(log.address)));
 }

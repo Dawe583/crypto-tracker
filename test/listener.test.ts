@@ -157,7 +157,8 @@ test('token inflows require native or quote-asset payment evidence', () => {
   const wallet = '0x0000000000000000000000000000000000000001';
   const usdc = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
   const token = '0x000000000000000000000000000000000000dEaD';
-  assert.equal(walletPaidForTransfer('base', wallet, [], 1n), true);
+  assert.equal(walletPaidForTransfer('base', wallet, [], 1n, wallet), true);
+  assert.equal(walletPaidForTransfer('base', wallet, [], 1n, token), false);
   assert.equal(walletPaidForTransfer('base', wallet, [{ address: usdc, args: { from: wallet } }], 0n), true);
   assert.equal(walletPaidForTransfer('base', wallet, [{ address: usdc, args: { from: token } }], 0n), false);
   assert.equal(walletPaidForTransfer('base', wallet, [{ address: token, args: { from: wallet } }], 0n), false);
