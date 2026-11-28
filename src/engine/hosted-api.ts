@@ -27,7 +27,7 @@ async function hostedCandles(symbol: string): Promise<Feed | null> {
     pending = fetchSymbol(symbol, '1m').then((feed) => {
       const prior = candleCache.get(symbol)?.feed ?? null;
       const trimmed = feed ? { ...feed, candles: feed.candles.slice(-HOSTED_CANDLE_WINDOW) } : null;
-      candleCache.set(symbol, { at: Date.now(), feed: trimmed ?? prior });
+      if (trimmed || !prior) candleCache.set(symbol, { at: Date.now(), feed: trimmed });
       return trimmed ?? prior;
     }).finally(() => pendingCandles.delete(symbol));
     pendingCandles.set(symbol, pending);

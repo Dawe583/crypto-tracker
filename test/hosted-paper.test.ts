@@ -189,6 +189,34 @@ test('hosted candles are fetched once and served outside the paper state payload
   assert.equal(fetches, 1);
 });
 
+test('a failed hosted candle refresh does not extend the warm-cache lifetime', async (t) => {
+  resetHostedCandleCacheForTests();
+  t.after(resetHostedCandleCacheForTests);
+  const prev = { ...process.env };
+  Object.assign(process.env, { SUPABASE_URL: 'https://storage.invalid', SUPABASE_SECRET_KEY: 'secret-test', API_TOKEN: 'read-test' });
+  t.after(() => { process.env = prev; });
+  let nowMs = Math.floor(Date.now() / 60_000) * 60_000 + 1_000;
+  t.mock.method(Date, 'now', () => nowMs);
+  let fetches = 0;
+  let outage = false;
+  t.mock.method(globalThis, 'fetch', async () => {
+    fetches += 1;
+    if (outage) throw new Error('temporary exchange outage');
+    const now = nowMs - (nowMs % 60_000);
+    return Response.json(Array.from({ length: 5 }, (_, i) => [now - (4 - i) * 60_000, '100', '101', '99', '100', '1', 0, '0', 0, '0', '0', '0']));
+  });
+  const url = new URL('https://deck.invalid/api/engine/candles?symbol=BTCUSDT');
+  assert.equal((await hostedRead(url, 'GET', 'Bearer read-test')).status, 200);
+  nowMs += 21_000;
+  outage = true;
+  assert.equal((await hostedRead(url, 'GET', 'Bearer read-test')).status, 200);
+  const failedFetches = fetches;
+  outage = false;
+  nowMs += 4_000;
+  assert.equal((await hostedRead(url, 'GET', 'Bearer read-test')).status, 200);
+  assert.ok(fetches > failedFetches);
+});
+
 test('the snapshot requires a fresh cycle and does not require an Origin header', async (t) => {
   const prev = { ...process.env };
   Object.assign(process.env, { SUPABASE_URL: 'https://storage.invalid', SUPABASE_SECRET_KEY: 'secret-test', API_TOKEN: 'read-test' });
