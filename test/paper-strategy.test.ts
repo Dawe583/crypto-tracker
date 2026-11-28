@@ -5,8 +5,6 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { config } from '../src/config.js';
 import { replayOne, runBacktest } from '../src/engine/backtest.js';
-import { runStress } from '../src/engine/stress.js';
-import { runSweep } from '../src/engine/sweep.js';
 import { managedSize } from '../src/engine/execution.js';
 import { closedStrategyBars } from '../src/engine/market.js';
 import { PaperPortfolio } from '../src/engine/portfolio.js';
@@ -101,6 +99,7 @@ test('indicator helpers reject invalid lookback parameters instead of producing 
 
 
 test('research runners reject non-fixed candle intervals before network fetches', async () => {
+  const [{ runSweep }, { runStress }] = await Promise.all([import('../src/engine/sweep.js'), import('../src/engine/stress.js')]);
   await assert.rejects(runSweep('rsi_reversion', [symbol], 'bad-interval'), /fixed candle interval/);
   await assert.rejects(runStress([symbol], '1M'), /fixed candle interval/);
 });
