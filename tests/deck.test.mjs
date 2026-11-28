@@ -369,3 +369,21 @@ test('halted canvases never present a previous NAV, a false zero or portfolio-de
   assert.equal(texts.filter((s) => s.startsWith('ENGINE HALTED')).length, 3);
   assert.deepEqual(texts.filter((s) => s.startsWith('NAV ')), ['NAV —']);
 });
+
+test('engine-controlled text is escaped before insertion into HTML feeds', () => {
+  const payload = '<img src=x onerror=alert(1)>';
+  const app = runtime();
+  app.run(`loadDemo();
+    STATE.snap.positions[0].strategy = ${JSON.stringify(payload)};
+    STATE.decisions = [{ ...STATE.decisions[0], strategy: ${JSON.stringify(payload)}, reason: ${JSON.stringify(payload)} }];
+    STATE.strats = [{ name: ${JSON.stringify(payload)}, enabled: true }];
+    renderStatic()`);
+  assert.match(app.elements.get('cortexList').innerHTML, /&lt;img/);
+  assert.doesNotMatch(app.elements.get('cortexList').innerHTML, /<img/);
+  assert.match(app.elements.get('thoughts').children[0].innerHTML, /&lt;img/);
+  assert.doesNotMatch(app.elements.get('thoughts').children[0].innerHTML, /<img/);
+  assert.match(app.elements.get('trace').children[0].innerHTML, /&lt;img/);
+  assert.doesNotMatch(app.elements.get('trace').children[0].innerHTML, /<img/);
+  assert.match(app.elements.get('rotLegend').innerHTML, /&lt;img/);
+  assert.doesNotMatch(app.elements.get('rotLegend').innerHTML, /<img/);
+});

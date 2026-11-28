@@ -4,6 +4,8 @@
 const $ = (id) => document.getElementById(id);
 const fmt$ = (n, d = 0) => (n == null ? '—' : `$${Number(n).toLocaleString(undefined, { minimumFractionDigits: d, maximumFractionDigits: Math.max(2, d) })}`);
 const cls = (n) => (n >= 0 ? 'pos' : 'neg');
+const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ESCAPES[ch]);
 const ago = (ts) => { const s = (Date.now() - ts) / 1000; return s < 60 ? `${s | 0}s` : s < 3600 ? `${(s / 60) | 0}m` : `${(s / 3600) | 0}h`; };
 
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -328,7 +330,7 @@ function renderStatic() {
 
   $('cortexList').innerHTML = s.positions.map((p) => {
     const pc = ((p.markPrice - p.entryPrice) / p.entryPrice) * 100;
-    return `<div class="crow"><span>${p.strategy}·${p.symbol.replace('USDT', '')}</span>
+    return `<div class="crow"><span>${esc(p.strategy)}·${esc(p.symbol.replace('USDT', ''))}</span>
       <span class="${cls(pc)}">${pc.toFixed(2)}%</span><span>${fmt$(p.unrealizedUsd, 2)}</span></div>`;
   }).join('') || '<div class="empty-state">No open tickets. Waiting for an entry.</div>';
 
@@ -336,15 +338,15 @@ function renderStatic() {
 
   renderFeed('thoughts', 40, (d) =>
     `<span class="t">${utc(d.ts)}</span>
-     <b style="color:${stageColor(d)}">${d.strategy}</b> ${d.action.toUpperCase()} ${d.symbol.replace('USDT', '')}
-     <span class="dim">${(d.confidence * 100) | 0}%</span>${d.vetoed ? ` <span class="amb">VETO ${d.vetoed}</span>` : ''}`);
+     <b style="color:${stageColor(d)}">${esc(d.strategy)}</b> ${esc(d.action.toUpperCase())} ${esc(d.symbol.replace('USDT', ''))}
+     <span class="dim">${(d.confidence * 100) | 0}%</span>${d.vetoed ? ` <span class="amb">VETO ${esc(d.vetoed)}</span>` : ''}`);
 
   renderFeed('trace', 50, (d) =>
     `<span class="tm">${utc(d.ts)}</span>
-     <span style="color:${stageColor(d)}">■</span> ${d.strategy} → ${d.action}${d.vetoed ? ' (veto)' : ''} — ${d.reason}`);
+     <span style="color:${stageColor(d)}">■</span> ${esc(d.strategy)} → ${esc(d.action)}${d.vetoed ? ' (veto)' : ''} — ${esc(d.reason)}`);
 
   $('rotLegend').innerHTML = STATE.strats.map((s, i) =>
-    `<span><i style="background:${STRAT_COLORS[i % STRAT_COLORS.length]}"></i>${s.name}${s.enabled ? '' : ' (off)'}</span>`).join('');
+    `<span><i style="background:${STRAT_COLORS[i % STRAT_COLORS.length]}"></i>${esc(s.name)}${s.enabled ? '' : ' (off)'}</span>`).join('');
 
   const last = STATE.decisions[0];
   const wire = last
