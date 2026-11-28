@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { PaperPortfolio } from '../src/engine/portfolio.js';
 import { loadStrategies } from '../src/strategies/registry.js';
+import { LIBRARY } from '../src/strategies/library.js';
 
 const symbol = 'BTCUSDT';
 
@@ -49,4 +50,14 @@ test('invalid strategy lookback periods fall back to defaults', () => {
   assert.equal(emaStrategy.params.fast, 9);
   assert.equal(emaStrategy.params.slow, 21);
   assert.equal(emaStrategy.params.sizeUsd, 300);
+});
+
+test('keltner squeeze requires an actual squeeze release transition', () => {
+  const strategy = LIBRARY.find(({ name }) => name === 'keltner_squeeze')!;
+  const candle = (i: number, c: number) => ({ t: i * 60_000, o: c, h: c + 0.1, l: c - 0.1, c, v: 1 });
+  const trend = Array.from({ length: 70 }, (_, i) => candle(i, 100 + (i >= 55 ? i - 54 : 0)));
+  const ctx = { symbol, candles: trend, price: trend.at(-1)!.c, positions: [], signals: { whaleBuys: 0, newPools: 0, goldSpread: {} }, params: strategy.defaults };
+  assert.deepEqual(strategy.evaluate(ctx), []);
+  const release = Array.from({ length: 70 }, (_, i) => candle(i, i === 69 ? 105 : 100));
+  assert.equal(strategy.evaluate({ ...ctx, candles: release, price: 105 })[0]?.side, 'buy');
 });

@@ -250,9 +250,13 @@ export const LIBRARY: Strategy[] = [
       if (!b || mid === null || a === null || h === null) return [];
       const kc = ctx.params.kcMult * a;
       const squeeze = (b.up - b.lo) < 2 * kc;            // bollinger inside keltner
+      const previousB = bollinger(xs.slice(0, -1), n, 2);
+      const previousA = atr(ctx.candles.slice(0, -1), 10);
+      const wasSqueeze = previousB !== null && previousA !== null
+        && (previousB.up - previousB.lo) < 2 * ctx.params.kcMult * previousA;
       const c = xs[xs.length - 1];
       const has = ctx.positions.some((p) => p.strategy === 'keltner_squeeze' && p.symbol === ctx.symbol);
-      if (!squeeze && h > 0 && c > mid && !has)
+      if (wasSqueeze && !squeeze && h > 0 && c > mid && !has)
         return [buy('keltner_squeeze', ctx.symbol, 0.6, `squeeze fired, momentum up`, { sizeUsd: ctx.params.sizeUsd, stopLossPct: ctx.params.stopLossPct, takeProfitPct: ctx.params.takeProfitPct, maxHoldMin: ctx.params.maxHoldMin })];
       if (h < 0 && has) return [sell('keltner_squeeze', ctx.symbol, 0.6, 'momentum faded')];
       return [];
