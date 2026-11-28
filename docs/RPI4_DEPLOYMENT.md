@@ -13,7 +13,7 @@ Past whale alerts remain visible in the API after a watchlist edit. Paper tradin
 
 ## 1. Prerequisites on the Pi
 
-Raspberry Pi OS 64-bit, Node.js 20 or 22, git.
+Raspberry Pi OS 64-bit, Node.js 22 or newer, git.
 
   node -v && git --version
 

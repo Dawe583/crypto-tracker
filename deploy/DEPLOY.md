@@ -5,7 +5,7 @@ This guide covers deploying crypto-tracker (base-evm-whale-tracker) on a Raspber
 ## 1. Prerequisites
 
 - Raspberry Pi 4 (2 GB or more) running Raspberry Pi OS 64-bit.
-- Node.js 20 or later (`node -v`). Install with NodeSource or nvm.
+- Node.js 22 or later (`node -v`). Install with NodeSource or nvm.
 - git (`sudo apt-get install -y git`).
 
 ## 2. Get the code

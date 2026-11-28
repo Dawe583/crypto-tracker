@@ -8,7 +8,7 @@ RUN_USER="${SUDO_USER:-$USER}"
 NPM_BIN="$(command -v npm || true)"
 
 if [ -z "$NPM_BIN" ]; then
-  echo "npm not found. Install Node.js 20+ first (see docs/RPI4_DEPLOYMENT.md)." >&2
+  echo "npm not found. Install Node.js 22+ first (see docs/RPI4_DEPLOYMENT.md)." >&2
   exit 1
 fi
 if [ ! -f "$APP_DIR/.env" ]; then
