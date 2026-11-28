@@ -195,7 +195,7 @@ curl http://<pi-address>:8787/api/health
 ```
 
 Access control:
-- If `API_TOKEN` is set, protect the API with it. Generate a value with `openssl rand -hex 32`. The exact header or query scheme is defined in `src/api.ts`.
+- If `API_TOKEN` is set, protected routes require `Authorization: Bearer <token>`. Generate a value with `openssl rand -hex 32`; the local engine kill control is disabled while the token is empty.
 - Set `API_TOKEN` whenever the Pi is reachable beyond localhost.
 - Browser access is allowed from `openterminal-ashen.vercel.app` and localhost by default. Add more origins with `API_CORS_ORIGINS`.
 - To disable the API, set `API_ENABLED=false` and restart the service.
