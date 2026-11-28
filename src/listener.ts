@@ -119,6 +119,8 @@ async function onWatchedTransfer(chain: ChainKey, logs: Log[]) {
       const wallet = lookupWallet(to);
       if (!wallet || !dedupe(`${chain}:${log.transactionHash}:${log.logIndex}`)) continue;
       const token = getAddress(log.address);
+      // Quote-token inflows are often sale proceeds, not a token buy; they carry no long signal.
+      if (isQuoteToken(chain, token)) continue;
       const [meta, market] = await Promise.all([tokenMeta(client, token), getMarket(chain, token)]);
       if (!market) continue;
       const buyUsd = transferBuyUsd(log.args.value as bigint, meta.decimals, market.priceUsd);
@@ -147,10 +149,13 @@ async function onWatchedTransfer(chain: ChainKey, logs: Log[]) {
   }
 }
 
+export function isQuoteToken(chain: ChainKey, token: Address): boolean {
+  return QUOTE_TOKENS[CHAINS[chain].id].some((quote) => quote.toLowerCase() === token.toLowerCase());
+}
+
 export function nonQuoteToken(chain: ChainKey, token0: Address, token1: Address): Address | null {
-  const quotes = new Set(QUOTE_TOKENS[CHAINS[chain].id].map((q) => q.toLowerCase()));
-  const quote0 = quotes.has(token0.toLowerCase());
-  const quote1 = quotes.has(token1.toLowerCase());
+  const quote0 = isQuoteToken(chain, token0);
+  const quote1 = isQuoteToken(chain, token1);
   if (quote0 === quote1) return null;
   return quote0 ? token1 : token0;
 }
