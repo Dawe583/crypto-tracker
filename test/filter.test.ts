@@ -62,3 +62,16 @@ test('market lookup rejects non-finite and non-positive upstream prices', async 
   assert.equal(await getMarket('base', token), null);
 });
 
+test('market lookup normalizes malformed liquidity and market cap values', async (t) => {
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (async () => Response.json({
+    pairs: [
+      { chainId: 'base', baseToken: { address: token }, priceUsd: '3', liquidity: { usd: 'not-a-number' }, marketCap: 'bad', pairAddress: 'malformed', dexId: 'dex' },
+    ],
+  })) as typeof fetch;
+  t.after(() => { globalThis.fetch = realFetch; });
+
+  const market = await getMarket('base', token);
+  assert.equal(market?.liquidityUsd, 0);
+  assert.equal(market?.marketCapUsd, null);
+});

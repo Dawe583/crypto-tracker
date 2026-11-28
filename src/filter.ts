@@ -40,12 +40,16 @@ export async function getMarket(chain: ChainKey, token: Address): Promise<Market
     const tokenAddress = token.toLowerCase();
     const pairs = (j.pairs ?? []).filter((p: any) => p.chainId === CHAINS[chain].dexscreenerSlug && p.priceUsd && p.baseToken?.address?.toLowerCase() === tokenAddress && Number.isFinite(Number(p.priceUsd)) && Number(p.priceUsd) > 0);
     if (!pairs.length) return null;
-    pairs.sort((a: any, b: any) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0));
-    const p = pairs[0];
+    const liquid = pairs.map((p: any) => {
+      const liquidityUsd = Number(p.liquidity?.usd ?? 0);
+      return { p, liquidityUsd: Number.isFinite(liquidityUsd) && liquidityUsd > 0 ? liquidityUsd : 0 };
+    }).sort((a: { liquidityUsd: number }, b: { liquidityUsd: number }) => b.liquidityUsd - a.liquidityUsd);
+    const { p, liquidityUsd } = liquid[0];
+    const marketCapUsd = Number(p.marketCap ?? p.fdv);
     return {
       priceUsd: Number(p.priceUsd),
-      liquidityUsd: Number(p.liquidity?.usd ?? 0),
-      marketCapUsd: p.marketCap ?? p.fdv ?? null,
+      liquidityUsd,
+      marketCapUsd: Number.isFinite(marketCapUsd) && marketCapUsd > 0 ? marketCapUsd : null,
       pairAddress: p.pairAddress,
       dexId: p.dexId,
       pairUrl: p.url ?? `https://dexscreener.com/${CHAINS[chain].dexscreenerSlug}/${p.pairAddress}`,
