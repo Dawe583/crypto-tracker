@@ -517,3 +517,29 @@ test('does not set a new daily loss baseline while the kill switch is on', (t) =
   const resumed = runCycle(root, tomorrow + 60_000, { BTCUSDT: 111, ETHUSDT: 110 }, undefined, lossLimit);
   assert.deepEqual(resumed.positions.map(({ symbol }) => symbol), ['BTCUSDT', 'ETHUSDT']);
 });
+
+test('ledger tail reads backward across UTC day files', (t) => {
+  const root = fixture(t);
+  const result = runProcess(root, tomorrow, {}, 'BTCUSDT', {}, `
+    import { mkdirSync, writeFileSync } from 'node:fs';
+    const { hashLedgerPayload, ledgerTail } = await import('./src/engine/ledger.ts');
+    const row = (seq, prevHash, type, ts) => {
+      const data = { seq };
+      return { seq, ts, type, prevHash, hash: hashLedgerPayload(prevHash, seq, type, JSON.stringify(data)), data };
+    };
+    const rows = [];
+    rows.push(row(0, 'GENESIS', 'decision', 1));
+    rows.push(row(1, rows[0].hash, 'fill', 2));
+    rows.push(row(2, rows[1].hash, 'equity', 3));
+    rows.push(row(3, rows[2].hash, 'fill', 4));
+    mkdirSync('./data/ledger', { recursive: true });
+    writeFileSync('./data/ledger/2026-11-24.jsonl', rows.slice(0, 2).map((r) => JSON.stringify(r)).join('\\n') + '\\n');
+    writeFileSync('./data/ledger/2026-11-25.jsonl', rows.slice(2).map((r) => JSON.stringify(r)).join('\\n') + '\\n');
+    console.log(JSON.stringify({
+      tail: ledgerTail(3).map((r) => [r.seq, r.type]),
+      fills: ledgerTail(2, 'fill').map((r) => r.seq),
+    }));
+  `);
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), { tail: [[1, 'fill'], [2, 'equity'], [3, 'fill']], fills: [1, 3] });
+});

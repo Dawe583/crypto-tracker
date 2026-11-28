@@ -126,19 +126,16 @@ export function ledgerAppend<T>(type: LedgerRecord['type'], data: T, ts = Date.n
 }
 
 export function ledgerTail(limit: number, type?: LedgerRecord['type']): LedgerRecord[] {
-  const files = [day ? path : ''].filter(Boolean);
+  if (!existsSync(LEDGER_DIR)) return [];
+  const files = readdirSync(LEDGER_DIR).filter((file) => /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(file)).sort().reverse();
   const out: LedgerRecord[] = [];
-  for (const f of files) {
-    if (!existsSync(f)) continue;
-    const lines = readFileSync(f, 'utf8').trim().split('\n').filter(Boolean);
-    for (const l of lines) {
-      const rec = JSON.parse(l) as LedgerRecord;
-      if (!type || rec.type === type) out.push(rec);
+  outer: for (const file of files) {
+    for (const record of readLedgerBackwards(file)) {
+      if (!type || record.type === type) {
+        out.unshift(record);
+        if (out.length >= limit) break outer;
+      }
     }
   }
-  return out.slice(-limit);
-}
-
-export function ledgerAllToday(type?: LedgerRecord['type']): LedgerRecord[] {
-  return ledgerTail(10000, type);
+  return out;
 }
