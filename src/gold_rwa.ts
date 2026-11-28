@@ -4,7 +4,7 @@ import { CHAINS, config } from './config.js';
 import { logger } from './logger.js';
 import { dispatch, type WhaleSignal } from './notifier.js';
 import { setGoldSnapshot } from './store.js';
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, renameSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -144,7 +144,9 @@ function loadState(): Record<string, string> {
 }
 function saveState(s: Record<string, string>) {
   mkdirSync(dirname(STATE_PATH), { recursive: true });
-  writeFileSync(STATE_PATH, JSON.stringify(s, null, 2));
+  const temp = `${STATE_PATH}.tmp`;
+  writeFileSync(temp, JSON.stringify(s), { mode: 0o600 });
+  renameSync(temp, STATE_PATH);
 }
 
 export async function runGoldCycle(): Promise<GoldQuote[]> {
@@ -152,6 +154,7 @@ export async function runGoldCycle(): Promise<GoldQuote[]> {
   setGoldSnapshot(quotes);
   if (!quotes.length) return quotes;
   const state = loadState();
+  let changed = false;
   for (const q of quotes) {
     const key = `${q.chain}:${q.symbol}`;
     const prev = state[key] ?? 'none';
@@ -170,10 +173,11 @@ export async function runGoldCycle(): Promise<GoldQuote[]> {
       };
       await dispatch(signal);
     }
+    changed ||= state[key] !== q.level;
     state[key] = q.level;
     logger.info({ asset: key, dex: q.dexPriceUsd, spot: q.spotUsd, devPct: Number(q.deviationPct.toFixed(3)), level: q.level }, 'gold scan');
   }
-  saveState(state);
+  if (changed) saveState(state);
   return quotes;
 }
 
