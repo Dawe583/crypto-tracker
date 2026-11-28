@@ -118,7 +118,5 @@ export const config = {
     dailyLossPct: positiveNum(process.env.ENGINE_DAILY_LOSS_PCT, 5),
     minConfidence: fractionNum(process.env.ENGINE_MIN_CONFIDENCE, 0.5),
     cooldownMin: positiveNum(process.env.ENGINE_COOLDOWN_MIN, 60),
-    typesafeKey: str(process.env.TYPESAFE_AI_API_KEY),
-    typesafeUrl: str(process.env.TYPESAFE_AI_URL, 'https://api.typesafe.ai/v1'),
   },
 };
