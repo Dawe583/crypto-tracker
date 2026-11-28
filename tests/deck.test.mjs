@@ -389,3 +389,15 @@ test('engine-controlled text is escaped before insertion into HTML feeds', () =>
   assert.match(app.elements.get('rotLegend').innerHTML, /&lt;img/);
   assert.doesNotMatch(app.elements.get('rotLegend').innerHTML, /<img/);
 });
+
+test('profit display uses the engine daily baseline and labels legacy totals distinctly', () => {
+  const app = runtime();
+  app.run('loadDemo(); demoMode = false; Object.assign(STATE.snap, { equityUsd: 10100, realizedUsd: 500, unrealizedUsd: 50, dayStartEquityUsd: 10000 }); renderStatic()');
+  assert.equal(app.elements.get('sPnlLabel').textContent, 'DAY PNL');
+  assert.equal(app.elements.get('sPnl').textContent, '$100.00');
+  assert.match(app.elements.get('bigDelta').innerHTML, /today/);
+  app.run('delete STATE.snap.dayStartEquityUsd; renderStatic()');
+  assert.equal(app.elements.get('sPnlLabel').textContent, 'TOTAL PNL');
+  assert.equal(app.elements.get('sPnl').textContent, '$550.00');
+  assert.match(app.elements.get('bigDelta').innerHTML, /total/);
+});

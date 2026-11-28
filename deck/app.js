@@ -272,20 +272,22 @@ function renderStatic() {
     for (const id of ['marketRail', 'cortexList', 'indChips', 'modelRows', 'kellyBox', 'thoughts', 'trace', 'orderBook']) $(id).innerHTML = waiting;
     return;
   }
-  const start = s.equityUsd - s.realizedUsd - s.unrealizedUsd || 10000;
-  const dayPnl = s.realizedUsd + s.unrealizedUsd;
+  const hasDayBaseline = Number.isFinite(s.dayStartEquityUsd) && s.dayStartEquityUsd > 0;
+  const dayPnl = hasDayBaseline ? s.equityUsd - s.dayStartEquityUsd : s.realizedUsd + s.unrealizedUsd;
+  const pnlLabel = hasDayBaseline ? 'DAY PNL' : 'TOTAL PNL';
   const stats = Object.values(s.stats || {});
   const trades = stats.reduce((a, v) => a + v.trades, 0);
   const wins = stats.reduce((a, v) => a + v.wins, 0);
   setText('sNav', fmt$(s.equityUsd));
   $('sNav').classList.toggle('pos', dayPnl >= 0); $('sNav').classList.toggle('neg', dayPnl < 0);
+  $('sPnlLabel').textContent = pnlLabel;
   setText('sPnl', fmt$(dayPnl, 2));
   $('sPnl').classList.toggle('pos', dayPnl >= 0); $('sPnl').classList.toggle('neg', dayPnl < 0);
   $('sWin').textContent = trades ? `${((wins / trades) * 100).toFixed(0)}%` : '—';
   setText('sOpen', s.positions.length);
   setText('bigNav', fmt$(s.equityUsd));
   $('bigNav').classList.toggle('up', dayPnl >= 0);
-  $('bigDelta').innerHTML = `<span class="${cls(dayPnl)}">${dayPnl >= 0 ? '▲' : '▼'} ${fmt$(Math.abs(dayPnl), 2)} session</span> · cash ${fmt$(s.cashUsd)}`;
+  $('bigDelta').innerHTML = `<span class="${cls(dayPnl)}">${dayPnl >= 0 ? '▲' : '▼'} ${fmt$(Math.abs(dayPnl), 2)} ${hasDayBaseline ? 'today' : 'total'}</span> · cash ${fmt$(s.cashUsd)}`;
   const stopped = s.killed;
   $('running').textContent = demoMode ? 'DEMO' : stopped ? 'STOPPED' : 'RUNNING';
   $('running').className = `right ${stopped ? 'neg' : 'pos'}`;
