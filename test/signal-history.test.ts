@@ -146,6 +146,51 @@ test('keeps the last snapshot and live alerts when the history file cannot be wr
   `);
 });
 
+test('long Telegram alerts are truncated while webhook failures do not lose signal history', (t) => {
+  const root = fixture(t);
+  run(root, `
+    const { dispatch } = await import('./src/notifier.ts');
+    const { config } = await import('./src/config.ts');
+    config.telegramToken = 'token';
+    config.telegramChatId = 'chat';
+    config.webhookUrl = 'https://alerts.test/';
+    let telegramLength = 0;
+    let webhookCalls = 0;
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = (url, init) => {
+      if (String(url).startsWith('https://api.telegram.org/')) {
+        telegramLength = JSON.parse(init.body).text.length;
+        return Promise.resolve(new Response(null, { status: 200 }));
+      }
+      if (url === config.webhookUrl) {
+        webhookCalls += 1;
+        return Promise.resolve(new Response(null, { status: 500 }));
+      }
+      return realFetch(url, init);
+    };
+    await dispatch({ ...signal(4), safety: { verdict: 'CAUTION', reasons: ['x'.repeat(5000)] } });
+    assert.equal(telegramLength, 4096);
+    assert.equal(webhookCalls, 1);
+    assert.equal((await request('/api/whales')).count, 1);
+  `);
+});
+
+test('alert text strips terminal control characters from token-controlled fields', (t) => {
+  const root = fixture(t);
+  run(root, `
+    const { renderText } = await import('./src/notifier.ts');
+    const text = renderText({
+      kind: 'whale_buy', chain: 'base',
+      token: { address: '0x0000000000000000000000000000000000000001', symbol: 'EVIL\u001b[31mTOKEN' },
+      marketCapUsd: null, liquidityUsd: null, contractVerified: null,
+      links: { explorerToken: 'https://basescan.org/token/0x0000000000000000000000000000000000000001' },
+      createdAt: new Date().toISOString(),
+    });
+    assert.equal(text.includes('\u001b'), false);
+    assert.ok(text.includes('EVIL[31mTOKEN'));
+  `);
+});
+
 test('restored whales only drive paper entries if the wallet is still watched on that chain', (t) => {
   const root = fixture(t);
   const removed = '0x0000000000000000000000000000000000000010';
