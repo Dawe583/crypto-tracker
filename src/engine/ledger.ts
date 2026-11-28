@@ -67,18 +67,19 @@ export function ledgerResumeLatestCheckpoint<T>(): LedgerRecord<T> | undefined {
   const links = new Map<string, Pick<LedgerRecord, 'seq' | 'prevHash'>>();
   let checkpoint: LedgerRecord<T> | undefined;
   let tip: LedgerRecord | undefined;
-  let genesis = false;
+  let genesisRows = 0;
   for (const file of files) {
     for (const record of readLedgerBackwards<T>(file)) {
       if (links.has(record.hash)) throw new Error(`duplicate paper ledger row in ${file}`);
       links.set(record.hash, { seq: record.seq, prevHash: record.prevHash });
-      genesis ||= record.seq === 0;
+      if (record.seq === 0) genesisRows += 1;
       tip ??= record;
       checkpoint ??= record.type === 'fill' || record.type === 'checkpoint' ? record : undefined;
     }
   }
   if (!links.size) return undefined;
-  if (!genesis) throw new Error('missing paper ledger chain prefix');
+  if (!genesisRows) throw new Error('missing paper ledger chain prefix');
+  if (genesisRows > 1) throw new Error('multiple paper ledger chain genesis rows');
   for (const { seq: rowSeq, prevHash } of links.values()) {
     if (rowSeq > 0 && links.get(prevHash)?.seq !== rowSeq - 1) {
       throw new Error('missing paper ledger chain predecessor');

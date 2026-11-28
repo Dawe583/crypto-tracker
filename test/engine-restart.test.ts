@@ -525,6 +525,21 @@ test('does not set a new daily loss baseline while the kill switch is on', (t) =
   assert.deepEqual(resumed.positions.map(({ symbol }) => symbol), ['BTCUSDT', 'ETHUSDT']);
 });
 
+test('rejects a ledger with multiple genesis rows', (t) => {
+  const root = fixture(t);
+  const directory = join(root, 'data', 'ledger');
+  mkdirSync(directory);
+  const row = (equityUsd: number) => {
+    const data = { equityUsd };
+    return { seq: 0, ts: today, type: 'equity', prevHash: 'GENESIS',
+      hash: createHash('sha256').update(`GENESIS:0:equity:${JSON.stringify(data)}`).digest('hex'), data };
+  };
+  writeFileSync(join(directory, '2026-11-24.jsonl'), [row(10_000), row(10_001)].map((r) => JSON.stringify(r)).join('\n') + '\n');
+  const result = runProcess(root, tomorrow, { BTCUSDT: 100, ETHUSDT: 100 });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /ledger chain/i);
+});
+
 test('ledger tail reads backward across UTC day files', (t) => {
   const root = fixture(t);
   const result = runProcess(root, tomorrow, {}, 'BTCUSDT', {}, `
