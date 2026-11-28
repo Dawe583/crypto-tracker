@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { test, type TestContext } from 'node:test';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { RiskEngine } from '../src/engine/risk.js';
 import { LIBRARY } from '../src/strategies/library.js';
 
 async function runCycle(
@@ -70,6 +71,8 @@ async function runCycle(
 test('checks exposure again after a paper fill in the same cycle', async (t) => {
   const state = await runCycle(t, {});
   assert.deepEqual(state.snapshot?.positions.map((p) => p.symbol), ['BTCUSDT']);
+  assert.equal(state.snapshot?.dayStartEquityUsd, 10_000);
+  assert.equal(state.snapshot?.dayStart, new Date().toDateString());
   assert.equal(state.decisions.find((d) => d.strategy === 'ema_cross' && d.symbol === 'ETHUSDT')?.vetoed, 'total exposure cap');
 });
 
@@ -96,4 +99,17 @@ test('reuses exposure freed by a strategy sell in the same cycle', async (t) => 
     ['ETHUSDT', 'buy', undefined],
     ['BTCUSDT', 'sell', undefined],
   ]);
+});
+
+test('rolls the daily baseline without waiting for a buy intent', () => {
+  const cfg = { maxPositionUsd: 500, maxTotalUsd: 1000, maxOpenPositions: 8, dailyLossPct: 5, minConfidence: 0.5, cooldownMin: 60, startEquityUsd: 10_000 };
+  const first = Date.UTC(2026, 0, 1, 23, 0);
+  const next = Date.UTC(2026, 0, 2, 0, 1);
+  const risk = new RiskEngine(cfg, first, false);
+  assert.equal(risk.baselineEquity, 10_000);
+  risk.rollDay(9_750, next);
+  assert.equal(risk.baselineDay, new Date(next).toDateString());
+  assert.equal(risk.baselineEquity, 9_750);
+  risk.rollDay(9_800, next + 60_000);
+  assert.equal(risk.baselineEquity, 9_750);
 });

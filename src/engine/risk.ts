@@ -41,13 +41,18 @@ export class RiskEngine {
   }
 
   get baselineDay() { return this.dayStart; }
+  get baselineEquity() { return this.dayStartEquity; }
+
+  rollDay(equity: number, now = Date.now()) {
+    const today = new Date(now).toDateString();
+    if (today !== this.dayStart) { this.dayStart = today; this.dayStartEquity = equity; }
+  }
 
   // returns null when allowed, else the veto reason (logged to ledger)
   check(i: TradeIntent, positions: Position[], equity: number, exposureUsd: number, now = Date.now()): string | null {
     if (i.side === 'sell') return null;
     if (this.killed || (this.useKillFile && existsSync(KILL_FILE))) { this.killed = true; return 'kill switch ON (data/KILL)'; }
-    const today = new Date(now).toDateString();
-    if (today !== this.dayStart) { this.dayStart = today; this.dayStartEquity = equity; }
+    this.rollDay(equity, now);
     if (equity < this.dayStartEquity * (1 - this.cfg.dailyLossPct / 100)) {
       return `daily loss breaker (${this.cfg.dailyLossPct}%)`;
     }

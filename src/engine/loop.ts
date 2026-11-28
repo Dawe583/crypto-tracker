@@ -197,6 +197,7 @@ export function createPaperEngine(options: {
       if (!marks.has(p.symbol) && priorMark !== undefined) marks.set(p.symbol, priorMark);
     }
     const eq = portfolio.equity(marks);
+    risk.rollDay(eq, now);
     const unrealizedUsd = portfolio.unrealized(marks);
     if (positions.every((p) => prices.has(p.symbol))) {
       equityCurve.push({ ts: Date.now(), equityUsd: eq });
@@ -209,6 +210,8 @@ export function createPaperEngine(options: {
       realizedUsd: portfolio.realizedUsd,
       unrealizedUsd,
       feesUsd: portfolio.feesUsd,
+      dayStartEquityUsd: risk.baselineEquity,
+      dayStart: risk.baselineDay,
       positions: positions.map((p) => {
         const markPrice = marks.get(p.symbol) ?? p.entryPrice;
         return { ...p, markPrice, unrealizedUsd: p.qty * markPrice - p.sizeUsd - (p.entryFeeUsd ?? 0) };
