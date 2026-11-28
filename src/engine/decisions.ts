@@ -4,6 +4,8 @@
 import { logger } from '../logger.js';
 import type { StrategyContext, TradeIntent } from './types.js';
 
+const MODEL_TIMEOUT_MS = 5_000;
+
 export interface DecisionModel {
   name: string;
   decide(ctx: StrategyContext, question: string): Promise<{ action: 'buy' | 'sell' | 'hold'; confidence: number; reason: string }>;
@@ -20,6 +22,7 @@ export class JevModel implements DecisionModel {
       const r = await fetch(`${this.baseUrl}/decide`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', authorization: `Bearer ${this.apiKey}` },
+        signal: AbortSignal.timeout(MODEL_TIMEOUT_MS),
         body: JSON.stringify({
           question,
           state: {
