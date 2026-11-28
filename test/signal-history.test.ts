@@ -186,3 +186,32 @@ test('restored whales only drive paper entries if the wallet is still watched on
     assert.deepEqual(engineState.snapshot.positions.map((p) => p.strategy), ['whale_follow']);
   `, env);
 });
+
+test('long Telegram alerts are truncated while webhook failures do not lose signal history', (t) => {
+  const root = fixture(t);
+  run(root, `
+    const { dispatch } = await import('./src/notifier.ts');
+    const { config } = await import('./src/config.ts');
+    config.telegramToken = 'token';
+    config.telegramChatId = 'chat';
+    config.webhookUrl = 'https://alerts.test/';
+    let telegramLength = 0;
+    let webhookCalls = 0;
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = (url, init) => {
+      if (String(url).startsWith('https://api.telegram.org/')) {
+        telegramLength = JSON.parse(init.body).text.length;
+        return Promise.resolve(new Response(null, { status: 200 }));
+      }
+      if (url === config.webhookUrl) {
+        webhookCalls += 1;
+        return Promise.resolve(new Response(null, { status: 500 }));
+      }
+      return realFetch(url, init);
+    };
+    await dispatch({ ...signal(4), safety: { verdict: 'CAUTION', reasons: ['x'.repeat(5000)] } });
+    assert.equal(telegramLength, 4096);
+    assert.equal(webhookCalls, 1);
+    assert.equal((await request('/api/whales')).count, 1);
+  `);
+});

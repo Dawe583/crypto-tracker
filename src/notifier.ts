@@ -20,6 +20,7 @@ export interface WhaleSignal {
 }
 
 const SEND_TIMEOUT_MS = 5_000;
+const TELEGRAM_LIMIT = 4_096;
 
 const fmtUsd = (n: number | null | undefined) =>
   n === null || n === undefined ? 'n/a' : n >= 1e6 ? `$${(n / 1e6).toFixed(2)}M` : n >= 1e3 ? `$${(n / 1e3).toFixed(1)}K` : `$${n.toFixed(2)}`;
@@ -46,6 +47,7 @@ export function renderText(s: WhaleSignal): string {
 
 export async function dispatch(s: WhaleSignal): Promise<void> {
   const text = renderText(s);
+  const telegramText = text.length > TELEGRAM_LIMIT ? `${text.slice(0, TELEGRAM_LIMIT - 1)}…` : text;
   recordSignal(s);
   logger.info({ signal: s.kind, token: s.token.symbol, chain: s.chain }, 'signal');
   console.log(`\n${text}\n`);
@@ -56,7 +58,7 @@ export async function dispatch(s: WhaleSignal): Promise<void> {
         method: 'POST',
         signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ chat_id: config.telegramChatId, text, disable_web_page_preview: true }),
+        body: JSON.stringify({ chat_id: config.telegramChatId, text: telegramText, disable_web_page_preview: true }),
       });
       if (!r.ok) logger.warn({ status: r.status }, 'telegram send failed');
     } catch (err) {
@@ -66,12 +68,13 @@ export async function dispatch(s: WhaleSignal): Promise<void> {
 
   if (config.webhookUrl) {
     try {
-      await fetch(config.webhookUrl, {
+      const r = await fetch(config.webhookUrl, {
         method: 'POST',
         signal: AbortSignal.timeout(SEND_TIMEOUT_MS),
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ text, signal: s }),
       });
+      if (!r.ok) logger.warn({ status: r.status }, 'webhook send failed');
     } catch (err) {
       logger.warn({ err: String(err) }, 'webhook error');
     }
