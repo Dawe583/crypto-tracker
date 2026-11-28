@@ -112,7 +112,7 @@ git clone https://github.com/Dawe583/crypto-tracker.git ~/crypto-tracker
 cd ~/crypto-tracker
 
 # 2. Install dependencies
-npm i
+npm ci
 
 # 3. Create your config (never commit .env)
 cp .env.example .env
@@ -170,7 +170,7 @@ sudo systemctl disable whale-tracker    # stop auto-start on boot
 Updating:
 
 ```bash
-cd ~/crypto-tracker && git pull && npm i && sudo systemctl restart whale-tracker
+cd ~/crypto-tracker && git pull && npm ci && sudo systemctl restart whale-tracker
 ```
 
 See [docs/RPI4_DEPLOYMENT.md](docs/RPI4_DEPLOYMENT.md) for the full Raspberry Pi deployment guide, and [deploy/DEPLOY.md](deploy/DEPLOY.md) for rsync deploys and more detail.
