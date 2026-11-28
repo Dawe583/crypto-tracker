@@ -75,8 +75,9 @@ async function dexQuote(chain: 'base' | 'ethereum', address: Address) {
 }
 
 function thresholds() {
-  const alert = Math.max(0, config.gold.alertPct);
-  return { alert, major: Math.max(alert, config.gold.majorPct) };
+  const alert = config.gold.alertPct >= 0 ? config.gold.alertPct : 0.5;
+  const configuredMajor = config.gold.majorPct >= 0 ? config.gold.majorPct : 1.5;
+  return { alert, major: Math.max(alert, configuredMajor) };
 }
 
 export function classify(deviationPct: number): GoldQuote['level'] {

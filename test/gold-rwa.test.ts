@@ -83,4 +83,8 @@ test('reversed gold thresholds cannot turn small spreads into major alerts', (t)
   config.gold.majorPct = 1;
   assert.equal(classify(1.5), 'none');
   assert.equal(classify(2.1), 'major');
+  config.gold.alertPct = -1;
+  config.gold.majorPct = -2;
+  assert.equal(classify(0.6), 'alert');
+  assert.equal(classify(1.6), 'major');
 });
