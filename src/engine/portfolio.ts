@@ -33,12 +33,24 @@ export class PaperPortfolio {
   }
 
   restoreCheckpoint(c: PaperPortfolioCheckpoint) {
-    if (![c.cashUsd, c.realizedUsd, c.feesUsd, c.tradesClosed, c.wins, c.seq].every(Number.isFinite)
+    const optionalPositive = (n: number | null) => n === null || (Number.isFinite(n) && n > 0);
+    if (Array.isArray(c.positions)) for (const p of c.positions) {
+      p.stopLossPct ??= null;
+      p.takeProfitPct ??= null;
+      p.maxHoldMin ??= null;
+    }
+    if (![c.cashUsd, c.realizedUsd, c.feesUsd].every(Number.isFinite) || c.cashUsd < 0 || c.feesUsd < 0
+      || ![c.tradesClosed, c.wins, c.seq].every(Number.isSafeInteger) || c.tradesClosed < 0 || c.wins < 0 || c.seq < 0 || c.wins > c.tradesClosed
       || !Array.isArray(c.positions) || c.positions.some((p) =>
-        ![p.qty, p.entryPrice, p.entryTs, p.sizeUsd].every(Number.isFinite)
+        typeof p.id !== 'string' || !p.id || typeof p.strategy !== 'string' || !p.strategy || typeof p.symbol !== 'string' || !p.symbol
+        || ![p.qty, p.entryPrice, p.entryTs, p.sizeUsd].every(Number.isFinite)
+        || p.qty <= 0 || p.entryPrice <= 0 || p.entryTs <= 0 || p.sizeUsd <= 0
+        || !optionalPositive(p.stopLossPct) || (p.stopLossPct !== null && p.stopLossPct >= 100)
+        || !optionalPositive(p.takeProfitPct) || !optionalPositive(p.maxHoldMin)
         || (p.entryFeeUsd !== undefined && (!Number.isFinite(p.entryFeeUsd) || p.entryFeeUsd < 0))
-        || (p.trailing !== undefined && (!p.trailing || !Number.isFinite(p.trailing.peak)
-          || p.trailing.peak < p.entryPrice || !Number.isFinite(p.trailing.afterPct) || p.trailing.afterPct <= 0)))) {
+        || (p.trailing !== undefined && (!p.trailing || !Number.isFinite(p.trailing.peak) || p.trailing.peak <= 0
+          || p.trailing.peak < p.entryPrice || !Number.isFinite(p.trailing.afterPct) || p.trailing.afterPct <= 0)))
+      || new Set(c.positions.map((p) => `${p.strategy}|${p.symbol}`)).size !== c.positions.length) {
       throw new Error('invalid paper portfolio ledger checkpoint');
     }
     this.cashUsd = c.cashUsd;
