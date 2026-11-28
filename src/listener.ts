@@ -71,10 +71,11 @@ async function onNewPool(client: PublicClient, chain: ChainKey, dex: string, kin
 
   // Give the DEX indexer a moment to pick up the new pool before the market lookup.
   await new Promise((r) => setTimeout(r, 15_000));
-  const [meta, market, deployerTx] = await Promise.all([
+  const [meta, market, deployerTx, createdAt] = await Promise.all([
     tokenMeta(client, token),
     getMarket(chain, token),
     log.transactionHash ? txFrom(client, log.transactionHash) : Promise.resolve(undefined),
+    logTimestampIso(client, log.blockNumber),
   ]);
   const safety = await evaluateToken({ chain, token, pair, pairKind: kind, deployer: deployerTx, client });
   if (safety.verdict === 'REJECT') {
@@ -99,11 +100,25 @@ async function onNewPool(client: PublicClient, chain: ChainKey, dex: string, kin
       explorerToken: `${CHAINS[chain].explorer}/token/${token}`,
       explorerTx: log.transactionHash ? `${CHAINS[chain].explorer}/tx/${log.transactionHash}` : undefined,
     },
-    createdAt: new Date().toISOString(),
+    createdAt,
   };
   await dispatch(signal);
 }
 
+
+
+export async function logTimestampIso(client: PublicClient, blockNumber: bigint | null | undefined): Promise<string> {
+  if (typeof blockNumber === 'bigint') {
+    try {
+      const block = await client.getBlock({ blockNumber });
+      const ms = Number(block.timestamp) * 1000;
+      if (Number.isFinite(ms)) return new Date(ms).toISOString();
+    } catch (err) {
+      logger.warn({ err: String(err), blockNumber: blockNumber.toString() }, 'block timestamp lookup failed');
+    }
+  }
+  return new Date().toISOString();
+}
 
 export function transferBuyUsd(value: bigint, decimals: number, priceUsd: number): number | null {
   const buyUsd = Number(formatUnits(value, decimals)) * priceUsd;
@@ -120,11 +135,12 @@ async function onWatchedTransfer(client: PublicClient, chain: ChainKey, logs: Lo
       // Quote-token inflows are often sale proceeds, not a token buy; they carry no long signal.
       if (isQuoteToken(chain, token)) continue;
       const hash = log.transactionHash;
-      const [meta, market, receipt, transaction] = await Promise.all([
+      const [meta, market, receipt, transaction, createdAt] = await Promise.all([
         tokenMeta(client, token),
         getMarket(chain, token),
         hash ? client.getTransactionReceipt({ hash }).catch(() => null) : Promise.resolve(null),
         hash ? client.getTransaction({ hash }).catch(() => null) : Promise.resolve(null),
+        logTimestampIso(client, log.blockNumber),
       ]);
       if (!market) continue;
       let transfers: Array<{ address: string; args: { from?: string } }> | null = null;
@@ -157,7 +173,7 @@ async function onWatchedTransfer(client: PublicClient, chain: ChainKey, logs: Lo
           explorerToken: `${CHAINS[chain].explorer}/token/${token}`,
           explorerTx: `${CHAINS[chain].explorer}/tx/${log.transactionHash}`,
         },
-        createdAt: new Date().toISOString(),
+        createdAt,
       };
       await dispatch(signal);
     } catch (err) {

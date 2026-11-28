@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { parseAbiItem, type Log, type PublicClient } from 'viem';
-import { isQuoteToken, nonQuoteToken, transferBuyUsd, walletPaidForTransfer, watchLogs, watcherCursor } from '../src/listener.js';
+import { isQuoteToken, logTimestampIso, nonQuoteToken, transferBuyUsd, walletPaidForTransfer, watchLogs, watcherCursor } from '../src/listener.js';
 
 const transfer = parseAbiItem('event Transfer(address indexed from, address indexed to, uint256 value)');
 const to = ['0x0000000000000000000000000000000000000001'] as const;
@@ -162,4 +162,15 @@ test('token inflows require native or quote-asset payment evidence', () => {
   assert.equal(walletPaidForTransfer('base', wallet, [{ address: usdc, args: { from: wallet } }], 0n), true);
   assert.equal(walletPaidForTransfer('base', wallet, [{ address: usdc, args: { from: token } }], 0n), false);
   assert.equal(walletPaidForTransfer('base', wallet, [{ address: token, args: { from: wallet } }], 0n), false);
+});
+
+test('signal timestamps come from the event block when available', async () => {
+  const client = {
+    async getBlock({ blockNumber }: { blockNumber: bigint }) {
+      assert.equal(blockNumber, 123n);
+      return { timestamp: 1_700_000_000n };
+    },
+  } as unknown as PublicClient;
+  assert.equal(await logTimestampIso(client, 123n), '2023-11-14T22:13:20.000Z');
+  assert.ok(Number.isFinite(Date.parse(await logTimestampIso(client, null))));
 });
