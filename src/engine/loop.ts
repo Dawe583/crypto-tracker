@@ -43,6 +43,7 @@ export function createPaperEngine(options: {
   const equityCurve = [...(state.snapshot?.equityCurve ?? [])];
   const perStrategy = new Map<string, { pnl: number; trades: number; wins: number }>();
   const lastSignalBars = new Map<string, number>();
+  let checkpointDirty = false;
 
   function checkpointState(): EngineCheckpoint {
     return { portfolio: portfolio.checkpoint(), risk: risk.checkpoint(), stats: [...perStrategy], lastSignalBars: [...lastSignalBars] };
@@ -80,17 +81,17 @@ export function createPaperEngine(options: {
       if (pnl > 0) stats.wins += 1;
     }
     append('fill', { ...fill, checkpoint: checkpointState() });
+    checkpointDirty = false;
   }
 
   function checkExits(prices: Map<string, number>, now: number) {
     const stopped = new Set<string>();
-    let peakChanged = false;
     for (const p of [...portfolio.positions.values()]) {
       const px = prices.get(p.symbol);
       if (!px) continue;
       const priorPeak = p.trailing?.peak;
       const reason = positionExit(p, px, now);
-      peakChanged ||= priorPeak !== p.trailing?.peak;
+      if (priorPeak !== p.trailing?.peak) checkpointDirty = true;
       if (!reason) continue;
       const price = slippedPrice(px, 'sell', p.trailing ? MANAGED_SLIPPAGE_BPS : 0);
       const fill = portfolio.close(p.strategy, p.symbol, price, config.engine.feePct, reason, now);
@@ -100,7 +101,7 @@ export function createPaperEngine(options: {
         logger.info({ symbol: p.symbol, strategy: p.strategy, pnl: fill.pnlUsd }, 'position closed');
       }
     }
-    return { stopped, peakChanged };
+    return { stopped };
   }
 
   async function cycle() {
@@ -120,8 +121,24 @@ export function createPaperEngine(options: {
     const prices = new Map([...feeds].map(([symbol, feed]) => [symbol, feed.price] as const));
 
     const now = Date.now();
-    const { stopped, peakChanged } = checkExits(prices, now);
-    let signalBarChanged = false;
+    const marksFor = (positions: ReturnType<PaperPortfolio['checkpoint']>['positions']) => {
+      const marks = new Map<string, number>();
+      for (const symbol of new Set([...symbols, ...positions.map((p) => p.symbol)])) {
+        const mark = prices.get(symbol) ?? state.snapshot?.prices[symbol];
+        if (mark !== undefined) marks.set(symbol, mark);
+      }
+      for (const p of positions) {
+        const priorMark = state.snapshot?.positions.find((previous) => previous.id === p.id)?.markPrice;
+        if (!marks.has(p.symbol) && priorMark !== undefined) marks.set(p.symbol, priorMark);
+      }
+      return marks;
+    };
+    if (!risk.isKilled()) {
+      const priorDay = risk.baselineDay;
+      risk.rollDay(portfolio.equity(marksFor([...portfolio.positions.values()])), now);
+      checkpointDirty ||= risk.baselineDay !== priorDay;
+    }
+    const { stopped } = checkExits(prices, now);
     const signals = options.signals();
 
     for (const { strategy, params, enabled } of strategies) {
@@ -135,7 +152,7 @@ export function createPaperEngine(options: {
         const bar = candles[candles.length - 1].t;
         if (bar <= (lastSignalBars.get(key) ?? -Infinity)) continue;
         lastSignalBars.set(key, bar);
-        signalBarChanged = true;
+        checkpointDirty = true;
         let intents: TradeIntent[] = [];
         try {
           intents = strategy.evaluate({ symbol, candles, price: candles[candles.length - 1].c,
@@ -162,13 +179,11 @@ export function createPaperEngine(options: {
           const equity = portfolio.equity(prices);
           const sizeUsd = i.management ? managedSize(i, equity, config.engine.feePct, MANAGED_SLIPPAGE_BPS,
             Math.min(config.engine.maxPositionUsd, config.engine.maxTotalUsd - exposure)) : i.sizeUsd;
-          const baselineDay = risk.baselineDay;
           const veto = positions.some((p) => !prices.has(p.symbol))
             ? 'market price unavailable for an open position'
             : i.management && !((sizeUsd ?? 0) >= 5)
               ? 'managed size below minimum or invalid risk parameters'
               : risk.check({ ...i, sizeUsd }, positions, equity, exposure, now);
-          if (risk.baselineDay !== baselineDay) append('checkpoint', { checkpoint: checkpointState() });
           if (veto) { rec.vetoed = veto; append('decision', rec); append('risk', rec); state.decisions.unshift(rec); continue; }
           const price = slippedPrice(feed.price, 'buy', i.management ? MANAGED_SLIPPAGE_BPS : 0);
           const fill = portfolio.open({ ...i, sizeUsd }, price, config.engine.feePct, now);
@@ -182,20 +197,13 @@ export function createPaperEngine(options: {
       }
     }
 
-    if (options.checkpointObservations && (peakChanged || signalBarChanged))
+    if (options.checkpointObservations && checkpointDirty) {
       append('checkpoint', { checkpoint: checkpointState() });
+      checkpointDirty = false;
+    }
     const positions = [...portfolio.positions.values()];
-    const marks = new Map<string, number>();
-    for (const symbol of new Set([...symbols, ...positions.map((p) => p.symbol)])) {
-      const mark = prices.get(symbol) ?? state.snapshot?.prices[symbol];
-      if (mark !== undefined) marks.set(symbol, mark);
-    }
-    for (const p of positions) {
-      const priorMark = state.snapshot?.positions.find((previous) => previous.id === p.id)?.markPrice;
-      if (!marks.has(p.symbol) && priorMark !== undefined) marks.set(p.symbol, priorMark);
-    }
+    const marks = marksFor(positions);
     const eq = portfolio.equity(marks);
-    risk.rollDay(eq, now);
     const unrealizedUsd = portfolio.unrealized(marks);
     if (positions.every((p) => prices.has(p.symbol))) {
       equityCurve.push({ ts: Date.now(), equityUsd: eq });

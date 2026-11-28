@@ -501,6 +501,8 @@ test('keeps the new daily loss baseline after a cycle with no fill', (t) => {
   assert.deepEqual(vetoed.positions.map(({ symbol }) => symbol), ['BTCUSDT']);
 
   const restarted = runCycle(root, tomorrow + 60_000, { BTCUSDT: 111, ETHUSDT: 110 }, undefined, lossLimit);
+  assert.equal(restarted.dayStartEquityUsd, vetoed.dayStartEquityUsd);
+  assert.notEqual(vetoed.dayStartEquityUsd, 10_000);
   assert.deepEqual(restarted.positions.map(({ symbol }) => symbol), ['BTCUSDT']);
   const ledger = readFileSync(join(root, 'data', 'ledger', '2026-11-25.jsonl'), 'utf8');
   assert.match(ledger, /max open positions/);
@@ -515,6 +517,7 @@ test('does not set a new daily loss baseline while the kill switch is on', (t) =
   writeFileSync(kill, 'on');
   const halted = runCycle(root, tomorrow, { BTCUSDT: 115, ETHUSDT: 110 }, undefined, lossLimit);
   assert.equal(halted.killed, true);
+  assert.equal(halted.dayStartEquityUsd, 10_000);
   assert.deepEqual(halted.positions.map(({ symbol }) => symbol), ['BTCUSDT']);
   rmSync(kill);
 
