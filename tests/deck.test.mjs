@@ -28,7 +28,7 @@ function runtime(fetch = async () => ({ ok: true, json: async () => ({}) }), hos
 
 test('cancelled token prompt terminates concurrent unauthorized requests without retrying', async () => {
   let requests = 0, prompts = 0;
-  const app = runtime(async () => { requests++; return { status: 401, ok: false }; });
+  const app = runtime(async (_path, init) => { requests++; assert.ok(init.signal instanceof AbortSignal); return { status: 401, ok: false }; });
   app.context.prompt = () => { prompts++; return null; };
   const results = await app.run('Promise.allSettled([api("/one"), api("/two")])');
   assert.equal(requests, 2);

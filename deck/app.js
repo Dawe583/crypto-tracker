@@ -37,7 +37,9 @@ const utc = (ts) => new Date(ts).toISOString().slice(11, 19);
 let TOKEN = sessionStorage.getItem('apiToken') || '';
 let tokenRequest;
 const api = async (path, opts = {}, retried = false) => {
-  const r = await fetch(path, { ...opts, headers: TOKEN ? { authorization: `Bearer ${TOKEN}` } : {} });
+  const { headers: extraHeaders, ...rest } = opts;
+  const r = await fetch(path, { ...rest, signal: AbortSignal.timeout(10_000),
+    headers: { ...extraHeaders, ...(TOKEN ? { authorization: `Bearer ${TOKEN}` } : {}) } });
   if (r.status === 401 && !retried) {
     tokenRequest ??= Promise.resolve().then(() => {
       const token = prompt('Enter the configured API token to connect this deck.');
