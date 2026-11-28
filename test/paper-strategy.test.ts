@@ -5,6 +5,8 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { config } from '../src/config.js';
 import { replayOne, runBacktest } from '../src/engine/backtest.js';
+import { runStress } from '../src/engine/stress.js';
+import { runSweep } from '../src/engine/sweep.js';
 import { managedSize } from '../src/engine/execution.js';
 import { closedStrategyBars } from '../src/engine/market.js';
 import { PaperPortfolio } from '../src/engine/portfolio.js';
@@ -95,6 +97,12 @@ test('indicator helpers reject invalid lookback parameters instead of producing 
   }
   assert.equal(bollinger(xs, 2, 0), null);
   assert.equal(macdHist(xs, 0, 2, 1), null);
+});
+
+
+test('research runners reject non-fixed candle intervals before network fetches', async () => {
+  await assert.rejects(runSweep('rsi_reversion', [symbol], 'bad-interval'), /fixed candle interval/);
+  await assert.rejects(runStress([symbol], '1M'), /fixed candle interval/);
 });
 
 test('archive reports for different symbols and windows do not overwrite each other', async (t) => {
