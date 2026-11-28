@@ -1,4 +1,5 @@
 import { timingSafeEqual } from 'node:crypto';
+import { config } from '../config.js';
 import { logger } from '../logger.js';
 import { createHostedStore, hostedEngineEnabled, hostedStrategies, runHostedCycle } from './hosted.js';
 import { fetchSymbol, type Feed } from './market.js';
@@ -75,7 +76,7 @@ export async function hostedRead(url: URL, method?: string, authorization?: stri
       }
       case '/api/engine/candles': {
         const symbol = (url.searchParams.get('symbol') ?? 'BTCUSDT').toUpperCase();
-        if (!/^[A-Z0-9]{1,20}$/.test(symbol)) return failure(400, 'Invalid symbol');
+        if (!/^[A-Z0-9]{1,20}$/.test(symbol) || !config.engine.symbols.includes(symbol)) return failure(400, 'Invalid symbol');
         const feed = await hostedCandles(symbol);
         return reply(200, feed ? { symbol, source: feed.source, lastFetch: feed.lastFetch, candles: feed.candles } : { symbol, candles: [] });
       }
