@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { setImmediate, setTimeout } from 'node:timers/promises';
 import { config } from '../src/config.js';
-import { GOLD_ASSETS, classify, scanGold, startGoldLoop } from '../src/gold_rwa.js';
+import { GOLD_ASSETS, scanGold, startGoldLoop } from '../src/gold_rwa.js';
+import { classify } from '../src/gold_rwa.js';
 
 test('a stalled DEX request does not prevent a valid asset from refreshing', async (t) => {
   const [paxg, xaut] = GOLD_ASSETS;
