@@ -186,3 +186,26 @@ test('restored whales only drive paper entries if the wallet is still watched on
     assert.deepEqual(engineState.snapshot.positions.map((p) => p.strategy), ['whale_follow']);
   `, env);
 });
+
+test('API bearer auth uses exact constant-time matching and localhost is the default host', (t) => {
+  const root = fixture(t);
+  run(root, `
+    const { config } = await import('./src/config.ts');
+    assert.equal(config.api.host, '127.0.0.1');
+    const server = startApi();
+    await once(server, 'listening');
+    try {
+      const url = 'http://127.0.0.1:' + server.address().port + '/api/whales';
+      const missing = await fetch(url);
+      assert.equal(missing.status, 401);
+      const wrongLength = await fetch(url, { headers: { authorization: 'Bearer secret-token-x' } });
+      assert.equal(wrongLength.status, 401);
+      const wrongSameLength = await fetch(url, { headers: { authorization: 'Bearer secret-tokem' } });
+      assert.equal(wrongSameLength.status, 401);
+      const correct = await fetch(url, { headers: { authorization: 'Bearer secret-token' } });
+      assert.equal(correct.status, 200);
+    } finally {
+      server.close();
+    }
+  `, { API_TOKEN: 'secret-token' });
+});

@@ -64,7 +64,7 @@ export const config = {
   webhookUrl: str(process.env.ALERT_WEBHOOK_URL),
   api: {
     enabled: str(process.env.API_ENABLED, 'true').toLowerCase() !== 'false',
-    host: str(process.env.API_HOST, '0.0.0.0'),
+    host: str(process.env.API_HOST, '127.0.0.1'),
     port: num(process.env.API_PORT, 8787),
     token: str(process.env.API_TOKEN),
     corsOrigins: str(process.env.API_CORS_ORIGINS)

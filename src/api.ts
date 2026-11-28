@@ -7,6 +7,7 @@
 // Auth: if API_TOKEN is set, every /api/* route except /api/health needs "Authorization: Bearer <API_TOKEN>".
 // CORS: allows https://openterminal-ashen.vercel.app, any http://localhost or http://127.0.0.1 origin, and API_CORS_ORIGINS.
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http';
+import { timingSafeEqual } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -48,7 +49,9 @@ function send(res: ServerResponse, status: number, body: unknown, headers: Recor
 
 function authorized(req: IncomingMessage): boolean {
   if (!config.api.token) return true;
-  return req.headers.authorization === `Bearer ${config.api.token}`;
+  const given = Buffer.from(req.headers.authorization ?? '');
+  const expected = Buffer.from(`Bearer ${config.api.token}`);
+  return given.length === expected.length && timingSafeEqual(given, expected);
 }
 
 function parseLimit(raw: string | null): number {
@@ -177,6 +180,9 @@ export function startApi(): Server | null {
     });
   });
   server.on('error', (err) => logger.error({ err: String(err) }, 'api server error'));
+  if (!config.api.token && !['127.0.0.1', 'localhost', '::1'].includes(config.api.host)) {
+    logger.warn({ host: config.api.host }, 'API is network reachable without API_TOKEN; signals are public and the engine kill endpoint is unauthenticated');
+  }
   server.listen(config.api.port, config.api.host, () => {
     logger.info({ host: config.api.host, port: config.api.port, auth: Boolean(config.api.token) }, 'API listening');
   });
