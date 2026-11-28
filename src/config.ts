@@ -11,6 +11,10 @@ const positiveNum = (v: string | undefined, d: number): number => {
   const n = num(v, d);
   return n > 0 ? n : d;
 };
+const positiveInt = (v: string | undefined, d: number): number => {
+  const n = num(v, d);
+  return Number.isSafeInteger(n) && n > 0 ? n : d;
+};
 const nonNegativeNum = (v: string | undefined, d: number): number => {
   const n = num(v, d);
   return n >= 0 ? n : d;
@@ -104,13 +108,13 @@ export const config = {
   engine: {
     enabled: str(process.env.ENGINE_ENABLED, 'true').toLowerCase() !== 'false',
     startUsd: positiveNum(process.env.ENGINE_START_USD, 10_000),
-    symbols: str(process.env.ENGINE_SYMBOLS, 'BTCUSDT,ETHUSDT,SOLUSDT,DOGEUSDT,AVAXUSDT,LINKUSDT').split(',').map((s) => s.trim().toUpperCase()).filter(Boolean),
+    symbols: [...new Set(str(process.env.ENGINE_SYMBOLS, 'BTCUSDT,ETHUSDT,SOLUSDT,DOGEUSDT,AVAXUSDT,LINKUSDT').split(',').map((s) => s.trim().toUpperCase()).filter((s) => /^[A-Z0-9]{2,20}$/.test(s)))],
     interval: str(process.env.ENGINE_INTERVAL, '1m'),
     pollMs: positiveNum(process.env.ENGINE_POLL_MS, 30_000),
     feePct: nonNegativeNum(process.env.ENGINE_FEE_PCT, 0.1),
     maxPositionUsd: positiveNum(process.env.ENGINE_MAX_POSITION_USD, 500),
     maxTotalUsd: positiveNum(process.env.ENGINE_MAX_TOTAL_USD, 3_000),
-    maxOpenPositions: positiveNum(process.env.ENGINE_MAX_OPEN_POSITIONS, 8),
+    maxOpenPositions: positiveInt(process.env.ENGINE_MAX_OPEN_POSITIONS, 8),
     dailyLossPct: positiveNum(process.env.ENGINE_DAILY_LOSS_PCT, 5),
     minConfidence: fractionNum(process.env.ENGINE_MIN_CONFIDENCE, 0.5),
     cooldownMin: positiveNum(process.env.ENGINE_COOLDOWN_MIN, 60),
