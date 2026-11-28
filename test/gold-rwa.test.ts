@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { setImmediate, setTimeout } from 'node:timers/promises';
 import { config } from '../src/config.js';
-import { GOLD_ASSETS, scanGold, startGoldLoop } from '../src/gold_rwa.js';
+import { GOLD_ASSETS, optionalGoldAddress, scanGold, startGoldLoop } from '../src/gold_rwa.js';
 
 test('a stalled DEX request does not prevent a valid asset from refreshing', async (t) => {
   const [paxg, xaut] = GOLD_ASSETS;
@@ -58,4 +58,10 @@ test('scheduled gold polls do not overlap', async (t) => {
   }
   await tick();
   assert.equal(requests, 2);
+});
+
+test('invalid optional Base gold addresses are disabled rather than crashing startup', () => {
+  assert.equal(optionalGoldAddress('not-an-address', 'BASE_PAXG_ADDRESS'), null);
+  assert.equal(optionalGoldAddress('', 'BASE_XAUT_ADDRESS'), null);
+  assert.equal(optionalGoldAddress('0x45804880De22913dAFE09f4980848ECE6EcbAf78', 'BASE_PAXG_ADDRESS'), '0x45804880De22913dAFE09f4980848ECE6EcbAf78');
 });

@@ -8,12 +8,25 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+export function optionalGoldAddress(raw: string, label: string): Address | null {
+  if (!raw) return null;
+  try {
+    return getAddress(raw);
+  } catch {
+    logger.warn({ label }, 'invalid configured gold token address; asset disabled');
+    return null;
+  }
+}
+
+const basePaxg = optionalGoldAddress(config.gold.basePaxg, 'BASE_PAXG_ADDRESS');
+const baseXaut = optionalGoldAddress(config.gold.baseXaut, 'BASE_XAUT_ADDRESS');
+
 // Each token represents one troy ounce of gold (PAXG and XAUt are 1 token = 1 fine troy oz).
 export const GOLD_ASSETS: Array<{ symbol: string; chain: 'base' | 'ethereum'; address: Address; issuer: string }> = [
   { symbol: 'PAXG', chain: 'ethereum', address: getAddress('0x45804880De22913dAFE09f4980848ECE6EcbAf78'), issuer: 'Paxos' },
   { symbol: 'XAUT', chain: 'ethereum', address: getAddress('0x68749665FF8D2d112Fa859AA293F07A622782F38'), issuer: 'Tether' },
-  ...(config.gold.basePaxg ? [{ symbol: 'PAXG', chain: 'base' as const, address: getAddress(config.gold.basePaxg), issuer: 'Paxos' }] : []),
-  ...(config.gold.baseXaut ? [{ symbol: 'XAUT', chain: 'base' as const, address: getAddress(config.gold.baseXaut), issuer: 'Tether' }] : []),
+  ...(basePaxg ? [{ symbol: 'PAXG', chain: 'base' as const, address: basePaxg, issuer: 'Paxos' }] : []),
+  ...(baseXaut ? [{ symbol: 'XAUT', chain: 'base' as const, address: baseXaut, issuer: 'Tether' }] : []),
 ];
 
 export interface GoldQuote {
