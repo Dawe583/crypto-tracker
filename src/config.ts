@@ -19,6 +19,10 @@ const fractionNum = (v: string | undefined, d: number): number => {
   const n = num(v, d);
   return n >= 0 && n <= 1 ? n : d;
 };
+const portNum = (v: string | undefined, d: number): number => {
+  const n = num(v, d);
+  return Number.isSafeInteger(n) && n >= 0 && n <= 65535 ? n : d;
+};
 
 export const CHAINS = {
   base: {
@@ -82,7 +86,7 @@ export const config = {
   api: {
     enabled: str(process.env.API_ENABLED, 'true').toLowerCase() !== 'false',
     host: str(process.env.API_HOST, '127.0.0.1'),
-    port: num(process.env.API_PORT, 8787),
+    port: portNum(process.env.API_PORT, 8787),
     token: str(process.env.API_TOKEN),
     corsOrigins: str(process.env.API_CORS_ORIGINS)
       .split(',')
