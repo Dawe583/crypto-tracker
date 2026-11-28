@@ -95,9 +95,11 @@ export async function checkVerified(chain: ChainKey, token: Address): Promise<bo
   const host = chain === 'base' ? 'https://api.basescan.org/api' : 'https://api.etherscan.io/api';
   try {
     const r = await fetch(`${host}?module=contract&action=getsourcecode&address=${token}&apikey=${key}`, { signal: AbortSignal.timeout(FILTER_TIMEOUT_MS) });
+    if (!r.ok) return null;
     const j: any = await r.json();
-    const src = j.result?.[0]?.SourceCode ?? '';
-    return src !== '';
+    if (j.status !== undefined && String(j.status) !== '1') return null;
+    const src = j.result?.[0]?.SourceCode;
+    return typeof src === 'string' && src !== '';
   } catch {
     return null;
   }

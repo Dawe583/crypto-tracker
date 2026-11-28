@@ -88,3 +88,11 @@ test('honeypot lookup normalizes malformed upstream result types', async (t) => 
     isHoneypot: null, buyTaxPct: 2.5, sellTaxPct: null, reason: undefined,
   });
 });
+
+test('explorer errors are unknown rather than false unverified results', async (t) => {
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (async () => Response.json({ status: '0', message: 'rate limited', result: [] })) as typeof fetch;
+  t.after(() => { globalThis.fetch = realFetch; config.basescanKey = ''; });
+  config.basescanKey = 'test-key';
+  assert.equal(await checkVerified('base', token), null);
+});
