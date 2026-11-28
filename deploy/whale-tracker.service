@@ -1,6 +1,6 @@
 # systemd unit for the Base/EVM whale tracker on Raspberry Pi OS (64-bit).
 # Normally installed by deploy/install-service.sh, which fills in the placeholders.
-# Manual install: replace <USER> and <APP_DIR>, and set ExecStart to the output of `which npm`.
+# Manual install: replace <USER> and <APP_DIR>, set ExecStart to `which npm`, and include the Node.js bin directory in PATH.
 [Unit]
 Description=Base & EVM whale tracker (crypto alert daemon + OpenTerminal API)
 After=network-online.target
@@ -15,6 +15,7 @@ Group=<USER>
 WorkingDirectory=<APP_DIR>
 # Require .env so a missing configuration cannot silently start with public defaults.
 EnvironmentFile=<APP_DIR>/.env
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
 Environment=NODE_ENV=production
 ExecStart=/usr/bin/npm start
 Restart=always

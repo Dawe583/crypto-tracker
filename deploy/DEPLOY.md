@@ -51,7 +51,7 @@ Look for the startup line `Base & EVM whale tracker running`. Stop with Ctrl+C.
 cd ~/crypto-tracker
 sudo cp deploy/whale-tracker.service /etc/systemd/system/whale-tracker.service
 sudo sed -i "s|<USER>|$USER|; s|<APP_DIR>|$PWD|g" /etc/systemd/system/whale-tracker.service
-which npm   # if not /usr/bin/npm, edit ExecStart in the unit file
+which npm   # if not /usr/bin/npm, edit ExecStart and add its Node.js bin directory to Environment=PATH
 sudo systemctl daemon-reload
 sudo systemctl enable --now whale-tracker
 sudo systemctl status whale-tracker
