@@ -82,20 +82,6 @@ test('replay buys at next open, charges both sides on a gap stop and includes th
   assert.equal(replayOne(fixture, {}, symbol, candles.slice(0, 1), 0.2, 10, minute).trades, 0);
 });
 
-test('archive reports for different symbols and windows do not overwrite each other', async (t) => {
-  const root = mkdtempSync(join(tmpdir(), 'crypto-tracker-replay-'));
-  const cwd = process.cwd();
-  t.after(() => { process.chdir(cwd); rmSync(root, { recursive: true, force: true }); });
-  process.chdir(root);
-  writeFileSync('first.csv', '60000,100,101,99,100,1\n120000,100,101,99,100,1\n');
-  writeFileSync('next.csv', '180000,100,101,99,100,1\n240000,100,101,99,100,1\n');
-  const first = await runBacktest([symbol], '1m', 'first.csv');
-  const otherSymbol = await runBacktest(['ETHUSDT'], '1m', 'first.csv');
-  const next = await runBacktest([symbol], '1m', 'next.csv');
-  assert.equal(new Set([first.file, otherSymbol.file, next.file]).size, 3);
-  assert.ok([first, otherSymbol, next].every(({ file }) => existsSync(file)));
-});
-
 test('indicator helpers reject invalid lookback parameters instead of producing NaN signals', async () => {
   const { sma, ema, rsi, bollinger, zscore, pctChange, macdHist } = await import('../src/engine/indicators.js');
   const xs = [1, 2, 3, 4, 5];
@@ -109,4 +95,18 @@ test('indicator helpers reject invalid lookback parameters instead of producing 
   }
   assert.equal(bollinger(xs, 2, 0), null);
   assert.equal(macdHist(xs, 0, 2, 1), null);
+});
+
+test('archive reports for different symbols and windows do not overwrite each other', async (t) => {
+  const root = mkdtempSync(join(tmpdir(), 'crypto-tracker-replay-'));
+  const cwd = process.cwd();
+  t.after(() => { process.chdir(cwd); rmSync(root, { recursive: true, force: true }); });
+  process.chdir(root);
+  writeFileSync('first.csv', '60000,100,101,99,100,1\n120000,100,101,99,100,1\n');
+  writeFileSync('next.csv', '180000,100,101,99,100,1\n240000,100,101,99,100,1\n');
+  const first = await runBacktest([symbol], '1m', 'first.csv');
+  const otherSymbol = await runBacktest(['ETHUSDT'], '1m', 'first.csv');
+  const next = await runBacktest([symbol], '1m', 'next.csv');
+  assert.equal(new Set([first.file, otherSymbol.file, next.file]).size, 3);
+  assert.ok([first, otherSymbol, next].every(({ file }) => existsSync(file)));
 });
