@@ -101,6 +101,14 @@ test('reuses exposure freed by a strategy sell in the same cycle', async (t) => 
   ]);
 });
 
+
+test('daily loss breaker triggers at the configured threshold boundary', () => {
+  const cfg = { maxPositionUsd: 500, maxTotalUsd: 1000, maxOpenPositions: 8, dailyLossPct: 5, minConfidence: 0.5, cooldownMin: 60, startEquityUsd: 10_000 };
+  const risk = new RiskEngine(cfg, Date.UTC(2026, 0, 1), false);
+  const intent = { strategy: 'fixture', symbol: 'BTCUSDT', side: 'buy' as const, confidence: 1, reason: 'boundary', sizeUsd: 100 };
+  assert.equal(risk.check(intent, [], 9_500, 0, Date.UTC(2026, 0, 1)), 'daily loss breaker (5%)');
+});
+
 test('rolls the daily baseline without waiting for a buy intent', () => {
   const cfg = { maxPositionUsd: 500, maxTotalUsd: 1000, maxOpenPositions: 8, dailyLossPct: 5, minConfidence: 0.5, cooldownMin: 60, startEquityUsd: 10_000 };
   const first = Date.UTC(2026, 0, 1, 23, 0);

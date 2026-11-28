@@ -66,7 +66,7 @@ export class RiskEngine {
     if (i.side === 'sell') return null;
     if (this.isKilled()) return 'kill switch ON (data/KILL)';
     this.rollDay(equity, now);
-    if (equity < this.dayStartEquity * (1 - this.cfg.dailyLossPct / 100)) {
+    if (equity <= this.dayStartEquity * (1 - this.cfg.dailyLossPct / 100)) {
       return `daily loss breaker (${this.cfg.dailyLossPct}%)`;
     }
     if (i.confidence < this.cfg.minConfidence) return `confidence ${i.confidence} < ${this.cfg.minConfidence}`;
