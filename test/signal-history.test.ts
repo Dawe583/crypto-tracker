@@ -209,3 +209,24 @@ test('API bearer auth uses exact constant-time matching and localhost is the def
     }
   `, { API_TOKEN: 'secret-token' });
 });
+
+test('malformed watchlists disable wallet watching instead of crashing startup', (t) => {
+  const root = fixture(t);
+  writeFileSync(join(root, 'data', 'watchlist.json'), '{broken');
+  run(root, `
+    const { WATCHLIST } = await import('./src/wallets.ts');
+    assert.deepEqual(WATCHLIST, []);
+  `);
+  writeFileSync(join(root, 'data', 'watchlist.json'), JSON.stringify([
+    { address: '0x0000000000000000000000000000000000000001', label: 'bad-chain', chains: ['solana'] },
+    { address: '0x0000000000000000000000000000000000000002', label: 'good', category: 'unexpected', chains: ['base', 'solana'] },
+  ]));
+  run(root, `
+    const { WATCHLIST, watchedAddresses } = await import('./src/wallets.ts');
+    assert.equal(WATCHLIST.length, 1);
+    assert.equal(WATCHLIST[0].label, 'good');
+    assert.equal(WATCHLIST[0].category, 'other');
+    assert.deepEqual(watchedAddresses('base'), ['0x0000000000000000000000000000000000000002']);
+    assert.deepEqual(watchedAddresses('ethereum'), []);
+  `);
+});

@@ -177,7 +177,7 @@ See [docs/RPI4_DEPLOYMENT.md](docs/RPI4_DEPLOYMENT.md) for the full Raspberry Pi
 
 ## HTTP JSON API
 
-The tracker process serves a read-only JSON API from `src/api.ts`, backed by the in-memory data in `src/store.ts`. It is enabled by default and listens on port 8787. Set `API_HOST=127.0.0.1` for local-only access, or `0.0.0.0` (the default in `.env.example`) for LAN access.
+The tracker process serves a read-only JSON API from `src/api.ts`, backed by the in-memory data in `src/store.ts`. It is enabled by default and listens on port 8787. `API_HOST` defaults to local-only `127.0.0.1`; set `0.0.0.0` only with a strong `API_TOKEN` for LAN access.
 
 | Method | Path | Returns |
 |---|---|---|
@@ -232,7 +232,7 @@ HTTP API settings:
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `API_ENABLED` | No | `true` | Set to `false` to turn off the HTTP JSON API. |
-| `API_HOST` | No | `0.0.0.0` | Bind address. `0.0.0.0` allows LAN access. `127.0.0.1` allows local access only. |
+| `API_HOST` | No | `127.0.0.1` | Bind address. `0.0.0.0` allows LAN access and must be paired with a strong `API_TOKEN`. |
 | `API_PORT` | No | `8787` | Port for the HTTP JSON API. |
 | `API_TOKEN` | Recommended | (empty) | Access token for the API. Generate with `openssl rand -hex 32`. Required if the Pi is reachable beyond localhost. |
 | `API_CORS_ORIGINS` | No | (empty) | Extra browser origins for CORS, comma-separated. `openterminal-ashen.vercel.app` and localhost are built in. |
