@@ -20,6 +20,7 @@ const reversal = Array.from({ length: 120 }, (_, i) =>
 
 test('only the sourced controller opens by default; it needs both Bollinger and MACD conditions', () => {
   assert.deepEqual(loadStrategies().filter(({ enabled }) => enabled).map(({ strategy }) => strategy.name), [macdBb.name]);
+  assert.deepEqual(loadStrategies({}).filter(({ enabled }) => enabled), []);
   const ctx = { symbol, price: 100, candles: reversal, positions: [], params: macdBb.defaults,
     signals: { whaleBuys: 0, newPools: 0, goldSpread: {} } };
   const [entry] = macdBb.evaluate(ctx);

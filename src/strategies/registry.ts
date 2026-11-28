@@ -20,6 +20,6 @@ export function loadStrategies(overrides?: StrategyConfig): ActiveStrategy[] {
   }
   return LIBRARY.map((s) => {
     const c = conf[s.name] ?? {};
-    return { strategy: s, params: { ...s.defaults, ...(c.params ?? {}) }, enabled: c.enabled !== false };
+    return { strategy: s, params: { ...s.defaults, ...(c.params ?? {}) }, enabled: c.enabled === true };
   });
 }
