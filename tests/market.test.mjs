@@ -1,11 +1,11 @@
 import { test, afterEach } from 'node:test';
 import assert from 'node:assert/strict';
-import handler from '../api/market.js';
+import handler, { resetMarketCacheForTests } from '../api/market.js';
 import { logger } from '../src/logger.js';
 
 logger.level = 'silent';
 const originalFetch = globalThis.fetch;
-afterEach(() => { globalThis.fetch = originalFetch; });
+afterEach(() => { globalThis.fetch = originalFetch; resetMarketCacheForTests(); });
 async function request(method = 'GET') {
   const response = { code: 200, headers: {}, setHeader(k, v) { this.headers[k] = v; },
     status(code) { this.code = code; return this; }, json(body) { this.body = body; return this; } };
@@ -29,6 +29,9 @@ test('public markets reuse validated exchange feeds without auth or storage', as
   assert.equal(btc.candles.at(-1).t, time);
   assert.ok(btc.lastFetch >= time);
   assert.match(result.headers['Cache-Control'], /s-maxage=20/);
+  const again = await request();
+  assert.equal(again.code, 200);
+  assert.equal(urls.length, 6, 'warm invocations should not repeat upstream exchange calls');
 });
 
 test('regional exchange failures fall back to honestly denominated USD candles', async () => {
