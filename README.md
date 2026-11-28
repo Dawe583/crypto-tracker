@@ -231,6 +231,18 @@ All settings come from `.env`. The template is `.env.example`.
 | `GOLD_MAJOR_PCT` | No | `1.5` | Spread (%) that triggers a major gold alert. |
 | `BASE_PAXG_ADDRESS` | No | (empty) | Optional Base PAXG address. Verify on Basescan first. |
 | `BASE_XAUT_ADDRESS` | No | (empty) | Optional Base XAUt address. Verify on Basescan first. |
+| `ENGINE_ENABLED` | No | `true` | Enables the local paper-trading engine. Simulated only; it never places real orders. |
+| `ENGINE_START_USD` | No | `10000` | Starting simulated cash. |
+| `ENGINE_SYMBOLS` | No | `BTCUSDT,ETHUSDT,SOLUSDT,DOGEUSDT,AVAXUSDT,LINKUSDT` | Comma-separated uppercase alphanumeric markets. Invalid entries are ignored; if none remain, the engine fails closed. |
+| `ENGINE_INTERVAL` | No | `1m` | Candle interval used by the engine. |
+| `ENGINE_POLL_MS` | No | `30000` | Engine evaluation interval in milliseconds. |
+| `ENGINE_FEE_PCT` | No | `0.1` | Simulated fee per fill side. |
+| `ENGINE_MAX_POSITION_USD` | No | `500` | Maximum simulated position size. |
+| `ENGINE_MAX_TOTAL_USD` | No | `3000` | Maximum total simulated exposure. |
+| `ENGINE_MAX_OPEN_POSITIONS` | No | `8` | Maximum simultaneous positions; must be a positive integer. |
+| `ENGINE_DAILY_LOSS_PCT` | No | `5` | Daily loss breaker percentage. |
+| `ENGINE_MIN_CONFIDENCE` | No | `0.5` | Minimum strategy confidence, from 0 through 1. |
+| `ENGINE_COOLDOWN_MIN` | No | `60` | Strategy cooldown after repeated losses, in minutes. |
 | `LOG_LEVEL` | No | `info` | `fatal`, `error`, `warn`, `info`, `debug`, or `trace`. |
 
 HTTP API settings:
