@@ -74,10 +74,16 @@ async function dexQuote(chain: 'base' | 'ethereum', address: Address) {
   return quotes[0] ?? null;
 }
 
+function thresholds() {
+  const alert = Math.max(0, config.gold.alertPct);
+  return { alert, major: Math.max(alert, config.gold.majorPct) };
+}
+
 export function classify(deviationPct: number): GoldQuote['level'] {
   const a = Math.abs(deviationPct);
-  if (a >= config.gold.majorPct) return 'major';
-  if (a >= config.gold.alertPct) return 'alert';
+  const { alert, major } = thresholds();
+  if (a >= major) return 'major';
+  if (a >= alert) return 'alert';
   return 'none';
 }
 
@@ -102,7 +108,7 @@ export async function scanGold(): Promise<GoldQuote[]> {
       spotSource: spot.source,
       deviationPct: dev,
       level: classify(dev),
-      direction: Math.abs(dev) < config.gold.alertPct ? 'in_line' : dev > 0 ? 'premium' : 'discount',
+      direction: Math.abs(dev) < thresholds().alert ? 'in_line' : dev > 0 ? 'premium' : 'discount',
     };
   }));
   return quotes.filter((q) => q !== null);
@@ -118,7 +124,7 @@ export function renderGoldAlert(q: GoldQuote): string {
     `Spread: ${q.deviationPct >= 0 ? '+' : ''}${q.deviationPct.toFixed(2)}% (${q.direction.replace('_', ' ')})`,
     `DEX liquidity: $${Math.round(q.liquidityUsd).toLocaleString('en-US')}`,
     `Status: ${depeg}`,
-    `Thresholds: alert at ${config.gold.alertPct}%, major at ${config.gold.majorPct}%`,
+    `Thresholds: alert at ${thresholds().alert}%, major at ${thresholds().major}%`,
     `Chart: ${q.pairUrl}`,
     `Note: spread is DEX vs spot reference. Redemption/mint fees and slippage are not netted out.`,
   ].join('\n');
