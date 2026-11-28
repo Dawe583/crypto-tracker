@@ -216,6 +216,8 @@ test('API bearer auth uses exact constant-time matching and localhost is the def
       const font = await fetch('http://127.0.0.1:' + server.address().port + '/deck/space-grotesk-latin.woff2');
       assert.equal(font.status, 200);
       assert.equal(font.headers.get('content-type'), 'font/woff2');
+      assert.match(font.headers.get('content-security-policy'), /script-src 'self'/);
+      assert.equal(font.headers.get('x-content-type-options'), 'nosniff');
     } finally {
       server.close();
     }

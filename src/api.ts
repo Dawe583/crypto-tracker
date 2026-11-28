@@ -127,7 +127,9 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
     const ext = file.slice(file.lastIndexOf('.'));
     const type = MIME[ext] ?? 'application/octet-stream';
     const text = type.startsWith('text/') || type === 'application/json';
-    res.writeHead(200, { 'content-type': `${type}${text ? '; charset=utf-8' : ''}`, 'cache-control': 'no-store', ...cors });
+    res.writeHead(200, { 'content-type': `${type}${text ? '; charset=utf-8' : ''}`, 'cache-control': 'no-store',
+      'content-security-policy': "default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+      'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer', ...cors });
     return res.end(await readFile(file));
   }
 
