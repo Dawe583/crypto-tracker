@@ -5,7 +5,7 @@
   "type": "module",
   "description": "Base + Ethereum whale, new-pool, and Gold RWA (PAXG/XAUt) monitor with alerts",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "start": "tsx src/index.ts",
