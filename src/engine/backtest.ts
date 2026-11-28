@@ -55,7 +55,7 @@ export function replayOne(strategy: Strategy, params: Record<string, number>, sy
     if (exit) sell(exit);
     // A missing bar cannot be used as the next-open execution for its predecessor.
     if (barMs === undefined || (now - prior.t === barMs
-      && (!strategy.closedBars || history.every((c, j) => j === 0 || c.t - history[j - 1].t === barMs)))) {
+      && history.every((c, j) => j === 0 || c.t - history[j - 1].t === barMs))) {
       bars++;
       const intents = strategy.evaluate({ symbol, candles: history, price: prior.c, positions: [...pf.positions.values()],
         signals: { whaleBuys: 0, newPools: 0, goldSpread: {} }, params });

@@ -2,7 +2,7 @@
 // paper fill -> ledger -> snapshot. One decision unit per cycle, hold when late.
 import { logger } from '../logger.js';
 import { config } from '../config.js';
-import { closedStrategyBars, refreshSymbol, type Feed, type fetchSymbol } from './market.js';
+import { DEFAULT_CLOSED_BARS, refreshSymbol, validClosedBars, type Feed, type fetchSymbol } from './market.js';
 import { managedSize, MANAGED_SLIPPAGE_BPS, positionExit, slippedPrice } from './execution.js';
 import { PaperPortfolio } from './portfolio.js';
 import { RiskEngine } from './risk.js';
@@ -111,7 +111,7 @@ export function createPaperEngine(options: {
     for (const [symbol, feed] of await Promise.all(marketSymbols.map(async (symbol) => {
       const closedBars = Math.max(0, ...strategies.filter(({ strategy, enabled }) =>
         (enabled && symbols.includes(symbol)) || portfolio.positions.has(`${strategy.name}|${symbol}`))
-        .map(({ strategy }) => strategy.closedBars ?? 0));
+        .map(({ strategy }) => strategy.closedBars ?? DEFAULT_CLOSED_BARS));
       return [symbol, await options.refresh(symbol, config.engine.interval, { closedBars })] as const;
     }))) {
       if (feed && Number.isFinite(feed.price) && feed.price > 0) feeds.set(symbol, feed);
@@ -130,17 +130,15 @@ export function createPaperEngine(options: {
         const feed = feeds.get(symbol);
         if (!feed || feed.candles.length < 30) continue;
         const key = `${strategy.name}|${symbol}`;
-        const candles = strategy.closedBars ? closedStrategyBars(feed, config.engine.interval, strategy.closedBars) : feed.candles;
+        const candles = validClosedBars(feed, config.engine.interval, strategy.closedBars ?? DEFAULT_CLOSED_BARS);
         if (!candles.length) continue;
-        if (strategy.closedBars) {
-          const bar = candles[candles.length - 1].t;
-          if (bar <= (lastSignalBars.get(key) ?? -Infinity)) continue;
-          lastSignalBars.set(key, bar);
-          signalBarChanged = true;
-        }
+        const bar = candles[candles.length - 1].t;
+        if (bar <= (lastSignalBars.get(key) ?? -Infinity)) continue;
+        lastSignalBars.set(key, bar);
+        signalBarChanged = true;
         let intents: TradeIntent[] = [];
         try {
-          intents = strategy.evaluate({ symbol, candles, price: strategy.closedBars ? candles[candles.length - 1].c : feed.price,
+          intents = strategy.evaluate({ symbol, candles, price: candles[candles.length - 1].c,
             positions: [...portfolio.positions.values()], signals, params });
         } catch (e) { logger.warn({ err: String(e), strategy: strategy.name, symbol }, 'strategy eval failed'); }
         for (const i of intents) {

@@ -36,7 +36,7 @@ function runProcess(root: string, ts: number, prices: Record<string, number>, sy
       if (price === undefined) return new Response(null, { status: 503 });
       const candles = Array.from({ length: 40 }, (_, i) => {
         const time = now - (39 - i) * 60_000;
-        return i === 39 ? [time, 100, price + 1, 99, price, 1000] : [time, 100, 101, 99, 100, 100];
+        return i >= 38 ? [time, 100, price + 1, 99, price, 1000] : [time, 100, 101, 99, 100, 100];
       });
       return Response.json(candles);
     };
@@ -112,6 +112,7 @@ test('does not open a new trade while a held symbol has no current quote', (t) =
     await runEngineCycle();
     delete prices.BTCUSDT;
     prices.ETHUSDT = 110;
+    now += 60_000;
     await runEngineCycle();
     assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['BTCUSDT']);
     assert.deepEqual(engineState.snapshot.prices, { BTCUSDT: 101.12, ETHUSDT: 110 });
@@ -120,11 +121,13 @@ test('does not open a new trade while a held symbol has no current quote', (t) =
     assert.equal(engineState.decisions[0].vetoed, 'market price unavailable for an open position');
 
     prices.BTCUSDT = 100;
+    now += 60_000;
     await runEngineCycle();
     assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['BTCUSDT', 'ETHUSDT']);
 
     delete prices.BTCUSDT;
     prices.ETHUSDT = 120;
+    now += 60_000;
     await runEngineCycle();
     assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['BTCUSDT']);
     assert.equal(engineState.snapshot.stats.ema_cross.trades, 1);
@@ -285,6 +288,7 @@ test('gold API retains cached quotes without feeding stale spreads into paper tr
       assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['XAUTUSD']);
 
       dexPrices.PAXG = 98;
+      now += 60_000;
       await runGoldCycle();
       assert.ok((await gold()).assets.every((quote) => !quote.stale));
       await runEngineCycle();

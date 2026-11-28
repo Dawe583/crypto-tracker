@@ -3,6 +3,7 @@ import { logger } from '../logger.js';
 import type { Candle } from './types.js';
 
 const CANDLE_LIMIT = 300;
+export const DEFAULT_CLOSED_BARS = 30;
 const REQUEST_TIMEOUT_MS = 5_000;
 const CLOCK_SKEW_MS = 5_000;
 const CANDLE_UNIT_MS: Record<string, number> = {
@@ -90,6 +91,12 @@ export function closedStrategyBars(feed: Feed, interval: string, count: number):
   return bars.every((c, i) => i === 0 || c.t - bars[i - 1].t === ms) ? bars : [];
 }
 
+export function validClosedBars(feed: Feed, interval: string, minCount = DEFAULT_CLOSED_BARS): Candle[] {
+  const completed = completedCandles(feed, interval);
+  if (completed.length < minCount) return [];
+  return closedStrategyBars(feed, interval, completed.length);
+}
+
 export async function fetchSymbol(symbol: string, interval: string, { requireRecent = true, closedBars = 0 } = {}): Promise<Feed | null> {
   const maxAgeMs = 2 * intervalMs(interval);
   if (requireRecent && (!Number.isSafeInteger(maxAgeMs) || maxAgeMs <= 0)) {
@@ -111,7 +118,7 @@ export async function fetchSymbol(symbol: string, interval: string, { requireRec
       const age = lastFetch - latest.t;
       if (requireRecent && (age > maxAgeMs || age < -CLOCK_SKEW_MS)) throw new Error('market candle timestamp out of range');
       const feed = { candles, price: latest.c, source, lastFetch, requestedAt };
-      if (!closedBars || interval.endsWith('M') || closedStrategyBars(feed, interval, closedBars).length) return feed;
+      if (!closedBars || interval.endsWith('M') || validClosedBars(feed, interval, closedBars).length) return feed;
       markOnly ??= feed;
     } catch (err) {
       logger.warn({ err: String(err), symbol, source }, 'market feed failed');
