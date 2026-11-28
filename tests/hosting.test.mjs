@@ -91,3 +91,15 @@ test('the rewritten Vercel route can serve Supabase paper data without an upstre
     { count: 0, signals: [], available: false });
   assert.equal(calls, 1);
 });
+
+test('hosted deck uses restrictive security headers without external script access', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const vercel = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'));
+  const headers = Object.fromEntries(vercel.headers.flatMap((group) => group.headers.map((h) => [h.key.toLowerCase(), h.value])));
+  assert.match(headers['content-security-policy'], /default-src 'none'/);
+  assert.match(headers['content-security-policy'], /script-src 'self'/);
+  assert.match(headers['content-security-policy'], /connect-src 'self'/);
+  assert.doesNotMatch(headers['content-security-policy'], /script-src[^;]*unsafe-inline/);
+  assert.equal(headers['x-content-type-options'], 'nosniff');
+  assert.equal(headers['referrer-policy'], 'no-referrer');
+});
