@@ -141,19 +141,6 @@ export const LIBRARY: Strategy[] = [
     },
   },
   {
-    name: 'dca',
-    description: 'Baseline: accumulate every N minutes on red bars',
-    defaults: { intervalMin: 60, sizeUsd: 150, takeProfitPct: 10, stopLossPct: 15, maxHoldMin: 10080 },
-    evaluate(ctx) {
-      const last = ctx.candles[ctx.candles.length - 1];
-      const has = ctx.positions.some((p) => p.strategy === 'dca' && p.symbol === ctx.symbol);
-      const mins = (Date.now() - last.t) / 60000;
-      if (last.c < last.o && mins < ctx.params.intervalMin && !has)
-        return [buy('dca', ctx.symbol, 0.5, 'scheduled accumulation on red bar', { sizeUsd: ctx.params.sizeUsd, takeProfitPct: ctx.params.takeProfitPct, stopLossPct: ctx.params.stopLossPct, maxHoldMin: ctx.params.maxHoldMin })];
-      return [];
-    },
-  },
-  {
     name: 'zscore_reversion',
     description: 'Price z-score mean reversion',
     defaults: { n: 50, entryZ: -2, exitZ: 0, sizeUsd: 250, stopLossPct: 6, takeProfitPct: 7, maxHoldMin: 720 },
