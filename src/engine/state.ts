@@ -7,6 +7,8 @@ export interface EngineSnapshot {
   realizedUsd: number;
   unrealizedUsd: number;
   feesUsd: number;
+  dayStartEquityUsd?: number;
+  dayStart?: string;
   positions: Array<Position & { markPrice: number; unrealizedUsd: number }>;
   stats: Record<string, { pnl: number; trades: number; wins: number }>;
   equityCurve: { ts: number; equityUsd: number }[];

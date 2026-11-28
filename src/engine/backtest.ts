@@ -55,13 +55,13 @@ export function replayOne(strategy: Strategy, params: Record<string, number>, sy
     if (exit) sell(exit);
     // A missing bar cannot be used as the next-open execution for its predecessor.
     if (barMs === undefined || (now - prior.t === barMs
-      && (!strategy.closedBars || history.every((c, j) => j === 0 || c.t - history[j - 1].t === barMs)))) {
+      && history.every((c, j) => j === 0 || c.t - history[j - 1].t === barMs))) {
       bars++;
       const intents = strategy.evaluate({ symbol, candles: history, price: prior.c, positions: [...pf.positions.values()],
         signals: { whaleBuys: 0, newPools: 0, goldSpread: {} }, params });
       for (const it of intents) {
         if (it.side === 'sell') { sell(it.reason); continue; }
-        if (exit && position?.trailing) continue;
+        if (exit) continue;
         const equity = pf.equity(marks);
         const exposure = (pf.positions.get(key)?.qty ?? 0) * price;
         const cap = Math.min(config.engine.maxPositionUsd, config.engine.maxTotalUsd - exposure);

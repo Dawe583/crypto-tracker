@@ -19,7 +19,7 @@ const GRIDS: Record<string, Record<string, number[]>> = {
   donchian: { n: [20, 30, 50], stopLossPct: [4, 6], takeProfitPct: [8, 12] },
   vwap_reversion: { n: [40, 60], devPct: [1, 1.5, 2.5], stopLossPct: [4, 6], takeProfitPct: [4, 6] },
   roc_momentum: { n: [6, 10, 15], entry: [0.8, 1.5], stopLossPct: [3, 4], takeProfitPct: [5, 7] },
-  atr_trend: { n: [10, 14], mult: [2, 3], stopLossPct: [4, 6], takeProfitPct: [6, 10] },
+  atr_trend: { trendN: [30, 50], atrMult: [2, 3], stopLossPct: [4, 6], takeProfitPct: [6, 10] },
   engulfing: { volMult: [1.3, 2], stopLossPct: [3, 4], takeProfitPct: [5, 7] },
   macd_momentum: { stopLossPct: [3, 5], takeProfitPct: [6, 10] },
   vol_spike: { mult: [2, 3, 4], stopLossPct: [3, 4], takeProfitPct: [5, 8] },
@@ -42,6 +42,8 @@ function* combos(grid: Record<string, number[]>): Generator<Record<string, numbe
 }
 
 export async function runSweep(stratName: string, symbols: string[] = config.engine.symbols, interval = '15m') {
+  const stepMs = intervalMs(interval);
+  if (!Number.isSafeInteger(stepMs) || stepMs <= 0 || interval.endsWith('M')) throw new Error('Sweep requires a fixed candle interval');
   const st = loadStrategies().find((s) => s.strategy.name === stratName);
   if (!st) throw new Error(`unknown strategy ${stratName}`);
   const grid = GRIDS[stratName] ?? {};
@@ -56,7 +58,7 @@ export async function runSweep(stratName: string, symbols: string[] = config.eng
     const merged = { ...st.params, ...params };
     for (const symbol of symbols) {
       if (!candleMap[symbol].length) continue;
-      const r = replayOne(st.strategy, merged, symbol, candleMap[symbol], undefined, undefined, intervalMs(interval));
+      const r = replayOne(st.strategy, merged, symbol, candleMap[symbol], undefined, undefined, stepMs);
       pnl += r.pnlUsd; dd += r.maxDdUsd; trades += r.trades;
     }
     rows.push({ params: merged, pnlUsd: +pnl.toFixed(2), maxDdUsd: +dd.toFixed(2), trades, score: +(pnl - 0.5 * dd).toFixed(2) });

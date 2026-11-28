@@ -141,19 +141,6 @@ export const LIBRARY: Strategy[] = [
     },
   },
   {
-    name: 'dca',
-    description: 'Baseline: accumulate every N minutes on red bars',
-    defaults: { intervalMin: 60, sizeUsd: 150, takeProfitPct: 10, stopLossPct: 15, maxHoldMin: 10080 },
-    evaluate(ctx) {
-      const last = ctx.candles[ctx.candles.length - 1];
-      const has = ctx.positions.some((p) => p.strategy === 'dca' && p.symbol === ctx.symbol);
-      const mins = (Date.now() - last.t) / 60000;
-      if (last.c < last.o && mins < ctx.params.intervalMin && !has)
-        return [buy('dca', ctx.symbol, 0.5, 'scheduled accumulation on red bar', { sizeUsd: ctx.params.sizeUsd, takeProfitPct: ctx.params.takeProfitPct, stopLossPct: ctx.params.stopLossPct, maxHoldMin: ctx.params.maxHoldMin })];
-      return [];
-    },
-  },
-  {
     name: 'zscore_reversion',
     description: 'Price z-score mean reversion',
     defaults: { n: 50, entryZ: -2, exitZ: 0, sizeUsd: 250, stopLossPct: 6, takeProfitPct: 7, maxHoldMin: 720 },
@@ -173,8 +160,9 @@ export const LIBRARY: Strategy[] = [
     defaults: { minSignals: 1, sizeUsd: 400, stopLossPct: 5, takeProfitPct: 12, maxHoldMin: 1440 },
     evaluate(ctx) {
       const has = ctx.positions.some((p) => p.strategy === 'whale_follow' && p.symbol === ctx.symbol);
-      if (ctx.signals.whaleBuys >= ctx.params.minSignals && !has)
-        return [buy('whale_follow', ctx.symbol, 0.7, `${ctx.signals.whaleBuys} whale buy signal(s) in tracker`, { sizeUsd: ctx.params.sizeUsd, stopLossPct: ctx.params.stopLossPct, takeProfitPct: ctx.params.takeProfitPct, maxHoldMin: ctx.params.maxHoldMin })];
+      const whaleBuys = ctx.signals.whaleSymbols?.[ctx.symbol] ?? 0;
+      if (ctx.params.minSignals >= 1 && whaleBuys >= ctx.params.minSignals && !has)
+        return [buy('whale_follow', ctx.symbol, 0.7, `${whaleBuys} whale buy signal(s) for ${ctx.symbol}`, { sizeUsd: ctx.params.sizeUsd, stopLossPct: ctx.params.stopLossPct, takeProfitPct: ctx.params.takeProfitPct, maxHoldMin: ctx.params.maxHoldMin })];
       return [];
     },
   },
@@ -262,9 +250,13 @@ export const LIBRARY: Strategy[] = [
       if (!b || mid === null || a === null || h === null) return [];
       const kc = ctx.params.kcMult * a;
       const squeeze = (b.up - b.lo) < 2 * kc;            // bollinger inside keltner
+      const previousB = bollinger(xs.slice(0, -1), n, 2);
+      const previousA = atr(ctx.candles.slice(0, -1), 10);
+      const wasSqueeze = previousB !== null && previousA !== null
+        && (previousB.up - previousB.lo) < 2 * ctx.params.kcMult * previousA;
       const c = xs[xs.length - 1];
       const has = ctx.positions.some((p) => p.strategy === 'keltner_squeeze' && p.symbol === ctx.symbol);
-      if (!squeeze && h > 0 && c > mid && !has)
+      if (wasSqueeze && !squeeze && h > 0 && c > mid && !has)
         return [buy('keltner_squeeze', ctx.symbol, 0.6, `squeeze fired, momentum up`, { sizeUsd: ctx.params.sizeUsd, stopLossPct: ctx.params.stopLossPct, takeProfitPct: ctx.params.takeProfitPct, maxHoldMin: ctx.params.maxHoldMin })];
       if (h < 0 && has) return [sell('keltner_squeeze', ctx.symbol, 0.6, 'momentum faded')];
       return [];

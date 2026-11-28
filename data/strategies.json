@@ -83,12 +83,6 @@
   "grid": {
     "enabled": false
   },
-  "dca": {
-    "enabled": false,
-    "params": {
-      "intervalMin": 120
-    }
-  },
   "zscore_reversion": {
     "enabled": false,
     "params": {

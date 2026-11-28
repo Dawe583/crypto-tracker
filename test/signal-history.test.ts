@@ -164,8 +164,9 @@ test('restored whales only drive paper entries if the wallet is still watched on
   const engine = `
     const { runEngineCycle } = await import('./src/engine/loop.ts');
     const { engineState } = await import('./src/engine/state.ts');
+    const marketNow = Math.floor(Date.now() / 60_000) * 60_000;
     globalThis.fetch = async () => Response.json(
-      Array.from({ length: 40 }, (_, i) => [Date.now() - (39 - i) * 60_000, 100, 101, 99, 100, 100]),
+      Array.from({ length: 40 }, (_, i) => [marketNow - (39 - i) * 60_000, 100, 101, 99, 100, 100]),
     );
     await runEngineCycle();
   `;
@@ -179,6 +180,9 @@ test('restored whales only drive paper entries if the wallet is still watched on
     ${engine}
     assert.equal(engineState.snapshot.positions.length, 0);
     store.recordSignal({ ...signal(3), chain: 'ethereum', whale: { wallet: '${watched}' } });
+    await runEngineCycle();
+    assert.equal(engineState.snapshot.positions.length, 0);
+    store.recordSignal({ ...signal(4), chain: 'ethereum', token: { address: '0x1', symbol: 'BTC' }, whale: { wallet: '${watched}' } });
   `, env);
   run(root, `
     store.initSignalHistory();

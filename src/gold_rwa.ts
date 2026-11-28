@@ -74,10 +74,17 @@ async function dexQuote(chain: 'base' | 'ethereum', address: Address) {
   return quotes[0] ?? null;
 }
 
+function thresholds() {
+  const alert = config.gold.alertPct >= 0 ? config.gold.alertPct : 0.5;
+  const configuredMajor = config.gold.majorPct >= 0 ? config.gold.majorPct : 1.5;
+  return { alert, major: Math.max(alert, configuredMajor) };
+}
+
 export function classify(deviationPct: number): GoldQuote['level'] {
   const a = Math.abs(deviationPct);
-  if (a >= config.gold.majorPct) return 'major';
-  if (a >= config.gold.alertPct) return 'alert';
+  const { alert, major } = thresholds();
+  if (a >= major) return 'major';
+  if (a >= alert) return 'alert';
   return 'none';
 }
 
@@ -87,9 +94,10 @@ export async function scanGold(): Promise<GoldQuote[]> {
     logger.warn('no spot gold reference available this cycle');
     return [];
   }
+  const minLiquidityUsd = config.gold.minLiquidityUsd >= 0 ? config.gold.minLiquidityUsd : 20_000;
   const quotes = await Promise.all(GOLD_ASSETS.map(async (a): Promise<GoldQuote | null> => {
     const q = await dexQuote(a.chain, a.address).catch(() => null);
-    if (!q) return null;
+    if (!q || q.liquidityUsd < minLiquidityUsd) return null;
     const dev = ((q.priceUsd - spot.usd) / spot.usd) * 100;
     if (!Number.isFinite(dev)) return null;
     return {
@@ -102,7 +110,7 @@ export async function scanGold(): Promise<GoldQuote[]> {
       spotSource: spot.source,
       deviationPct: dev,
       level: classify(dev),
-      direction: Math.abs(dev) < config.gold.alertPct ? 'in_line' : dev > 0 ? 'premium' : 'discount',
+      direction: Math.abs(dev) < thresholds().alert ? 'in_line' : dev > 0 ? 'premium' : 'discount',
     };
   }));
   return quotes.filter((q) => q !== null);
@@ -118,7 +126,7 @@ export function renderGoldAlert(q: GoldQuote): string {
     `Spread: ${q.deviationPct >= 0 ? '+' : ''}${q.deviationPct.toFixed(2)}% (${q.direction.replace('_', ' ')})`,
     `DEX liquidity: $${Math.round(q.liquidityUsd).toLocaleString('en-US')}`,
     `Status: ${depeg}`,
-    `Thresholds: alert at ${config.gold.alertPct}%, major at ${config.gold.majorPct}%`,
+    `Thresholds: alert at ${thresholds().alert}%, major at ${thresholds().major}%`,
     `Chart: ${q.pairUrl}`,
     `Note: spread is DEX vs spot reference. Redemption/mint fees and slippage are not netted out.`,
   ].join('\n');

@@ -35,20 +35,38 @@ export class RiskEngine {
   }
 
   restoreCheckpoint(c: ReturnType<RiskEngine['checkpoint']>) {
+    const validLosses = Array.isArray(c?.losses) && c.losses.every((entry) => Array.isArray(entry)
+      && typeof entry[0] === 'string' && entry[0] !== '' && entry[1]
+      && Number.isSafeInteger(entry[1].n) && entry[1].n >= 0
+      && Number.isFinite(entry[1].until) && entry[1].until >= 0);
+    if (!c || typeof c.dayStart !== 'string' || c.dayStart.trim() === ''
+      || !Number.isFinite(c.dayStartEquity) || c.dayStartEquity <= 0 || !validLosses) {
+      throw new Error('invalid paper risk ledger checkpoint');
+    }
     this.dayStart = c.dayStart;
     this.dayStartEquity = c.dayStartEquity;
     this.losses = new Map(c.losses);
   }
 
   get baselineDay() { return this.dayStart; }
+  get baselineEquity() { return this.dayStartEquity; }
+
+  rollDay(equity: number, now = Date.now()) {
+    const today = new Date(now).toDateString();
+    if (today !== this.dayStart) { this.dayStart = today; this.dayStartEquity = equity; }
+  }
+
+  isKilled() {
+    if (this.killed || (this.useKillFile && existsSync(KILL_FILE))) this.killed = true;
+    return this.killed;
+  }
 
   // returns null when allowed, else the veto reason (logged to ledger)
   check(i: TradeIntent, positions: Position[], equity: number, exposureUsd: number, now = Date.now()): string | null {
     if (i.side === 'sell') return null;
-    if (this.killed || (this.useKillFile && existsSync(KILL_FILE))) { this.killed = true; return 'kill switch ON (data/KILL)'; }
-    const today = new Date(now).toDateString();
-    if (today !== this.dayStart) { this.dayStart = today; this.dayStartEquity = equity; }
-    if (equity < this.dayStartEquity * (1 - this.cfg.dailyLossPct / 100)) {
+    if (this.isKilled()) return 'kill switch ON (data/KILL)';
+    this.rollDay(equity, now);
+    if (equity <= this.dayStartEquity * (1 - this.cfg.dailyLossPct / 100)) {
       return `daily loss breaker (${this.cfg.dailyLossPct}%)`;
     }
     if (i.confidence < this.cfg.minConfidence) return `confidence ${i.confidence} < ${this.cfg.minConfidence}`;

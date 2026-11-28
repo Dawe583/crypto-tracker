@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { closedStrategyBars, completedCandles, fetchSymbol } from '../src/engine/market.js';
+import { closedStrategyBars, completedCandles, fetchSymbol, validClosedBars } from '../src/engine/market.js';
 
 test('a request crossing the candle boundary uses its pre-close window without falling back', async (t) => {
   const minute = 60_000;
@@ -42,6 +42,19 @@ test('market data skips stale and future candles and accepts a recent fallback',
   assert.equal(await fetchSymbol('BTCUSDT', '1m'), null);
 });
 
+
+test('market data rejects impossible candle ranges before using them', async (t) => {
+  const now = Date.UTC(2026, 10, 24, 12);
+  t.mock.method(Date, 'now', () => now);
+  t.mock.method(globalThis, 'fetch', async (url: string) => {
+    if (url.includes('binance')) return Response.json([[now - 60_000, 100, 99, 98, 100, 1]]);
+    if (url.includes('bybit')) return Response.json({ retCode: 0, result: { list: [[now - 60_000, 100, 101, 99, 100, 1]] } });
+    return new Response(null, { status: 503 });
+  });
+  const feed = await fetchSymbol('BTCUSDT', '1m');
+  assert.equal(feed?.source, 'bybit');
+});
+
 test('prefers a contiguous fallback for signals but keeps the first mark for exits', async (t) => {
   const minute = 60_000;
   const current = Date.UTC(2026, 10, 24, 12);
@@ -62,4 +75,16 @@ test('prefers a contiguous fallback for signals but keeps the first mark for exi
   assert.equal(markOnly?.source, 'binance');
   assert.equal(markOnly.price, 100);
   assert.deepEqual(closedStrategyBars(markOnly, '1m', 2), []);
+});
+
+
+test('closed signal validation is bounded to the latest exchange window', () => {
+  const minute = 60_000;
+  const current = Date.UTC(2026, 10, 24, 12);
+  const candle = (index: number) => ({ t: current - (302 - index) * minute, o: 100, h: 101, l: 99, c: 100, v: 1 });
+  const completed = Array.from({ length: 303 }, (_, i) => candle(i)).filter((_, i) => i !== 1);
+  const feed = { candles: completed, price: 100, source: 'kraken' as const, lastFetch: current + 1_000, requestedAt: current + 1_000 };
+  assert.equal(validClosedBars(feed, '1m', 30).length, 300);
+  const recentGap = { ...feed, candles: Array.from({ length: 303 }, (_, i) => candle(i)).filter((_, i) => i !== 300) };
+  assert.deepEqual(validClosedBars(recentGap, '1m', 30), []);
 });

@@ -12,6 +12,8 @@ const FEES = [0.05, 0.1, 0.2];          // % per side
 const SLIPS = [0, 5, 20];               // bps per fill
 
 export async function runStress(symbols: string[] = config.engine.symbols, interval = '15m') {
+  const stepMs = intervalMs(interval);
+  if (!Number.isSafeInteger(stepMs) || stepMs <= 0 || interval.endsWith('M')) throw new Error('Stress replay requires a fixed candle interval');
   const strats = loadStrategies().filter((s) => TOP.includes(s.strategy.name));
   const candleMap: Record<string, Candle[]> = {};
   for (const sym of symbols) {
@@ -25,7 +27,7 @@ export async function runStress(symbols: string[] = config.engine.symbols, inter
         let pnl = 0, trades = 0;
         for (const sym of symbols) {
           if (!candleMap[sym].length) continue;
-          const r = replayOne(st.strategy, st.params, sym, candleMap[sym], fee, slip, intervalMs(interval));
+          const r = replayOne(st.strategy, st.params, sym, candleMap[sym], fee, slip, stepMs);
           pnl += r.pnlUsd; trades += r.trades;
         }
         rows.push({ strategy: st.strategy.name, feePct: fee, slipBps: slip, pnlUsd: +pnl.toFixed(2), trades });

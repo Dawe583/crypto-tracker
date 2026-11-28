@@ -77,7 +77,7 @@ export interface StrategyContext {
   candles: Candle[]; // oldest → newest
   price: number;
   positions: Position[]; // all open positions (any strategy)
-  signals: { whaleBuys: number; newPools: number; goldSpread: Record<string, number> };
+  signals: { whaleBuys: number; newPools: number; goldSpread: Record<string, number>; whaleSymbols?: Record<string, number> };
   params: Record<string, number>;
 }
 

@@ -32,10 +32,17 @@ function memoryStore() {
   return { store, writes };
 }
 
-const refreshAt = (price: number) => async (): Promise<Feed> => ({
-  source: 'coinbase', price, lastFetch: Date.now(),
-  candles: Array.from({ length: 35 }, (_, t) => ({ t, o: price, h: price, l: price, c: price, v: 1 })),
-});
+const refreshAt = (price: number, barOffset = 0) => async (): Promise<Feed> => {
+  const minute = 60_000;
+  const current = Math.floor(Date.now() / minute) * minute + barOffset * minute;
+  const lastFetch = current + 1_000;
+  return {
+    source: 'coinbase', price, lastFetch, requestedAt: lastFetch,
+    candles: Array.from({ length: 35 }, (_, i) => ({
+      t: current - (34 - i) * minute, o: price, h: price, l: price, c: price, v: 1,
+    })),
+  };
+};
 const strategies: ActiveStrategy[] = [{
   enabled: true, params: {},
   strategy: {
@@ -50,7 +57,7 @@ test('hosted cycles restore positions and keep one ledger chain across invocatio
   const { store, writes } = memoryStore();
   assert.equal(await runHostedCycle(store, 1, refreshAt(100), strategies), true);
   assert.equal(writes[0].p_deck.snapshot.positions.length, 1);
-  assert.equal(await runHostedCycle(store, 2, refreshAt(110), []), true);
+  assert.equal(await runHostedCycle(store, 2, refreshAt(110, 1), []), true);
   const { snapshot } = writes[1].p_deck;
   assert.equal(snapshot.positions.length, 0);
   assert.equal(snapshot.equityCurve.length, 2);
@@ -111,7 +118,7 @@ test('a disabled strategy can wind down an existing position in a removed market
       { strategy: 'fixture', symbol, side: 'buy', confidence: 1, reason: 'no new positions' },
     ] },
   };
-  assert.equal(await runHostedCycle(store, 2, refreshAt(101), [disabled]), true);
+  assert.equal(await runHostedCycle(store, 2, refreshAt(101, 1), [disabled]), true);
   assert.deepEqual(writes[1].p_checkpoint.portfolio.positions, []);
   assert.deepEqual(writes[1].p_records.filter((r) => r.type === 'fill').map((r) => JSON.parse(r.payload).reason), ['legacy exit']);
 });
@@ -119,7 +126,7 @@ test('a disabled strategy can wind down an existing position in a removed market
 test('an unpriced open position keeps its mark without producing a fresh equity point', async () => {
   const { store, writes } = memoryStore();
   await runHostedCycle(store, 1, refreshAt(100), strategies);
-  await runHostedCycle(store, 2, (symbol) => symbol === 'BTCUSDT' ? Promise.resolve(null) : refreshAt(110)(), []);
+  await runHostedCycle(store, 2, (symbol) => symbol === 'BTCUSDT' ? Promise.resolve(null) : refreshAt(110, 1)(), []);
   const cycle = writes[1];
   assert.equal(cycle.p_deck.snapshot.positions[0]?.markPrice, 100);
   assert.equal(cycle.p_deck.snapshot.equityCurve.length, 1);
@@ -133,9 +140,9 @@ test('cached quotes stay visible only for configured markets or open positions',
   const { store, writes } = memoryStore();
   await runHostedCycle(store, 1, refreshAt(100), strategies);
   config.engine.symbols = ['ETHUSDT', 'SOLUSDT'];
-  await runHostedCycle(store, 2, (symbol) => symbol === 'ETHUSDT' ? refreshAt(110)() : Promise.resolve(null), []);
+  await runHostedCycle(store, 2, (symbol) => symbol === 'ETHUSDT' ? refreshAt(110, 1)() : Promise.resolve(null), []);
   assert.deepEqual(writes[1].p_deck.snapshot.prices, { BTCUSDT: 100, ETHUSDT: 110, SOLUSDT: 100 });
-  await runHostedCycle(store, 3, refreshAt(110), []);
+  await runHostedCycle(store, 3, refreshAt(110, 2), []);
   assert.deepEqual(writes[2].p_deck.snapshot.prices, { ETHUSDT: 110, SOLUSDT: 110 });
 });
 

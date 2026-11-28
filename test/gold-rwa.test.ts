@@ -35,6 +35,51 @@ test('a stalled DEX request does not prevent a valid asset from refreshing', asy
   assert.deepEqual(quotes.map((q) => [q.symbol, q.dexPriceUsd]), [['XAUT', 99]]);
 });
 
+test('thin gold pairs do not produce spread signals', async (t) => {
+  const [paxg, xaut] = GOLD_ASSETS;
+  t.mock.method(globalThis, 'fetch', async (url: string) => {
+    if (url === config.gold.spotUrl) return Response.json({ price: 100 });
+    const address = url.split('/').at(-1);
+    if (address === paxg.address) return new Response(null, { status: 503 });
+    if (address !== xaut.address) return new Response(null, { status: 404 });
+    return Response.json({ pairs: [{
+      chainId: xaut.chain, baseToken: { address }, priceUsd: '90', liquidity: { usd: 19_999 },
+    }] });
+  });
+  assert.deepEqual(await scanGold(), []);
+});
+
+
+test('negative configured gold liquidity cannot disable the floor', async (t) => {
+  const [paxg, xaut] = GOLD_ASSETS;
+  const original = config.gold.minLiquidityUsd;
+  t.after(() => { config.gold.minLiquidityUsd = original; });
+  config.gold.minLiquidityUsd = -1;
+  t.mock.method(globalThis, 'fetch', async (url: string) => {
+    if (url === config.gold.spotUrl) return Response.json({ price: 100 });
+    const address = url.split('/').at(-1);
+    if (address === paxg.address) return new Response(null, { status: 503 });
+    if (address !== xaut.address) return new Response(null, { status: 404 });
+    return Response.json({ pairs: [{ chainId: xaut.chain, baseToken: { address }, priceUsd: '90', liquidity: { usd: 19_999 } }] });
+  });
+  assert.deepEqual(await scanGold(), []);
+});
+
+test('reversed gold thresholds cannot turn small spreads into major alerts', async (t) => {
+  const { classify } = await import('../src/gold_rwa.js');
+  const alertPct = config.gold.alertPct;
+  const majorPct = config.gold.majorPct;
+  t.after(() => { config.gold.alertPct = alertPct; config.gold.majorPct = majorPct; });
+  config.gold.alertPct = 2;
+  config.gold.majorPct = 1;
+  assert.equal(classify(1.5), 'none');
+  assert.equal(classify(2.1), 'major');
+  config.gold.alertPct = -1;
+  config.gold.majorPct = -2;
+  assert.equal(classify(0.6), 'alert');
+  assert.equal(classify(1.6), 'major');
+});
+
 test('scheduled gold polls do not overlap', async (t) => {
   let tick!: () => Promise<void>;
   let requests = 0;

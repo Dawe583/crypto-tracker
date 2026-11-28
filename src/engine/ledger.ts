@@ -60,58 +60,38 @@ function* readLedgerBackwards<T>(file: string): Generator<LedgerRecord<T>> {
   }
 }
 
-function follows(newer: LedgerRecord, older: LedgerRecord): boolean {
-  return newer.seq === older.seq + 1 && newer.prevHash === older.hash;
-}
-
-// Old writers could fork the chain by revisiting a day. Verify every parent by hash, not file date.
-function validateLegacyLedger<T>(files: string[]): LedgerRecord<T> | undefined {
-  const links = new Map<string, Pick<LedgerRecord, 'seq' | 'prevHash'>>();
-  let fill: LedgerRecord<T> | undefined;
-  for (const file of files) {
-    let newer: LedgerRecord | undefined;
-    for (const record of readLedgerBackwards<T>(file)) {
-      if (record.type === 'checkpoint' || Object.hasOwn(Object(record.data), 'checkpoint')
-        || (newer && !follows(newer, record))) {
-        throw new Error(`broken paper ledger chain in ${file}`);
-      }
-      if (record.type === 'fill') fill ??= record;
-      links.set(record.hash, { seq: record.seq, prevHash: record.prevHash });
-      newer = record;
-    }
-  }
-  for (const { seq, prevHash } of links.values()) {
-    if (seq > 0 && links.get(prevHash)?.seq !== seq - 1) {
-      throw new Error('missing paper ledger chain predecessor');
-    }
-  }
-  return fill;
-}
 
 export function ledgerResumeLatestCheckpoint<T>(): LedgerRecord<T> | undefined {
   if (!existsSync(LEDGER_DIR)) return undefined;
   const files = readdirSync(LEDGER_DIR).filter((file) => /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(file)).sort().reverse();
-  let newer: LedgerRecord | undefined;
+  const links = new Map<string, Pick<LedgerRecord, 'seq' | 'prevHash'>>();
+  let checkpoint: LedgerRecord<T> | undefined;
+  let tip: LedgerRecord | undefined;
+  let genesisRows = 0;
   for (const file of files) {
-    let crossingDay = true;
     for (const record of readLedgerBackwards<T>(file)) {
-      if (newer && !follows(newer, record)) {
-        if (crossingDay) return validateLegacyLedger<T>(files);
-        throw new Error(`broken paper ledger chain in ${file}`);
-      }
-      crossingDay = false;
-      if (!newer) {
-        day = file.slice(0, 10);
-        path = join(LEDGER_DIR, file);
-        seq = record.seq + 1;
-        lastHash = record.hash;
-      }
-      if (record.type === 'fill' || record.type === 'checkpoint') return record;
-      if (record.seq === 0) return undefined;
-      newer = record;
+      if (links.has(record.hash)) throw new Error(`duplicate paper ledger row in ${file}`);
+      links.set(record.hash, { seq: record.seq, prevHash: record.prevHash });
+      if (record.seq === 0) genesisRows += 1;
+      tip ??= record;
+      checkpoint ??= record.type === 'fill' || record.type === 'checkpoint' ? record : undefined;
     }
   }
-  if (newer) throw new Error('missing paper ledger chain prefix');
+  if (!links.size) return undefined;
+  if (!genesisRows) throw new Error('missing paper ledger chain prefix');
+  if (genesisRows > 1) throw new Error('multiple paper ledger chain genesis rows');
+  for (const { seq: rowSeq, prevHash } of links.values()) {
+    if (rowSeq > 0 && links.get(prevHash)?.seq !== rowSeq - 1) {
+      throw new Error('missing paper ledger chain predecessor');
+    }
+  }
+  if (tip) {
+    day = files[0].slice(0, 10);
+    path = join(LEDGER_DIR, files[0]);
+    seq = tip.seq + 1;
+    lastHash = tip.hash;
+  }
+  return checkpoint;
 }
 
 export function ledgerAppend<T>(type: LedgerRecord['type'], data: T, ts = Date.now()): LedgerRecord<T> {
@@ -126,19 +106,16 @@ export function ledgerAppend<T>(type: LedgerRecord['type'], data: T, ts = Date.n
 }
 
 export function ledgerTail(limit: number, type?: LedgerRecord['type']): LedgerRecord[] {
-  const files = [day ? path : ''].filter(Boolean);
+  if (!existsSync(LEDGER_DIR)) return [];
+  const files = readdirSync(LEDGER_DIR).filter((file) => /^\d{4}-\d{2}-\d{2}\.jsonl$/.test(file)).sort().reverse();
   const out: LedgerRecord[] = [];
-  for (const f of files) {
-    if (!existsSync(f)) continue;
-    const lines = readFileSync(f, 'utf8').trim().split('\n').filter(Boolean);
-    for (const l of lines) {
-      const rec = JSON.parse(l) as LedgerRecord;
-      if (!type || rec.type === type) out.push(rec);
+  outer: for (const file of files) {
+    for (const record of readLedgerBackwards(file)) {
+      if (!type || record.type === type) {
+        out.unshift(record);
+        if (out.length >= limit) break outer;
+      }
     }
   }
-  return out.slice(-limit);
-}
-
-export function ledgerAllToday(type?: LedgerRecord['type']): LedgerRecord[] {
-  return ledgerTail(10000, type);
+  return out;
 }

@@ -13,13 +13,22 @@ const CONF_PATH = join(here, '..', '..', 'data', 'strategies.json');
 export interface ActiveStrategy { strategy: Strategy; params: Record<string, number>; enabled: boolean }
 type StrategyConfig = Record<string, { enabled?: boolean; params?: Record<string, number> }>;
 
+const integerPeriodParams = new Set(['fast', 'slow', 'n', 'trendN', 'k', 'd']);
+
 export function loadStrategies(overrides?: StrategyConfig): ActiveStrategy[] {
   let conf: StrategyConfig = overrides ?? {};
   if (!overrides && existsSync(CONF_PATH)) {
-    try { conf = JSON.parse(readFileSync(CONF_PATH, 'utf8')); } catch (e) { logger.warn({ err: String(e) }, 'strategies.json parse failed'); }
+    try {
+      const parsed: unknown = JSON.parse(readFileSync(CONF_PATH, 'utf8'));
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) conf = parsed as StrategyConfig;
+      else logger.warn('strategies.json root must be an object');
+    } catch (e) { logger.warn({ err: String(e) }, 'strategies.json parse failed'); }
   }
   return LIBRARY.map((s) => {
     const c = conf[s.name] ?? {};
-    return { strategy: s, params: { ...s.defaults, ...(c.params ?? {}) }, enabled: c.enabled !== false };
+    const rawParams = c.params && typeof c.params === 'object' && !Array.isArray(c.params) ? c.params : {};
+    const params = Object.fromEntries(Object.entries(rawParams).filter(([key, value]) => Number.isFinite(value)
+      && (!integerPeriodParams.has(key) || (Number.isSafeInteger(value) && value > 0))));
+    return { strategy: s, params: { ...s.defaults, ...params }, enabled: c.enabled === true };
   });
 }

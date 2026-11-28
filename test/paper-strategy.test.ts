@@ -20,6 +20,7 @@ const reversal = Array.from({ length: 120 }, (_, i) =>
 
 test('only the sourced controller opens by default; it needs both Bollinger and MACD conditions', () => {
   assert.deepEqual(loadStrategies().filter(({ enabled }) => enabled).map(({ strategy }) => strategy.name), [macdBb.name]);
+  assert.deepEqual(loadStrategies({}).filter(({ enabled }) => enabled), []);
   const ctx = { symbol, price: 100, candles: reversal, positions: [], params: macdBb.defaults,
     signals: { whaleBuys: 0, newPools: 0, goldSpread: {} } };
   const [entry] = macdBb.evaluate(ctx);
@@ -79,6 +80,21 @@ test('replay buys at next open, charges both sides on a gap stop and includes th
   assert.ok(config.engine.startUsd > 300);
   assert.equal(replayOne(fixture, {}, symbol, [candles[0], candles[2]], 0.2, 10, minute).bars, 0);
   assert.equal(replayOne(fixture, {}, symbol, candles.slice(0, 1), 0.2, 10, minute).trades, 0);
+});
+
+
+
+
+
+
+test('replay does not re-enter a protective stop on the same bar', () => {
+  const fixture: Strategy = { name: 'stop-replay', description: '', defaults: {}, closedBars: 1, evaluate: () => [{
+    strategy: 'stop-replay', symbol, side: 'buy', reason: 'always re-enter', confidence: 1, sizeUsd: 100, stopLossPct: 4,
+  }] };
+  const candles = [bar(0, 100), bar(1, 100), bar(2, 95), bar(3, 90), bar(4, 85)];
+  const row = replayOne(fixture, {}, symbol, candles, 0.1, 0, minute);
+  assert.equal(row.trades, 2);
+  assert.equal(row.unrealizedUsd, 0);
 });
 
 test('archive reports for different symbols and windows do not overwrite each other', async (t) => {

@@ -36,7 +36,7 @@ function runProcess(root: string, ts: number, prices: Record<string, number>, sy
       if (price === undefined) return new Response(null, { status: 503 });
       const candles = Array.from({ length: 40 }, (_, i) => {
         const time = now - (39 - i) * 60_000;
-        return i === 39 ? [time, 100, price + 1, 99, price, 1000] : [time, 100, 101, 99, 100, 100];
+        return i >= 38 ? [time, 100, Math.max(100, price) * 1.01, Math.min(100, price) * 0.99, price, 1000] : [time, 100, 101, 99, 100, 100];
       });
       return Response.json(candles);
     };
@@ -112,6 +112,7 @@ test('does not open a new trade while a held symbol has no current quote', (t) =
     await runEngineCycle();
     delete prices.BTCUSDT;
     prices.ETHUSDT = 110;
+    now += 60_000;
     await runEngineCycle();
     assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['BTCUSDT']);
     assert.deepEqual(engineState.snapshot.prices, { BTCUSDT: 101.12, ETHUSDT: 110 });
@@ -120,11 +121,13 @@ test('does not open a new trade while a held symbol has no current quote', (t) =
     assert.equal(engineState.decisions[0].vetoed, 'market price unavailable for an open position');
 
     prices.BTCUSDT = 100;
+    now += 60_000;
     await runEngineCycle();
     assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['BTCUSDT', 'ETHUSDT']);
 
     delete prices.BTCUSDT;
     prices.ETHUSDT = 120;
+    now += 60_000;
     await runEngineCycle();
     assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['BTCUSDT']);
     assert.equal(engineState.snapshot.stats.ema_cross.trades, 1);
@@ -285,6 +288,7 @@ test('gold API retains cached quotes without feeding stale spreads into paper tr
       assert.deepEqual(engineState.snapshot.positions.map((p) => p.symbol), ['XAUTUSD']);
 
       dexPrices.PAXG = 98;
+      now += 60_000;
       await runGoldCycle();
       assert.ok((await gold()).assets.every((quote) => !quote.stale));
       await runEngineCycle();
@@ -497,6 +501,8 @@ test('keeps the new daily loss baseline after a cycle with no fill', (t) => {
   assert.deepEqual(vetoed.positions.map(({ symbol }) => symbol), ['BTCUSDT']);
 
   const restarted = runCycle(root, tomorrow + 60_000, { BTCUSDT: 111, ETHUSDT: 110 }, undefined, lossLimit);
+  assert.equal(restarted.dayStartEquityUsd, vetoed.dayStartEquityUsd);
+  assert.notEqual(vetoed.dayStartEquityUsd, 10_000);
   assert.deepEqual(restarted.positions.map(({ symbol }) => symbol), ['BTCUSDT']);
   const ledger = readFileSync(join(root, 'data', 'ledger', '2026-11-25.jsonl'), 'utf8');
   assert.match(ledger, /max open positions/);
@@ -511,9 +517,51 @@ test('does not set a new daily loss baseline while the kill switch is on', (t) =
   writeFileSync(kill, 'on');
   const halted = runCycle(root, tomorrow, { BTCUSDT: 115, ETHUSDT: 110 }, undefined, lossLimit);
   assert.equal(halted.killed, true);
+  assert.equal(halted.dayStartEquityUsd, 10_000);
   assert.deepEqual(halted.positions.map(({ symbol }) => symbol), ['BTCUSDT']);
   rmSync(kill);
 
   const resumed = runCycle(root, tomorrow + 60_000, { BTCUSDT: 111, ETHUSDT: 110 }, undefined, lossLimit);
   assert.deepEqual(resumed.positions.map(({ symbol }) => symbol), ['BTCUSDT', 'ETHUSDT']);
+});
+
+test('rejects a ledger with multiple genesis rows', (t) => {
+  const root = fixture(t);
+  const directory = join(root, 'data', 'ledger');
+  mkdirSync(directory);
+  const row = (equityUsd: number) => {
+    const data = { equityUsd };
+    return { seq: 0, ts: today, type: 'equity', prevHash: 'GENESIS',
+      hash: createHash('sha256').update(`GENESIS:0:equity:${JSON.stringify(data)}`).digest('hex'), data };
+  };
+  writeFileSync(join(directory, '2026-11-24.jsonl'), [row(10_000), row(10_001)].map((r) => JSON.stringify(r)).join('\n') + '\n');
+  const result = runProcess(root, tomorrow, { BTCUSDT: 100, ETHUSDT: 100 });
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /ledger chain/i);
+});
+
+test('ledger tail reads backward across UTC day files', (t) => {
+  const root = fixture(t);
+  const result = runProcess(root, tomorrow, {}, 'BTCUSDT', {}, `
+    import { mkdirSync, writeFileSync } from 'node:fs';
+    const { hashLedgerPayload, ledgerTail } = await import('./src/engine/ledger.ts');
+    const row = (seq, prevHash, type, ts) => {
+      const data = { seq };
+      return { seq, ts, type, prevHash, hash: hashLedgerPayload(prevHash, seq, type, JSON.stringify(data)), data };
+    };
+    const rows = [];
+    rows.push(row(0, 'GENESIS', 'decision', 1));
+    rows.push(row(1, rows[0].hash, 'fill', 2));
+    rows.push(row(2, rows[1].hash, 'equity', 3));
+    rows.push(row(3, rows[2].hash, 'fill', 4));
+    mkdirSync('./data/ledger', { recursive: true });
+    writeFileSync('./data/ledger/2026-11-24.jsonl', rows.slice(0, 2).map((r) => JSON.stringify(r)).join('\\n') + '\\n');
+    writeFileSync('./data/ledger/2026-11-25.jsonl', rows.slice(2).map((r) => JSON.stringify(r)).join('\\n') + '\\n');
+    console.log(JSON.stringify({
+      tail: ledgerTail(3).map((r) => [r.seq, r.type]),
+      fills: ledgerTail(2, 'fill').map((r) => r.seq),
+    }));
+  `);
+  assert.equal(result.status, 0, result.stderr);
+  assert.deepEqual(JSON.parse(result.stdout), { tail: [[1, 'fill'], [2, 'equity'], [3, 'fill']], fills: [1, 3] });
 });
