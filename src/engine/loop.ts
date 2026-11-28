@@ -109,7 +109,7 @@ export function createPaperEngine(options: {
       const reason = positionExit(p, px, now);
       if (priorPeak !== p.trailing?.peak) checkpointDirty = true;
       if (!reason) continue;
-      const price = slippedPrice(px, 'sell', p.trailing ? MANAGED_SLIPPAGE_BPS : 0);
+      const price = slippedPrice(px, 'sell', MANAGED_SLIPPAGE_BPS);
       const fill = portfolio.close(p.strategy, p.symbol, price, config.engine.feePct, reason, now);
       if (fill) {
         stopped.add(`${p.strategy}|${p.symbol}`);

@@ -114,6 +114,28 @@ test('a protective stop cannot re-enter the same market in the same cycle', asyn
   assert.equal(engine.portfolio.tradesClosed, 1);
 });
 
+test('unmanaged protective exits use adverse slippage', async () => {
+  const firstOpen = Date.UTC(2026, 10, 24, 12, 0);
+  const candle = (index: number): Candle => ({ t: firstOpen + index * minute, o: 100, h: 101, l: 99, c: 100, v: 10 });
+  const completed = Array.from({ length: 70 }, (_, i) => candle(i));
+  const forming = candle(70);
+  const feed: Feed = { candles: [...completed, forming], price: 100, source: 'binance', lastFetch: forming.t + 30_000, requestedAt: forming.t + 30_000 };
+  const fixture: Strategy = { name: 'protective-slip-fixture', description: '', defaults: {}, evaluate: () => [] };
+  const records: [string, any][] = [];
+  const engine = createPaperEngine({
+    state: { snapshot: null, decisions: [], halted: false },
+    append: (type, data) => { records.push([type, data]); },
+    refresh: async () => feed,
+    signals: () => ({ whaleBuys: 0, newPools: 0, goldSpread: {} }),
+    strategies: [{ strategy: fixture, params: {}, enabled: true }],
+  });
+  engine.portfolio.open({ strategy: 'protective-slip-fixture', symbol: 'BTCUSDT', side: 'buy', confidence: 1, reason: 'seed', sizeUsd: 100, maxHoldMin: 1 }, 100, 0.1, forming.t - 2 * minute);
+  await engine.cycle();
+  const exit = records.find(([type, data]) => type === 'fill' && data.side === 'sell')?.[1];
+  assert.equal(exit.reason, 'max hold reached');
+  assert.ok(Math.abs(exit.price - 99.97) < 1e-9);
+});
+
 test('unmanaged paper fills use adverse slippage on both entry and exit', async () => {
   const firstOpen = Date.UTC(2026, 10, 24, 12, 0);
   const candle = (index: number): Candle => ({ t: firstOpen + index * minute, o: 100, h: 101, l: 99, c: 100, v: 10 });
