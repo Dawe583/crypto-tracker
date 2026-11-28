@@ -177,7 +177,7 @@ See [docs/RPI4_DEPLOYMENT.md](docs/RPI4_DEPLOYMENT.md) for the full Raspberry Pi
 
 ## HTTP JSON API
 
-The tracker process serves a read-only JSON API from `src/api.ts`, backed by the in-memory data in `src/store.ts`. It is enabled by default and listens on port 8787. `API_HOST` defaults to local-only `127.0.0.1`; set `0.0.0.0` only with a strong `API_TOKEN` for LAN access.
+The tracker process serves a small JSON API from `src/api.ts`, backed by the in-memory data in `src/store.ts`. Monitor and paper-engine reads are read-only; the only state-changing route is the authenticated local engine kill control. It is enabled by default and listens on port 8787. `API_HOST` defaults to local-only `127.0.0.1`; set `0.0.0.0` only with a strong `API_TOKEN` for LAN access.
 
 | Method | Path | Returns |
 |---|---|---|
@@ -185,6 +185,12 @@ The tracker process serves a read-only JSON API from `src/api.ts`, backed by the
 | GET | `/api/gold` | Latest PAXG and XAUt DEX prices compared with the spot gold reference. |
 | GET | `/api/whales` | Recent watched-wallet buy activity. |
 | GET | `/api/pools` | Recently detected new pools and their filter results. |
+| GET | `/api/engine/snapshot` | Current paper portfolio, positions, prices, and equity curve. |
+| GET | `/api/engine/strategies` | Strategy library entries, parameters, and enabled state. |
+| GET | `/api/engine/decisions` | Recent paper-engine decisions and risk vetoes. |
+| GET | `/api/engine/ledger` | Recent hash-chained paper-engine ledger records. |
+| GET | `/api/engine/candles` | Cached public candles for one engine symbol. |
+| POST | `/api/engine/kill` | Writes `data/KILL`, blocking new paper entries. Requires `API_TOKEN`; disabled when it is empty. |
 
 Gold quotes are cached per asset and chain. Each quote has its own `updatedAt` (when the tracker refreshed it) and `stale` flag. A quote is stale if the latest poll missed it or it is older than three poll intervals. The response-level `updatedAt` is the last successful refresh of any asset; `stale` means that no asset has a fresh quote. Stale quotes are kept for display but never used by the paper engine's gold-spread strategy.
 
@@ -276,7 +282,11 @@ Runtime files such as `data/gold_state.json` and `data/signal_state.json` are gi
 | `npm start` | Run the listener, the gold monitor, and the HTTP API (production entry point). |
 | `npm run listen` | On-chain listener only. |
 | `npm run gold` | One Gold RWA scan, printed as JSON. Useful for testing. |
+| `npm test` | Node regression tests. |
+| `npm run backtest` | Replay strategies over public or archived candles. |
+| `npm run sweep` / `npm run stress` | Parameter and robustness research runs. |
 | `npm run typecheck` | TypeScript type check, no output. |
+| `npm run build:deck` / `npm run test:deck` / `npm run test:hosting` | Build and validate the hosted deck. |
 | `npm run build` | Compile to `dist/`. Not required, because `npm start` runs the source through tsx. |
 
 ## Alerts
