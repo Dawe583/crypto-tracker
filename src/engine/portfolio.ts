@@ -33,24 +33,24 @@ export class PaperPortfolio {
   }
 
   restoreCheckpoint(c: PaperPortfolioCheckpoint) {
-    const optionalPositive = (n: number | null) => n === null || (Number.isFinite(n) && n > 0);
-    if (Array.isArray(c.positions)) for (const p of c.positions) {
-      p.stopLossPct ??= null;
-      p.takeProfitPct ??= null;
-      p.maxHoldMin ??= null;
-    }
-    if (![c.cashUsd, c.realizedUsd, c.feesUsd].every(Number.isFinite) || c.cashUsd < 0 || c.feesUsd < 0
-      || ![c.tradesClosed, c.wins, c.seq].every(Number.isSafeInteger) || c.tradesClosed < 0 || c.wins < 0 || c.seq < 0 || c.wins > c.tradesClosed
-      || !Array.isArray(c.positions) || c.positions.some((p) =>
-        typeof p.id !== 'string' || !p.id || typeof p.strategy !== 'string' || !p.strategy || typeof p.symbol !== 'string' || !p.symbol
-        || ![p.qty, p.entryPrice, p.entryTs, p.sizeUsd].every(Number.isFinite)
-        || p.qty <= 0 || p.entryPrice <= 0 || p.entryTs <= 0 || p.sizeUsd <= 0
-        || !optionalPositive(p.stopLossPct) || (p.stopLossPct !== null && p.stopLossPct >= 100)
-        || !optionalPositive(p.takeProfitPct) || !optionalPositive(p.maxHoldMin)
-        || (p.entryFeeUsd !== undefined && (!Number.isFinite(p.entryFeeUsd) || p.entryFeeUsd < 0))
-        || (p.trailing !== undefined && (!p.trailing || !Number.isFinite(p.trailing.peak) || p.trailing.peak <= 0
-          || p.trailing.peak < p.entryPrice || !Number.isFinite(p.trailing.afterPct) || p.trailing.afterPct <= 0)))
-      || new Set(c.positions.map((p) => `${p.strategy}|${p.symbol}`)).size !== c.positions.length) {
+    const validOptional = (value: number | null | undefined, allowHundred = false) =>
+      value == null || (Number.isFinite(value) && value > 0 && (allowHundred || value < 100));
+    const validPosition = (p: Position) => p && typeof p.id === 'string' && p.id !== ''
+      && typeof p.strategy === 'string' && p.strategy !== '' && typeof p.symbol === 'string' && p.symbol !== ''
+      && Number.isFinite(p.qty) && p.qty > 0 && Number.isFinite(p.entryPrice) && p.entryPrice > 0
+      && Number.isFinite(p.entryTs) && p.entryTs >= 0 && Number.isFinite(p.sizeUsd) && p.sizeUsd > 0
+      && validOptional(p.stopLossPct) && validOptional(p.takeProfitPct, true) && validOptional(p.maxHoldMin, true)
+      && (p.entryFeeUsd === undefined || (Number.isFinite(p.entryFeeUsd) && p.entryFeeUsd >= 0))
+      && (p.trailing === undefined || (p.trailing && Number.isFinite(p.trailing.peak) && p.trailing.peak >= p.entryPrice
+        && Number.isFinite(p.trailing.afterPct) && p.trailing.afterPct > 0));
+    const validTotals = c && Number.isFinite(c.cashUsd) && c.cashUsd >= 0
+      && Number.isFinite(c.realizedUsd) && Number.isFinite(c.feesUsd) && c.feesUsd >= 0
+      && Number.isSafeInteger(c.tradesClosed) && c.tradesClosed >= 0
+      && Number.isSafeInteger(c.wins) && c.wins >= 0 && c.wins <= c.tradesClosed
+      && Number.isSafeInteger(c.seq) && c.seq >= 0;
+    if (!validTotals || !Array.isArray(c.positions) || c.positions.some((p) => !validPosition(p))
+      || new Set(c.positions.map((p) => p.id)).size !== c.positions.length
+      || new Set(c.positions.map((p) => this.key(p))).size !== c.positions.length) {
       throw new Error('invalid paper portfolio ledger checkpoint');
     }
     this.cashUsd = c.cashUsd;
