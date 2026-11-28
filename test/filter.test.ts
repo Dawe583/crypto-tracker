@@ -75,3 +75,16 @@ test('market lookup normalizes malformed liquidity and market cap values', async
   assert.equal(market?.liquidityUsd, 0);
   assert.equal(market?.marketCapUsd, null);
 });
+
+test('honeypot lookup normalizes malformed upstream result types', async (t) => {
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (async () => Response.json({
+    honeypotResult: { isHoneypot: 'no', honeypotReason: 7 },
+    simulationResult: { buyTax: '2.5', sellTax: 'bad' },
+  })) as typeof fetch;
+  t.after(() => { globalThis.fetch = realFetch; });
+
+  assert.deepEqual(await checkHoneypot('base', token), {
+    isHoneypot: null, buyTaxPct: 2.5, sellTaxPct: null, reason: undefined,
+  });
+});

@@ -73,11 +73,15 @@ export async function checkHoneypot(chain: ChainKey, token: Address): Promise<Ho
     const r = await fetch(`https://api.honeypot.is/v2/IsHoneypot?address=${token}&chainID=${CHAINS[chain].honeypotChainId}`, { signal: AbortSignal.timeout(FILTER_TIMEOUT_MS) });
     if (!r.ok) return { isHoneypot: null, buyTaxPct: null, sellTaxPct: null, reason: `http ${r.status}` };
     const j: any = await r.json();
+    const tax = (value: unknown) => {
+      const n = Number(value);
+      return Number.isFinite(n) && n >= 0 ? n : null;
+    };
     return {
-      isHoneypot: j.honeypotResult?.isHoneypot ?? null,
-      buyTaxPct: j.simulationResult?.buyTax ?? null,
-      sellTaxPct: j.simulationResult?.sellTax ?? null,
-      reason: j.honeypotResult?.honeypotReason,
+      isHoneypot: typeof j.honeypotResult?.isHoneypot === 'boolean' ? j.honeypotResult.isHoneypot : null,
+      buyTaxPct: tax(j.simulationResult?.buyTax),
+      sellTaxPct: tax(j.simulationResult?.sellTax),
+      reason: typeof j.honeypotResult?.honeypotReason === 'string' ? j.honeypotResult.honeypotReason : undefined,
     };
   } catch (err) {
     return { isHoneypot: null, buyTaxPct: null, sellTaxPct: null, reason: String(err) };
