@@ -49,6 +49,13 @@ export function createPaperEngine(options: {
   }
 
   function restore(checkpoint: EngineCheckpoint) {
+    if (!Array.isArray(checkpoint.stats) || checkpoint.stats.some(([name, stats]) => typeof name !== 'string' || !name
+      || typeof stats !== 'object' || !stats || !Number.isFinite(stats.pnl)
+      || !Number.isSafeInteger(stats.trades) || stats.trades < 0 || !Number.isSafeInteger(stats.wins) || stats.wins < 0 || stats.wins > stats.trades)
+      || (checkpoint.lastSignalBars !== undefined && (!Array.isArray(checkpoint.lastSignalBars)
+        || checkpoint.lastSignalBars.some(([key, bar]) => typeof key !== 'string' || !key || !Number.isFinite(bar) || bar <= 0)))) {
+      throw new Error('invalid paper engine ledger checkpoint');
+    }
     portfolio.restoreCheckpoint(checkpoint.portfolio);
     risk.restoreCheckpoint(checkpoint.risk);
     for (const [name, stats] of checkpoint.stats) perStrategy.set(name, stats);

@@ -35,6 +35,12 @@ export class RiskEngine {
   }
 
   restoreCheckpoint(c: ReturnType<RiskEngine['checkpoint']>) {
+    if (typeof c.dayStart !== 'string' || !c.dayStart || !Number.isFinite(c.dayStartEquity) || c.dayStartEquity <= 0
+      || !Array.isArray(c.losses) || c.losses.some((entry) => !Array.isArray(entry) || typeof entry[0] !== 'string' || !entry[0]
+        || typeof entry[1] !== 'object' || !entry[1] || !Number.isSafeInteger(entry[1].n) || entry[1].n < 0
+        || !Number.isFinite(entry[1].until) || entry[1].until < 0)) {
+      throw new Error('invalid paper risk ledger checkpoint');
+    }
     this.dayStart = c.dayStart;
     this.dayStartEquity = c.dayStartEquity;
     this.losses = new Map(c.losses);

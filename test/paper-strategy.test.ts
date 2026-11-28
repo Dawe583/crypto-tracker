@@ -5,6 +5,8 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { config } from '../src/config.js';
 import { replayOne, runBacktest } from '../src/engine/backtest.js';
+import { createPaperEngine } from '../src/engine/loop.js';
+import { engineState } from '../src/engine/state.js';
 import { managedSize } from '../src/engine/execution.js';
 import { closedStrategyBars } from '../src/engine/market.js';
 import { PaperPortfolio } from '../src/engine/portfolio.js';
@@ -93,6 +95,25 @@ test('archive reports for different symbols and windows do not overwrite each ot
   const next = await runBacktest([symbol], '1m', 'next.csv');
   assert.equal(new Set([first.file, otherSymbol.file, next.file]).size, 3);
   assert.ok([first, otherSymbol, next].every(({ file }) => existsSync(file)));
+});
+
+
+test('engine checkpoints reject corrupt risk and statistics state', () => {
+  const engine = createPaperEngine({
+    state: engineState,
+    append: () => {},
+    refresh: async () => null,
+    signals: () => ({ whaleBuys: 0, newPools: 0, goldSpread: {} }),
+    strategies: [],
+  });
+  const checkpoint = engine.checkpoint();
+  const badRisk = structuredClone(checkpoint);
+  badRisk.risk.dayStartEquity = -1;
+  assert.throws(() => engine.restore(badRisk), /invalid paper risk/);
+  const badStats = structuredClone(checkpoint);
+  badStats.stats = [['fixture', { pnl: NaN, trades: 0, wins: 0 }]];
+  assert.throws(() => engine.restore(badStats), /invalid paper engine/);
+  engine.restore(checkpoint);
 });
 
 test('portfolio checkpoints reject corrupt positions instead of restoring them', () => {
