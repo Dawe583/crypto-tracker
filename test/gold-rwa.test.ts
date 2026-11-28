@@ -35,32 +35,6 @@ test('a stalled DEX request does not prevent a valid asset from refreshing', asy
   assert.deepEqual(quotes.map((q) => [q.symbol, q.dexPriceUsd]), [['XAUT', 99]]);
 });
 
-test('scheduled gold polls do not overlap', async (t) => {
-  let tick!: () => Promise<void>;
-  let requests = 0;
-  let release!: () => void;
-  const waiting = new Promise<void>((resolve) => { release = resolve; });
-  t.mock.method(globalThis, 'setInterval', (callback: typeof tick) => { tick = callback; });
-  t.mock.method(globalThis, 'fetch', async () => {
-    requests++;
-    await waiting;
-    return new Response(null, { status: 503 });
-  });
-
-  startGoldLoop();
-  const overlap = tick();
-  try {
-    assert.equal(requests, 1);
-  } finally {
-    release();
-    await overlap;
-    await setImmediate();
-  }
-  await tick();
-  assert.equal(requests, 2);
-});
-
-
 test('thin gold pairs do not produce spread signals', async (t) => {
   const [paxg, xaut] = GOLD_ASSETS;
   t.mock.method(globalThis, 'fetch', async (url: string) => {
@@ -87,4 +61,29 @@ test('reversed gold thresholds cannot turn small spreads into major alerts', (t)
   config.gold.majorPct = -2;
   assert.equal(classify(0.6), 'alert');
   assert.equal(classify(1.6), 'major');
+});
+
+test('scheduled gold polls do not overlap', async (t) => {
+  let tick!: () => Promise<void>;
+  let requests = 0;
+  let release!: () => void;
+  const waiting = new Promise<void>((resolve) => { release = resolve; });
+  t.mock.method(globalThis, 'setInterval', (callback: typeof tick) => { tick = callback; });
+  t.mock.method(globalThis, 'fetch', async () => {
+    requests++;
+    await waiting;
+    return new Response(null, { status: 503 });
+  });
+
+  startGoldLoop();
+  const overlap = tick();
+  try {
+    assert.equal(requests, 1);
+  } finally {
+    release();
+    await overlap;
+    await setImmediate();
+  }
+  await tick();
+  assert.equal(requests, 2);
 });

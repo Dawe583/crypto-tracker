@@ -77,9 +77,9 @@ export const config = {
     pollMs: num(process.env.GOLD_POLL_MS, 60_000),
     alertPct: num(process.env.GOLD_ALERT_PCT, 0.5),
     majorPct: num(process.env.GOLD_MAJOR_PCT, 1.5),
-    minLiquidityUsd: num(process.env.GOLD_MIN_LIQUIDITY_USD, 20_000),
     basePaxg: str(process.env.BASE_PAXG_ADDRESS),
     baseXaut: str(process.env.BASE_XAUT_ADDRESS),
+    minLiquidityUsd: num(process.env.GOLD_MIN_LIQUIDITY_USD, 20_000),
   },
   engine: {
     enabled: str(process.env.ENGINE_ENABLED, 'true').toLowerCase() !== 'false',
