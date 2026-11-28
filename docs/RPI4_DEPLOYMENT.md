@@ -13,7 +13,7 @@ Past whale alerts remain visible in the API after a watchlist edit. Paper tradin
 
 ## 1. Prerequisites on the Pi
 
-Raspberry Pi OS 64-bit, Node.js 20 or 22, git.
+Raspberry Pi OS 64-bit, Node.js 22 or newer, git.
 
   node -v && git --version
 
@@ -33,7 +33,7 @@ Install the systemd service and start it:
 
   cd ~/crypto-tracker && bash deploy/install-service.sh
 
-The script runs npm install, writes the unit to /etc/systemd/system/whale-tracker.service with your user, the app path, and the npm path, then runs daemon-reload and enable --now.
+The script runs npm ci from the locked dependency graph, writes the unit to /etc/systemd/system/whale-tracker.service with your user, the app path, and the npm path, then runs daemon-reload and enable --now.
 
 ## 3. Verify
 
@@ -45,7 +45,7 @@ The script runs npm install, writes the unit to /etc/systemd/system/whale-tracke
 
 Boot test: sudo reboot, then systemctl is-active whale-tracker.
 
-Update: cd ~/crypto-tracker && git pull && npm install && sudo systemctl restart whale-tracker
+Update: cd ~/crypto-tracker && git pull && npm ci && sudo systemctl restart whale-tracker
 
 Stop or disable: sudo systemctl stop whale-tracker; sudo systemctl disable whale-tracker
 

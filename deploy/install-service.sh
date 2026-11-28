@@ -6,29 +6,33 @@ set -euo pipefail
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RUN_USER="${SUDO_USER:-$USER}"
 NPM_BIN="$(command -v npm || true)"
+NODE_BIN="$(command -v node || true)"
 
-if [ -z "$NPM_BIN" ]; then
-  echo "npm not found. Install Node.js 20+ first (see docs/RPI4_DEPLOYMENT.md)." >&2
+if [ -z "$NPM_BIN" ] || [ -z "$NODE_BIN" ]; then
+  echo "Node.js/npm not found. Install Node.js 22+ first (see docs/RPI4_DEPLOYMENT.md)." >&2
   exit 1
 fi
+NODE_BIN_DIR="$(dirname "$NODE_BIN")"
 if [ ! -f "$APP_DIR/.env" ]; then
   echo "Missing $APP_DIR/.env. Run: cp .env.example .env && chmod 600 .env && nano .env" >&2
   exit 1
 fi
 
 chmod 600 "$APP_DIR/.env"
-(cd "$APP_DIR" && npm install --no-audit --no-fund)
+(cd "$APP_DIR" && npm ci --no-audit --no-fund)
 
 TMP_UNIT="$(mktemp)"
 sed -e "s|<USER>|$RUN_USER|g" \
     -e "s|<APP_DIR>|$APP_DIR|g" \
     -e "s|^ExecStart=.*|ExecStart=$NPM_BIN start|" \
+    -e "s|^Environment=PATH=.*|Environment=PATH=$NODE_BIN_DIR:/usr/local/bin:/usr/bin:/bin|" \
     "$APP_DIR/deploy/whale-tracker.service" > "$TMP_UNIT"
 
 sudo install -m 644 "$TMP_UNIT" /etc/systemd/system/whale-tracker.service
 rm -f "$TMP_UNIT"
 sudo systemctl daemon-reload
-sudo systemctl enable --now whale-tracker
+sudo systemctl enable whale-tracker
+sudo systemctl restart whale-tracker
 sleep 3
 sudo systemctl --no-pager status whale-tracker || true
 

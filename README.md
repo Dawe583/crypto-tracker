@@ -12,7 +12,7 @@ If no fresh paper snapshot is available, **the hosted page uses clearly labeled,
 
 Validate hosting with `npm run test:hosting` and `npm run build:deck`; deck behavior with `npm run test:deck`.
 
-[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D20-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-%3E%3D22-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![viem](https://img.shields.io/badge/viem-2.x-000000)](https://viem.sh/)
 [![Platform](https://img.shields.io/badge/Raspberry%20Pi-4-C51A4A?logo=raspberrypi&logoColor=white)](https://www.raspberrypi.com/)
@@ -94,7 +94,7 @@ Key design points:
 |---|---|---|
 | Board | Raspberry Pi 4 Model B, 2 GB or more | 2 GB is enough. 4 GB or 8 GB gives headroom. |
 | OS | Raspberry Pi OS 64-bit (Bookworm or later) | 64-bit is required for current Node.js builds. |
-| Node.js | 20 LTS or 22 LTS | Check with `node -v`. |
+| Node.js | 22 LTS or newer | Check with `node -v`. |
 | Storage | 16 GB or more microSD, or a USB SSD | The app writes little. A USB SSD is more reliable for 24/7 use. |
 | Network | Stable Ethernet or Wi-Fi | A paid WebSocket RPC (Alchemy, Infura) is advised. |
 | Power | Official 5V/3A USB-C supply | Under-voltage causes random crashes. |
@@ -112,7 +112,7 @@ git clone https://github.com/Dawe583/crypto-tracker.git ~/crypto-tracker
 cd ~/crypto-tracker
 
 # 2. Install dependencies
-npm i
+npm ci
 
 # 3. Create your config (never commit .env)
 cp .env.example .env
@@ -129,7 +129,7 @@ npm start
 sudo bash deploy/install-service.sh
 ```
 
-If Node.js is missing, install version 20 or later first. For example, with NodeSource:
+If Node.js is missing, install version 22 or later first. For example, with NodeSource:
 
 ```bash
 curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
@@ -170,7 +170,7 @@ sudo systemctl disable whale-tracker    # stop auto-start on boot
 Updating:
 
 ```bash
-cd ~/crypto-tracker && git pull && npm i && sudo systemctl restart whale-tracker
+cd ~/crypto-tracker && git pull && npm ci && sudo systemctl restart whale-tracker
 ```
 
 See [docs/RPI4_DEPLOYMENT.md](docs/RPI4_DEPLOYMENT.md) for the full Raspberry Pi deployment guide, and [deploy/DEPLOY.md](deploy/DEPLOY.md) for rsync deploys and more detail.
@@ -292,7 +292,7 @@ Alert types:
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| `npm i` fails with `EBADENGINE` or syntax errors | Node.js older than 20 | Install Node 20 or 22, then run `node -v`. |
+| `npm i` fails with `EBADENGINE` or syntax errors | Node.js older than 22 | Install Node 22 or newer, then run `node -v`. |
 | `Error: Invalid URL` or RPC connection errors | Empty or wrong `*_RPC_*` value | Check `.env`. Make sure the WebSocket URL starts with `wss://`. |
 | `429` or `rate limit` in logs | Public RPC throttling log requests | Use a paid WebSocket RPC (Alchemy or Infura). |
 | `watchlist loaded` with `count: 0` | Only template entries are present | Replace the `REPLACE_WITH_VERIFIED_0x_ADDRESS` entries with real addresses. |

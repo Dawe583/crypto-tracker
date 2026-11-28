@@ -5,7 +5,7 @@ This guide covers deploying crypto-tracker (base-evm-whale-tracker) on a Raspber
 ## 1. Prerequisites
 
 - Raspberry Pi 4 (2 GB or more) running Raspberry Pi OS 64-bit.
-- Node.js 20 or later (`node -v`). Install with NodeSource or nvm.
+- Node.js 22 or later (`node -v`). Install with NodeSource or nvm.
 - git (`sudo apt-get install -y git`).
 
 ## 2. Get the code
@@ -24,7 +24,7 @@ rsync -avz --exclude node_modules --exclude .env --exclude 'data/*_state.json' -
 
 ## 3. Install dependencies
 ```bash
-npm i
+npm ci
 ```
 devDependencies are needed because `npm start` runs TypeScript through tsx.
 
@@ -51,7 +51,7 @@ Look for the startup line `Base & EVM whale tracker running`. Stop with Ctrl+C.
 cd ~/crypto-tracker
 sudo cp deploy/whale-tracker.service /etc/systemd/system/whale-tracker.service
 sudo sed -i "s|<USER>|$USER|; s|<APP_DIR>|$PWD|g" /etc/systemd/system/whale-tracker.service
-which npm   # if not /usr/bin/npm, edit ExecStart in the unit file
+which npm   # if not /usr/bin/npm, edit ExecStart and add its Node.js bin directory to Environment=PATH
 sudo systemctl daemon-reload
 sudo systemctl enable --now whale-tracker
 sudo systemctl status whale-tracker
@@ -68,7 +68,7 @@ sudo systemctl disable whale-tracker           # no auto-start on boot
 
 ## 8. Update
 ```bash
-cd ~/crypto-tracker && git pull && npm i && sudo systemctl restart whale-tracker
+cd ~/crypto-tracker && git pull && npm ci && sudo systemctl restart whale-tracker
 ```
 
 ## Notes
