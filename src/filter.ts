@@ -37,7 +37,8 @@ export async function getMarket(chain: ChainKey, token: Address): Promise<Market
     const r = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${token}`, { signal: AbortSignal.timeout(FILTER_TIMEOUT_MS) });
     if (!r.ok) return null;
     const j: any = await r.json();
-    const pairs = (j.pairs ?? []).filter((p: any) => p.chainId === CHAINS[chain].dexscreenerSlug && p.priceUsd);
+    const tokenAddress = token.toLowerCase();
+    const pairs = (j.pairs ?? []).filter((p: any) => p.chainId === CHAINS[chain].dexscreenerSlug && p.priceUsd && p.baseToken?.address?.toLowerCase() === tokenAddress);
     if (!pairs.length) return null;
     pairs.sort((a: any, b: any) => (b.liquidity?.usd ?? 0) - (a.liquidity?.usd ?? 0));
     const p = pairs[0];

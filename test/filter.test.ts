@@ -32,3 +32,19 @@ test('external safety lookups use bounded abortable requests', async (t) => {
   config.basescanKey = '';
   assert.equal(seen.length, 3);
 });
+
+test('market lookup ignores deeper pairs where the token is only the quote asset', async (t) => {
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (async () => Response.json({
+    pairs: [
+      { chainId: 'base', baseToken: { address: '0x0000000000000000000000000000000000000099' }, priceUsd: '500', liquidity: { usd: 900000 }, pairAddress: 'wrong', dexId: 'dex' },
+      { chainId: 'base', baseToken: { address: token }, priceUsd: '2', liquidity: { usd: 30000 }, marketCap: 2000000, pairAddress: 'right', dexId: 'dex' },
+    ],
+  })) as typeof fetch;
+  t.after(() => { globalThis.fetch = realFetch; });
+
+  const market = await getMarket('base', token);
+  assert.equal(market?.priceUsd, 2);
+  assert.equal(market?.pairAddress, 'right');
+});
+
