@@ -249,6 +249,9 @@ test('engine kill is disabled rather than unauthenticated when API_TOKEN is unse
     const server = startApi();
     await once(server, 'listening');
     try {
+      assert.equal(server.requestTimeout, 10000);
+      assert.equal(server.headersTimeout, 10000);
+      assert.equal(server.keepAliveTimeout, 5000);
       const kill = await fetch('http://127.0.0.1:' + server.address().port + '/api/engine/kill', { method: 'POST' });
       assert.equal(kill.status, 403);
     } finally {

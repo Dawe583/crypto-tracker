@@ -182,6 +182,9 @@ export function startApi(): Server | null {
       if (!res.headersSent) send(res, 500, { error: 'internal error' }, {});
     });
   });
+  server.requestTimeout = 10_000;
+  server.headersTimeout = 10_000;
+  server.keepAliveTimeout = 5_000;
   server.on('error', (err) => logger.error({ err: String(err) }, 'api server error'));
   if (!config.api.token && !['127.0.0.1', 'localhost', '::1'].includes(config.api.host)) {
     logger.warn({ host: config.api.host }, 'API is network reachable without API_TOKEN; signal data is public and the engine kill endpoint is disabled');
