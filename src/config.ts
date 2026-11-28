@@ -7,6 +7,10 @@ const num = (v: string | undefined, d: number): number => {
   return Number.isFinite(n) ? n : d;
 };
 const str = (v: string | undefined, d = ''): string => (v && v.trim() !== '' ? v.trim() : d);
+const positiveNum = (v: string | undefined, d: number): number => {
+  const n = num(v, d);
+  return n > 0 ? n : d;
+};
 
 export const CHAINS = {
   base: {
@@ -79,7 +83,7 @@ export const config = {
   },
   gold: {
     spotUrl: str(process.env.GOLD_SPOT_URL, 'https://api.gold-api.com/price/XAU'),
-    pollMs: num(process.env.GOLD_POLL_MS, 60_000),
+    pollMs: positiveNum(process.env.GOLD_POLL_MS, 60_000),
     alertPct: num(process.env.GOLD_ALERT_PCT, 0.5),
     majorPct: num(process.env.GOLD_MAJOR_PCT, 1.5),
     basePaxg: str(process.env.BASE_PAXG_ADDRESS),
@@ -90,7 +94,7 @@ export const config = {
     startUsd: num(process.env.ENGINE_START_USD, 10_000),
     symbols: str(process.env.ENGINE_SYMBOLS, 'BTCUSDT,ETHUSDT,SOLUSDT,DOGEUSDT,AVAXUSDT,LINKUSDT').split(',').map((s) => s.trim().toUpperCase()).filter(Boolean),
     interval: str(process.env.ENGINE_INTERVAL, '1m'),
-    pollMs: num(process.env.ENGINE_POLL_MS, 30_000),
+    pollMs: positiveNum(process.env.ENGINE_POLL_MS, 30_000),
     feePct: num(process.env.ENGINE_FEE_PCT, 0.1),
     maxPositionUsd: num(process.env.ENGINE_MAX_POSITION_USD, 500),
     maxTotalUsd: num(process.env.ENGINE_MAX_TOTAL_USD, 3_000),
