@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { PaperPortfolio } from '../src/engine/portfolio.js';
+import { RiskEngine } from '../src/engine/risk.js';
 import { loadStrategies } from '../src/strategies/registry.js';
 import { LIBRARY } from '../src/strategies/library.js';
 
@@ -60,4 +61,37 @@ test('keltner squeeze requires an actual squeeze release transition', () => {
   assert.deepEqual(strategy.evaluate(ctx), []);
   const release = Array.from({ length: 70 }, (_, i) => candle(i, i === 69 ? 105 : 100));
   assert.equal(strategy.evaluate({ ...ctx, candles: release, price: 105 })[0]?.side, 'buy');
+});
+
+test('portfolio checkpoint restore rejects impossible positions fail-closed', () => {
+  const source = new PaperPortfolio(1000);
+  const intent = { strategy: 'fixture', symbol, side: 'buy' as const, confidence: 1, sizeUsd: 100, reason: 'test', stopLossPct: 5 };
+  assert.ok(source.open(intent, 100, 0.1, 1000));
+  const checkpoint = source.checkpoint();
+  const position = checkpoint.positions[0];
+  assert.doesNotThrow(() => new PaperPortfolio(1000).restoreCheckpoint(checkpoint));
+  for (const positions of [
+    [{ ...position, qty: -1 }],
+    [{ ...position, entryPrice: 0 }],
+    [{ ...position, sizeUsd: 0 }],
+    [{ ...position, stopLossPct: 0 }],
+    [position, { ...position, id: 'duplicate' }],
+  ]) {
+    assert.throws(() => new PaperPortfolio(1000).restoreCheckpoint({ ...checkpoint, positions }), /invalid paper portfolio ledger checkpoint/);
+  }
+});
+
+test('risk checkpoint restore rejects malformed baselines and cooldowns fail-closed', () => {
+  const risk = new RiskEngine({ maxPositionUsd: 500, maxTotalUsd: 1000, maxOpenPositions: 8, dailyLossPct: 5, minConfidence: 0.5, cooldownMin: 60, startEquityUsd: 10_000 }, 0, false);
+  const checkpoint = risk.checkpoint();
+  assert.doesNotThrow(() => risk.restoreCheckpoint(checkpoint));
+  for (const malformed of [
+    { ...checkpoint, dayStart: '' },
+    { ...checkpoint, dayStartEquity: -1 },
+    { ...checkpoint, losses: null },
+    { ...checkpoint, losses: [['fixture', { n: -1, until: 0 }]] },
+    { ...checkpoint, losses: [['fixture', { n: 1, until: NaN }]] },
+  ]) {
+    assert.throws(() => risk.restoreCheckpoint(malformed as never), /invalid paper risk ledger checkpoint/);
+  }
 });

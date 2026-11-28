@@ -67,3 +67,24 @@ test('a changed external signal reevaluates the same closed bar', async () => {
   await engine.cycle();
   assert.equal(evaluations, initial * 2);
 });
+
+test('engine checkpoints reject malformed stats and signal cursors', () => {
+  const state = { snapshot: null, decisions: [], halted: false };
+  const engine = createPaperEngine({
+    state,
+    append: () => {},
+    refresh: async () => null,
+    signals: () => ({ whaleBuys: 0, newPools: 0, goldSpread: {} }),
+    strategies: [],
+  });
+  const checkpoint = engine.checkpoint();
+  assert.doesNotThrow(() => engine.restore(checkpoint));
+  for (const malformed of [
+    { ...checkpoint, stats: [['fixture', { pnl: NaN, trades: 0, wins: 0 }]] },
+    { ...checkpoint, stats: [['fixture', { pnl: 0, trades: 1, wins: 2 }]] },
+    { ...checkpoint, lastSignalBars: [['fixture|BTCUSDT', NaN]] },
+    { ...checkpoint, signalFingerprints: [['fixture|BTCUSDT', '']] },
+  ]) {
+    assert.throws(() => engine.restore(malformed as never), /invalid paper engine ledger checkpoint/);
+  }
+});

@@ -33,12 +33,24 @@ export class PaperPortfolio {
   }
 
   restoreCheckpoint(c: PaperPortfolioCheckpoint) {
-    if (![c.cashUsd, c.realizedUsd, c.feesUsd, c.tradesClosed, c.wins, c.seq].every(Number.isFinite)
-      || !Array.isArray(c.positions) || c.positions.some((p) =>
-        ![p.qty, p.entryPrice, p.entryTs, p.sizeUsd].every(Number.isFinite)
-        || (p.entryFeeUsd !== undefined && (!Number.isFinite(p.entryFeeUsd) || p.entryFeeUsd < 0))
-        || (p.trailing !== undefined && (!p.trailing || !Number.isFinite(p.trailing.peak)
-          || p.trailing.peak < p.entryPrice || !Number.isFinite(p.trailing.afterPct) || p.trailing.afterPct <= 0)))) {
+    const validOptional = (value: number | null, allowHundred = false) =>
+      value === null || (Number.isFinite(value) && value > 0 && (allowHundred || value < 100));
+    const validPosition = (p: Position) => p && typeof p.id === 'string' && p.id !== ''
+      && typeof p.strategy === 'string' && p.strategy !== '' && typeof p.symbol === 'string' && p.symbol !== ''
+      && Number.isFinite(p.qty) && p.qty > 0 && Number.isFinite(p.entryPrice) && p.entryPrice > 0
+      && Number.isFinite(p.entryTs) && p.entryTs >= 0 && Number.isFinite(p.sizeUsd) && p.sizeUsd > 0
+      && validOptional(p.stopLossPct) && validOptional(p.takeProfitPct, true) && validOptional(p.maxHoldMin, true)
+      && (p.entryFeeUsd === undefined || (Number.isFinite(p.entryFeeUsd) && p.entryFeeUsd >= 0))
+      && (p.trailing === undefined || (p.trailing && Number.isFinite(p.trailing.peak) && p.trailing.peak >= p.entryPrice
+        && Number.isFinite(p.trailing.afterPct) && p.trailing.afterPct > 0));
+    const validTotals = c && Number.isFinite(c.cashUsd) && c.cashUsd >= 0
+      && Number.isFinite(c.realizedUsd) && Number.isFinite(c.feesUsd) && c.feesUsd >= 0
+      && Number.isSafeInteger(c.tradesClosed) && c.tradesClosed >= 0
+      && Number.isSafeInteger(c.wins) && c.wins >= 0 && c.wins <= c.tradesClosed
+      && Number.isSafeInteger(c.seq) && c.seq >= 0;
+    if (!validTotals || !Array.isArray(c.positions) || c.positions.some((p) => !validPosition(p))
+      || new Set(c.positions.map((p) => p.id)).size !== c.positions.length
+      || new Set(c.positions.map((p) => this.key(p))).size !== c.positions.length) {
       throw new Error('invalid paper portfolio ledger checkpoint');
     }
     this.cashUsd = c.cashUsd;
