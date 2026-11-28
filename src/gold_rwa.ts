@@ -1,5 +1,5 @@
 // Gold RWA module: PAXG and XAUt on-chain/DEX price vs spot gold. Flags premium/discount/depeg and feeds the shared notifier.
-import { getAddress, type Address } from 'viem';
+import { getAddress, isAddress, type Address } from 'viem';
 import { CHAINS, config } from './config.js';
 import { logger } from './logger.js';
 import { dispatch, type WhaleSignal } from './notifier.js';
@@ -9,11 +9,21 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 // Each token represents one troy ounce of gold (PAXG and XAUt are 1 token = 1 fine troy oz).
-export const GOLD_ASSETS: Array<{ symbol: string; chain: 'base' | 'ethereum'; address: Address; issuer: string }> = [
+type GoldAsset = { symbol: string; chain: 'base' | 'ethereum'; address: Address; issuer: string };
+const configuredAsset = (symbol: string, address: string, issuer: string): GoldAsset[] => {
+  if (!address) return [];
+  if (!isAddress(address)) {
+    logger.warn({ symbol }, 'ignoring malformed base gold token address');
+    return [];
+  }
+  return [{ symbol, chain: 'base', address: getAddress(address), issuer }];
+};
+
+export const GOLD_ASSETS: GoldAsset[] = [
   { symbol: 'PAXG', chain: 'ethereum', address: getAddress('0x45804880De22913dAFE09f4980848ECE6EcbAf78'), issuer: 'Paxos' },
   { symbol: 'XAUT', chain: 'ethereum', address: getAddress('0x68749665FF8D2d112Fa859AA293F07A622782F38'), issuer: 'Tether' },
-  ...(config.gold.basePaxg ? [{ symbol: 'PAXG', chain: 'base' as const, address: getAddress(config.gold.basePaxg), issuer: 'Paxos' }] : []),
-  ...(config.gold.baseXaut ? [{ symbol: 'XAUT', chain: 'base' as const, address: getAddress(config.gold.baseXaut), issuer: 'Tether' }] : []),
+  ...configuredAsset('PAXG', config.gold.basePaxg, 'Paxos'),
+  ...configuredAsset('XAUT', config.gold.baseXaut, 'Tether'),
 ];
 
 export interface GoldQuote {

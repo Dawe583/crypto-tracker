@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { setImmediate, setTimeout } from 'node:timers/promises';
+import { spawnSync } from 'node:child_process';
 import { config } from '../src/config.js';
 import { GOLD_ASSETS, scanGold, startGoldLoop } from '../src/gold_rwa.js';
 
@@ -87,4 +88,12 @@ test('scheduled gold polls do not overlap', async (t) => {
   }
   await tick();
   assert.equal(requests, 2);
+});
+
+test('malformed optional base gold addresses do not crash module startup', () => {
+  const result = spawnSync(process.execPath, ['--import', 'tsx', '-e', 'import "./src/gold_rwa.ts"'], {
+    cwd: new URL('..', import.meta.url), encoding: 'utf8',
+    env: { ...process.env, BASE_PAXG_ADDRESS: 'not-an-address', BASE_XAUT_ADDRESS: '0x123' },
+  });
+  assert.equal(result.status, 0, result.stderr);
 });
