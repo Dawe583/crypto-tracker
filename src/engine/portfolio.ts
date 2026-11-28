@@ -33,6 +33,11 @@ export class PaperPortfolio {
   }
 
   restoreCheckpoint(c: PaperPortfolioCheckpoint) {
+    if (Array.isArray(c?.positions)) for (const p of c.positions) {
+      p.stopLossPct ??= null;
+      p.takeProfitPct ??= null;
+      p.maxHoldMin ??= null;
+    }
     const validOptional = (value: number | null | undefined, allowHundred = false) =>
       value == null || (Number.isFinite(value) && value > 0 && (allowHundred || value < 100));
     const validPosition = (p: Position) => p && typeof p.id === 'string' && p.id !== ''
