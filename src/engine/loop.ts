@@ -231,6 +231,18 @@ const watchedWallets = {
   ethereum: new Set(watchedAddresses('ethereum').map((address) => address.toLowerCase())),
 };
 
+export function whaleSymbolCounts(whales: Array<{ token: { symbol: string } }>, symbols = config.engine.symbols): Record<string, number> {
+  const counts: Record<string, number> = {};
+  const exchangeSymbol = (base: string) => symbols.find((symbol) =>
+    symbol === base || symbol.replace(/(USDT|USDC|USD)$/, '') === base);
+  for (const signal of whales) {
+    const base = signal.token.symbol.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    const symbol = exchangeSymbol(base);
+    if (symbol) counts[symbol] = Math.min((counts[symbol] ?? 0) + 1, 50);
+  }
+  return counts;
+}
+
 function monitorSignals() {
   const now = Date.now();
   const whales = listSignals('whale_buy', Infinity).filter((s) => {
@@ -244,7 +256,7 @@ function monitorSignals() {
     const symbol = `${q.symbol}USD`;
     if (!q.stale && (q.chain === 'base' || goldSpread[symbol] === undefined)) goldSpread[symbol] = q.deviationPct;
   }
-  return { whaleBuys: Math.min(whales.length, 50), newPools: listSignals('new_pool', 50).length, goldSpread };
+  return { whaleBuys: Math.min(whales.length, 50), newPools: listSignals('new_pool', 50).length, goldSpread, whaleSymbols: whaleSymbolCounts(whales) };
 }
 
 const strategies = loadStrategies();

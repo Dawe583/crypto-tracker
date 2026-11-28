@@ -179,6 +179,9 @@ test('restored whales only drive paper entries if the wallet is still watched on
     ${engine}
     assert.equal(engineState.snapshot.positions.length, 0);
     store.recordSignal({ ...signal(3), chain: 'ethereum', whale: { wallet: '${watched}' } });
+    await runEngineCycle();
+    assert.equal(engineState.snapshot.positions.length, 0);
+    store.recordSignal({ ...signal(4), chain: 'ethereum', token: { address: '0x1', symbol: 'BTC' }, whale: { wallet: '${watched}' } });
   `, env);
   run(root, `
     store.initSignalHistory();
