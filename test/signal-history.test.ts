@@ -175,6 +175,22 @@ test('long Telegram alerts are truncated while webhook failures do not lose sign
   `);
 });
 
+test('alert text strips terminal control characters from token-controlled fields', (t) => {
+  const root = fixture(t);
+  run(root, `
+    const { renderText } = await import('./src/notifier.ts');
+    const text = renderText({
+      kind: 'whale_buy', chain: 'base',
+      token: { address: '0x0000000000000000000000000000000000000001', symbol: 'EVIL\u001b[31mTOKEN' },
+      marketCapUsd: null, liquidityUsd: null, contractVerified: null,
+      links: { explorerToken: 'https://basescan.org/token/0x0000000000000000000000000000000000000001' },
+      createdAt: new Date().toISOString(),
+    });
+    assert.equal(text.includes('\u001b'), false);
+    assert.ok(text.includes('EVIL[31mTOKEN'));
+  `);
+});
+
 test('restored whales only drive paper entries if the wallet is still watched on that chain', (t) => {
   const root = fixture(t);
   const removed = '0x0000000000000000000000000000000000000010';
@@ -214,20 +230,4 @@ test('restored whales only drive paper entries if the wallet is still watched on
     ${engine}
     assert.deepEqual(engineState.snapshot.positions.map((p) => p.strategy), ['whale_follow']);
   `, env);
-});
-
-test('alert text strips terminal control characters from token-controlled fields', (t) => {
-  const root = fixture(t);
-  run(root, `
-    const { renderText } = await import('./src/notifier.ts');
-    const text = renderText({
-      kind: 'whale_buy', chain: 'base',
-      token: { address: '0x0000000000000000000000000000000000000001', symbol: 'EVIL\u001b[31mTOKEN' },
-      marketCapUsd: null, liquidityUsd: null, contractVerified: null,
-      links: { explorerToken: 'https://basescan.org/token/0x0000000000000000000000000000000000000001' },
-      createdAt: new Date().toISOString(),
-    });
-    assert.equal(text.includes('\u001b'), false);
-    assert.ok(text.includes('EVIL[31mTOKEN'));
-  `);
 });
