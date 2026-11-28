@@ -100,13 +100,14 @@ async function handle(req: IncomingMessage, res: ServerResponse) {
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
       ...cors,
-      'access-control-allow-methods': 'GET, OPTIONS',
+      'access-control-allow-methods': 'GET, POST, OPTIONS',
       'access-control-allow-headers': 'authorization, content-type',
       'access-control-max-age': '600',
     });
     return res.end();
   }
   if (req.method === 'POST' && url.pathname === '/api/engine/kill') {
+    if (!config.api.token) return send(res, 403, { error: 'engine kill requires API_TOKEN' }, cors);
     if (!authorized(req)) return send(res, 401, { error: 'unauthorized' }, cors);
     const { writeFileSync } = await import('node:fs');
     writeFileSync(KILL_FILE, `killed ${new Date().toISOString()}\n`);

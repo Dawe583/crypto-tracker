@@ -204,6 +204,14 @@ test('API bearer auth uses exact constant-time matching and localhost is the def
       assert.equal(wrongSameLength.status, 401);
       const correct = await fetch(url, { headers: { authorization: 'Bearer secret-token' } });
       assert.equal(correct.status, 200);
+      const preflight = await fetch('http://127.0.0.1:' + server.address().port + '/api/engine/kill', {
+        method: 'OPTIONS', headers: { origin: 'http://127.0.0.1:8787' },
+      });
+      assert.match(preflight.headers.get('access-control-allow-methods'), /POST/);
+      const kill = await fetch('http://127.0.0.1:' + server.address().port + '/api/engine/kill', {
+        method: 'POST', headers: { authorization: 'Bearer secret-token' },
+      });
+      assert.equal(kill.status, 200);
     } finally {
       server.close();
     }
@@ -228,5 +236,19 @@ test('malformed watchlists disable wallet watching instead of crashing startup',
     assert.equal(WATCHLIST[0].category, 'other');
     assert.deepEqual(watchedAddresses('base'), ['0x0000000000000000000000000000000000000002']);
     assert.deepEqual(watchedAddresses('ethereum'), []);
+  `);
+});
+
+test('engine kill is disabled rather than unauthenticated when API_TOKEN is unset', (t) => {
+  const root = fixture(t);
+  run(root, `
+    const server = startApi();
+    await once(server, 'listening');
+    try {
+      const kill = await fetch('http://127.0.0.1:' + server.address().port + '/api/engine/kill', { method: 'POST' });
+      assert.equal(kill.status, 403);
+    } finally {
+      server.close();
+    }
   `);
 });
