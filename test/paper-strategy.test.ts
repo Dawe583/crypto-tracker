@@ -137,3 +137,11 @@ test('portfolio rejects malformed optional risk exits before they enter the ledg
   assert.equal(pf.open({ ...intent, maxHoldMin: -5 }, 100, 0), null);
   assert.ok(pf.open({ ...intent, stopLossPct: 5, takeProfitPct: 10, maxHoldMin: 60 }, 100, 0));
 });
+
+test('invalid strategy lookback periods fall back to defaults', () => {
+  const [emaStrategy] = loadStrategies({ ema_cross: { enabled: true, params: { fast: 0, slow: 21.5, sizeUsd: 300 } } })
+    .filter(({ strategy }) => strategy.name === 'ema_cross');
+  assert.equal(emaStrategy.params.fast, 9);
+  assert.equal(emaStrategy.params.slow, 21);
+  assert.equal(emaStrategy.params.sizeUsd, 300);
+});
