@@ -1040,8 +1040,8 @@ function renderIndicators(s) {
 
   // matched inventory: buy vs sell pressure from decisions + tape volume split
   const ds = STATE.decisions || [];
-  const buys = ds.filter((d) => d.intent?.side === 'buy').length;
-  const sells = ds.filter((d) => d.intent?.side === 'sell').length;
+  const buys = ds.filter((d) => d.action === 'buy').length;
+  const sells = ds.filter((d) => d.action === 'sell').length;
   const tot = buys + sells || 1;
   $('invB').style.width = `${(buys / tot) * 100}%`; $('invS').style.width = `${(sells / tot) * 100}%`;
   $('invTxt').textContent = `${buys} buy / ${sells} sell`;

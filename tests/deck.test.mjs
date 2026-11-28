@@ -401,3 +401,16 @@ test('profit display uses the engine daily baseline and labels legacy totals dis
   assert.equal(app.elements.get('sPnl').textContent, '$550.00');
   assert.match(app.elements.get('bigDelta').innerHTML, /total/);
 });
+
+test('decision inventory counts engine actions rather than a nonexistent nested intent', () => {
+  const app = runtime();
+  app.run(`loadDemo();
+    STATE.decisions = [
+      { strategy: 'a', symbol: 'BTCUSDT', action: 'buy', confidence: 1, reason: 'x', ts: 1 },
+      { strategy: 'a', symbol: 'BTCUSDT', action: 'buy', confidence: 1, reason: 'x', ts: 2 },
+      { strategy: 'a', symbol: 'BTCUSDT', action: 'sell', confidence: 1, reason: 'x', ts: 3 },
+    ];
+    STATE.candles.BTCUSDT = Array.from({ length: 30 }, (_, i) => ({ t: i, o: 100, h: 101, l: 99, c: 100, v: 1 }));
+    renderStatic()`);
+  assert.equal(app.run('$(\"invTxt\").textContent'), '2 buy / 1 sell');
+});
