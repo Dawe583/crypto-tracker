@@ -182,7 +182,7 @@ export function createPaperEngine(options: {
           const rec: DecisionRecord = { strategy: i.strategy, symbol, action: i.side, confidence: i.confidence, reason: i.reason, ts: now };
           if (i.side === 'sell') {
             const p = portfolio.positions.get(key);
-            const price = slippedPrice(feed.price, 'sell', p?.trailing ? MANAGED_SLIPPAGE_BPS : 0);
+            const price = slippedPrice(feed.price, 'sell', MANAGED_SLIPPAGE_BPS);
             const fill = portfolio.close(i.strategy, symbol, price, config.engine.feePct, i.reason, now);
             if (fill) recordFill(fill);
             rec.vetoed = fill ? undefined : 'no position to close';
@@ -204,7 +204,7 @@ export function createPaperEngine(options: {
               ? 'managed size below minimum or invalid risk parameters'
               : risk.check({ ...i, sizeUsd }, positions, equity, exposure, now);
           if (veto) { rec.vetoed = veto; append('decision', rec); append('risk', rec); state.decisions.unshift(rec); continue; }
-          const price = slippedPrice(feed.price, 'buy', i.management ? MANAGED_SLIPPAGE_BPS : 0);
+          const price = slippedPrice(feed.price, 'buy', MANAGED_SLIPPAGE_BPS);
           const fill = portfolio.open({ ...i, sizeUsd }, price, config.engine.feePct, now);
           if (fill) {
             recordFill(fill);

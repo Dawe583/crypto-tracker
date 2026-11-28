@@ -113,3 +113,44 @@ test('a protective stop cannot re-enter the same market in the same cycle', asyn
   assert.equal(engine.portfolio.positions.has('stop-fixture|BTCUSDT'), false);
   assert.equal(engine.portfolio.tradesClosed, 1);
 });
+
+test('unmanaged paper fills use adverse slippage on both entry and exit', async () => {
+  const firstOpen = Date.UTC(2026, 10, 24, 12, 0);
+  const candle = (index: number): Candle => ({ t: firstOpen + index * minute, o: 100, h: 101, l: 99, c: 100, v: 10 });
+  const completed = Array.from({ length: 70 }, (_, i) => candle(i));
+  const forming = candle(70);
+  const feed: Feed = { candles: [...completed, forming], price: 100, source: 'binance', lastFetch: forming.t + 30_000, requestedAt: forming.t + 30_000 };
+  const buyer: Strategy = {
+    name: 'slip-fixture', description: '', defaults: {}, evaluate: ({ symbol }) => symbol === 'BTCUSDT' ? [{
+      strategy: 'slip-fixture', symbol, side: 'buy', confidence: 1, reason: 'entry', sizeUsd: 100,
+    }] : [],
+  };
+  const state = { snapshot: null, decisions: [], halted: false };
+  const records: [string, any][] = [];
+  const engine = createPaperEngine({
+    state,
+    append: (type, data) => { records.push([type, data]); },
+    refresh: async () => feed,
+    signals: () => ({ whaleBuys: 0, newPools: 0, goldSpread: {} }),
+    strategies: [{ strategy: buyer, params: {}, enabled: true }],
+  });
+  await engine.cycle();
+  const entry = engine.portfolio.positions.get('slip-fixture|BTCUSDT');
+  assert.ok(Math.abs(entry!.entryPrice - 100.03) < 1e-9);
+
+  const seller: Strategy = { ...buyer, evaluate: ({ symbol }) => symbol === 'BTCUSDT' ? [{
+    strategy: 'slip-fixture', symbol, side: 'sell', confidence: 1, reason: 'exit',
+  }] : [] };
+  const sellRecords: [string, any][] = [];
+  const sellEngine = createPaperEngine({
+    state: { snapshot: null, decisions: [], halted: false },
+    append: (type, data) => { sellRecords.push([type, data]); },
+    refresh: async () => feed,
+    signals: () => ({ whaleBuys: 0, newPools: 0, goldSpread: {} }),
+    strategies: [{ strategy: seller, params: {}, enabled: true }],
+  });
+  sellEngine.portfolio.open({ strategy: 'slip-fixture', symbol: 'BTCUSDT', side: 'buy', confidence: 1, reason: 'seed', sizeUsd: 100 }, 100, 0.1, forming.t - minute);
+  await sellEngine.cycle();
+  const exit = sellRecords.find(([type, data]) => type === 'fill' && data.side === 'sell')?.[1];
+  assert.ok(Math.abs(exit.price - 99.97) < 1e-9);
+});
