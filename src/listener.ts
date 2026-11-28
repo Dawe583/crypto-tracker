@@ -60,8 +60,7 @@ export function watcherCursor(key: string, path = WATCHER_STATE_PATH): WatcherCu
   };
 }
 
-async function onNewPool(chain: ChainKey, dex: string, kind: 'v2' | 'v3' | 'aero', log: any) {
-  const client = makeClient(chain);
+async function onNewPool(client: PublicClient, chain: ChainKey, dex: string, kind: 'v2' | 'v3' | 'aero', log: any) {
   const t0 = getAddress(log.args.token0 as Address);
   const t1 = getAddress(log.args.token1 as Address);
   const pair = getAddress((log.args.pool ?? log.args.pair) as Address);
@@ -111,8 +110,7 @@ export function transferBuyUsd(value: bigint, decimals: number, priceUsd: number
   return Number.isFinite(buyUsd) ? buyUsd : null;
 }
 
-async function onWatchedTransfer(chain: ChainKey, logs: Log[]) {
-  const client = makeClient(chain);
+async function onWatchedTransfer(client: PublicClient, chain: ChainKey, logs: Log[]) {
   for (const log of logs as any[]) {
     try {
       const to = getAddress(log.args.to as Address);
@@ -239,7 +237,7 @@ export function startListener() {
         address: getAddress(f.address),
         event: ev as any,
         onLogs: async (logs) => {
-          await Promise.all(logs.map((l) => onNewPool(chain, f.name, f.kind, l).catch((e) => logger.error({ err: String(e) }, 'pool handler'))));
+          await Promise.all(logs.map((l) => onNewPool(client, chain, f.name, f.kind, l).catch((e) => logger.error({ err: String(e) }, 'pool handler'))));
         },
       }, watcherCursor(`${chain}:factory:${getAddress(f.address)}`));
       logger.info({ chain, dex: f.name, factory: f.address }, 'watching factory');
@@ -251,7 +249,7 @@ export function startListener() {
         event: EV.transfer,
         args: { to: watched },
         onLogs: async (logs) => {
-          await onWatchedTransfer(chain, logs).catch((e) => logger.error({ err: String(e) }, 'transfer handler'));
+          await onWatchedTransfer(client, chain, logs).catch((e) => logger.error({ err: String(e) }, 'transfer handler'));
         },
       }, watcherCursor(`${chain}:transfers`));
       logger.info({ chain, wallets: watched.length }, 'watching smart-money transfers');
