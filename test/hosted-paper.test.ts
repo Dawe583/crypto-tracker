@@ -59,6 +59,19 @@ test('hosted cycles restore positions and keep one ledger chain across invocatio
   assert.equal(writes[1].p_records[0].prevHash, writes[0].p_records.at(-1)?.hash);
 });
 
+
+test('hosted deck state stores only the candle window used by the dashboard', async () => {
+  const { store, writes } = memoryStore();
+  const refresh = async (): Promise<Feed> => ({
+    source: 'coinbase', price: 100, lastFetch: Date.now(),
+    candles: Array.from({ length: 180 }, (_, t) => ({ t, o: 100, h: 100, l: 100, c: 100, v: 1 })),
+  });
+  assert.equal(await runHostedCycle(store, 1, refresh, []), true);
+  const candles = writes[0].p_deck.candles.BTCUSDT.candles;
+  assert.equal(candles.length, 120);
+  assert.equal(candles[0].t, 60);
+});
+
 test('duplicate and stale cron slots cannot post a second cycle', async () => {
   const { store, writes } = memoryStore();
   const results = await Promise.all([runHostedCycle(store, 2, refreshAt(100), []), runHostedCycle(store, 2, refreshAt(100), [])]);
