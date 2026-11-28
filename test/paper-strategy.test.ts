@@ -95,3 +95,18 @@ test('archive reports for different symbols and windows do not overwrite each ot
   assert.equal(new Set([first.file, otherSymbol.file, next.file]).size, 3);
   assert.ok([first, otherSymbol, next].every(({ file }) => existsSync(file)));
 });
+
+test('indicator helpers reject invalid lookback parameters instead of producing NaN signals', async () => {
+  const { sma, ema, rsi, bollinger, zscore, pctChange, macdHist } = await import('../src/engine/indicators.js');
+  const xs = [1, 2, 3, 4, 5];
+  for (const n of [0, -1, 1.5, NaN]) {
+    assert.equal(sma(xs, n), null);
+    assert.equal(ema(xs, n), null);
+    assert.equal(rsi(xs, n), null);
+    assert.equal(bollinger(xs, n), null);
+    assert.equal(zscore(xs, n), null);
+    assert.equal(pctChange(xs, n), null);
+  }
+  assert.equal(bollinger(xs, 2, 0), null);
+  assert.equal(macdHist(xs, 0, 2, 1), null);
+});
