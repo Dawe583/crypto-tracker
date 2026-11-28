@@ -7,7 +7,7 @@ type VercelResponse = ServerResponse & {
 };
 
 // Public, read-only market data is independent of the paper engine and storage.
-const symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'DOGEUSDT', 'ADAUSDT'];
+const symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'DOGEUSDT', 'AVAXUSDT', 'LINKUSDT'];
 const CACHE_MS = 20_000;
 type Markets = Record<string, unknown>;
 let cached: { at: number; markets: Markets } | undefined;

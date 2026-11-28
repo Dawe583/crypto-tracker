@@ -70,7 +70,7 @@ const ctx2d = (id) => {
 };
 
 const STATE = { snap: null, halted: false, strats: [], decisions: [], candles: {}, marketAt: {}, publicMarkets: {}, sym: 'BTCUSDT', whales: 0, pools: 0, gold: [], book: null, bookAt: 0 };
-const MARKET_SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'XRPUSDT', 'DOGEUSDT', 'ADAUSDT'];
+const MARKET_SYMBOLS = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'DOGEUSDT', 'AVAXUSDT', 'LINKUSDT'];
 let demoMode = false;
 let marketRequest = null, marketRequestedAt = 0, marketFailed = false;
 const marketPrices = () => demoMode
