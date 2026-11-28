@@ -39,7 +39,7 @@ export function rsi(xs: number[], n = 14): number | null {
     const d = xs[i] - xs[i - 1];
     if (d > 0) gain += d; else loss -= d;
   }
-  if (loss === 0) return 100;
+  if (loss === 0) return gain === 0 ? null : 100;
   const rs = gain / loss;
   return 100 - 100 / (1 + rs);
 }

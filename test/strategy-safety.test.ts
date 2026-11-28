@@ -26,6 +26,8 @@ test('indicator helpers reject invalid lookback parameters instead of producing 
   }
   assert.equal(bollinger(xs, 2, 0), null);
   assert.equal(macdHist(xs, 0, 2, 1), null);
+  assert.equal(rsi([1, 1, 1, 1, 1], 2), null);
+  assert.equal(rsi([1, 2, 3], 1), 100);
 });
 test('research runners reject non-fixed candle intervals before network fetches', async () => {
   const [{ runSweep }, { runStress }] = await Promise.all([import('../src/engine/sweep.js'), import('../src/engine/stress.js')]);
