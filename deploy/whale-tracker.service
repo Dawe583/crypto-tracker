@@ -5,20 +5,20 @@
 Description=Base & EVM whale tracker (crypto alert daemon + OpenTerminal API)
 After=network-online.target
 Wants=network-online.target
+# Do not give up after repeated crashes (default is 5 starts in 10 seconds).
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
 User=<USER>
 Group=<USER>
 WorkingDirectory=<APP_DIR>
-# Leading '-' means the unit still starts if .env is missing (the app then exits with a clear error).
-EnvironmentFile=-<APP_DIR>/.env
+# Require .env so a missing configuration cannot silently start with public defaults.
+EnvironmentFile=<APP_DIR>/.env
 Environment=NODE_ENV=production
 ExecStart=/usr/bin/npm start
 Restart=always
 RestartSec=10
-# Do not give up after repeated crashes (default is 5 starts in 10 seconds).
-StartLimitIntervalSec=0
 KillSignal=SIGTERM
 TimeoutStopSec=20
 NoNewPrivileges=true
